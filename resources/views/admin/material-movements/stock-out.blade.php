@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-4xl mx-auto">
         <!-- Header Card -->
-        <div class="bg-gradient-to-r from-red-600 to-rose-700 rounded-xl shadow-lg p-6 mb-6">
+    <div class="bg-gradient-to-r from-red-700 to-rose-600 rounded-xl shadow-lg p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -15,11 +15,11 @@
                     </div>
                     <div>
                         <h2 class="text-2xl font-bold text-white">Stok Keluar Material</h2>
-                        <p class="text-red-50 text-sm mt-1">Input material yang keluar dari gudang</p>
+                        <p class="text-rose-50 text-sm mt-1">Input material yang keluar dari gudang</p>
                     </div>
                 </div>
-                <a href="{{ route('admin.material-movements.index') }}"
-                   class="px-5 py-2.5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 border border-white/20">
+                     <a href="{{ route('admin.material-movements.index') }}"
+                         class="px-5 py-2.5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 border border-white/20">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -33,12 +33,12 @@
 
         <!-- Success Message -->
         @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
                 <div class="flex items-start">
-                    <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-rose-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <div class="text-green-800">
+                    <div class="text-rose-800">
                         <p class="font-medium">{{ session('success') }}</p>
                     </div>
                 </div>
@@ -136,17 +136,17 @@
 
             <!-- Stock Info Display Card - Always Visible -->
             <div id="stock-info" class="transition-all duration-300">
-                <div id="stock-card" class="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
+                <div id="stock-card" class="bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm">
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4 flex-1">
-                            <div class="p-3 bg-blue-600 rounded-xl shadow-md">
+                            <div class="p-3 bg-red-600 rounded-xl shadow-md">
                                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-semibold text-blue-700 mb-1">Stok Tersedia Saat Ini</p>
-                                <p id="stock-value" class="text-3xl font-bold text-blue-900">-</p>
+                                <p class="text-sm font-semibold text-rose-700 mb-1">Stok Tersedia Saat Ini</p>
+                                <p id="stock-value" class="text-3xl font-bold text-rose-900">-</p>
                             </div>
                         </div>
                         <div id="stock-warning" class="hidden">

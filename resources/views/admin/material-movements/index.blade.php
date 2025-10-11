@@ -5,10 +5,10 @@
 @section('content')
     <div class="space-y-6">
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg p-6 border border-slate-200">
+    <div class="bg-gradient-to-r from-red-50 to-rose-100 rounded-lg p-6 border border-red-100">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="p-3 bg-blue-500 rounded-lg">
+                    <div class="p-3 bg-red-600 rounded-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
                         </svg>
@@ -19,15 +19,15 @@
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="{{ route('admin.material-movements.stock-in') }}"
-                       class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold shadow-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 flex items-center gap-3">
+                          <a href="{{ route('admin.material-movements.stock-in') }}"
+                              class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg font-semibold shadow-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 flex items-center gap-3">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
                         Stok Masuk
                     </a>
-                    <a href="{{ route('admin.material-movements.stock-out') }}"
-                       class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-semibold shadow-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 flex items-center gap-3">
+                          <a href="{{ route('admin.material-movements.stock-out') }}"
+                              class="px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:from-rose-700 hover:to-red-700 transition-all duration-200 flex items-center gap-3">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                         </svg>
@@ -38,14 +38,14 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Total Movements -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-blue-100 rounded-lg">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-slate-900">{{ $movements->total() ?? 0 }}</p>
+                            <p class="text-3xl font-bold text-red-700">{{ $movements->total() ?? 0 }}</p>
                             <span class="text-sm text-slate-500 mb-1">data</span>
                         </div>
                     </div>
@@ -63,12 +63,12 @@
             </div>
 
             <!-- Stock In Today -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-rose-200 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 bg-rose-100 rounded-lg">
+                                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                             </div>
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-green-600">{{ $movements->where('type', 'in')->where('tanggal', today())->count() }}</p>
+                            <p class="text-3xl font-bold text-rose-700">{{ $movements->where('type', 'in')->where('tanggal', today())->count() }}</p>
                             <span class="text-sm text-slate-500 mb-1">transaksi</span>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
             </div>
 
             <!-- Stock Out Today -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-red-600">{{ $movements->where('type', 'out')->where('tanggal', today())->count() }}</p>
+                            <p class="text-3xl font-bold text-red-700">{{ $movements->where('type', 'out')->where('tanggal', today())->count() }}</p>
                             <span class="text-sm text-slate-500 mb-1">transaksi</span>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
         @endif
 
         <!-- Filter & Search Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <div class="bg-white rounded-lg shadow-sm border border-red-100 p-6">
             <div class="flex items-center gap-3 mb-4">
                 <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"/>
@@ -162,15 +162,15 @@
                     </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button type="submit" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium flex items-center justify-center gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-medium flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'type', 'date', 'movement_type']))
-                        <a href="{{ route('admin.material-movements.index') }}"
-                           class="px-4 py-2.5 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition-all duration-200 flex items-center justify-center">
+                                <a href="{{ route('admin.material-movements.index') }}"
+                                    class="px-4 py-2.5 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all duration-200 flex items-center justify-center">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -191,7 +191,7 @@
                         <h3 class="text-lg font-semibold text-slate-800">Data Perpindahan Stok</h3>
                     </div>
                     @if($movements->total() > 0)
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                        <span class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">
                             {{ $movements->total() }} data ditemukan
                         </span>
                     @endif
@@ -264,17 +264,17 @@
                             <tr class="hover:bg-slate-50 transition-colors duration-200 group">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <span class="w-8 h-8 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center text-sm font-medium group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors duration-200">
+                                        <span class="w-8 h-8 bg-rose-100 text-red-600 rounded-full flex items-center justify-center text-sm font-medium group-hover:bg-red-200 group-hover:text-red-800 transition-colors duration-200">
                                             {{ $movements->firstItem() + $index }}
                                         </span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
                                         <div>
-                                            <div class="text-sm font-medium text-slate-900">{{ $movement->tanggal->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-slate-500">{{ $movement->tanggal->format('l') }}</div>
+                                            <div class="text-sm font-medium text-slate-900">{{ optional($movement->tanggal)->format('d/m/Y') ?? '-' }}</div>
+                                            <div class="text-xs text-slate-500">{{ optional($movement->tanggal)->format('l') ?? '-' }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -293,7 +293,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($movement->type == 'in')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-rose-100 text-rose-800 border border-rose-200">
                                             <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                             </svg>
@@ -310,7 +310,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-800 border border-red-200">
                                             {{ number_format($movement->jumlah, 0, ',', '.') }}
                                         </span>
                                         @if($movement->material && $movement->material->satuan)
@@ -322,7 +322,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($movement->movement_type)
                                         <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
-                                            @if($movement->movement_type == 'jo') bg-purple-100 text-purple-800
+                                            @if($movement->movement_type == 'jo') bg-rose-100 text-rose-800
                                             @elseif($movement->movement_type == 'memo') bg-yellow-100 text-yellow-800
                                             @else bg-gray-100 text-gray-800 @endif">
                                             {{ strtoupper($movement->movement_type) }}

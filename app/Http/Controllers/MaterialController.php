@@ -163,8 +163,8 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Material $material)
     {
+
         $validated = $request->validate([
-            'tanggal' => 'required|date',
             'material' => 'required|string|max:255',
             'spesifikasi' => 'nullable|string|max:255',
             'jumlah' => 'required|numeric|min:0',
@@ -177,7 +177,10 @@ class MaterialController extends Controller
         $validated['nama'] = $validated['material'];
         unset($validated['material']);
 
-        $material->update($validated);
+
+    $material->update($validated);
+    // Refresh model agar stok realtime langsung update jika ada observer/cache
+    $material->refresh();
 
         return redirect()->route('admin.materials.index')
                         ->with('success', 'Material berhasil diupdate.');

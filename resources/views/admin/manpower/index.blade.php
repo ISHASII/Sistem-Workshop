@@ -5,10 +5,10 @@
 @section('content')
     <div class="space-y-6">
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100 shadow-sm">
+    <div class="bg-gradient-to-r from-rose-50 to-red-50 rounded-xl p-6 border border-rose-100 shadow-sm">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="p-3 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl shadow-lg">
+                    <div class="p-3 bg-gradient-to-br from-rose-600 to-red-600 rounded-xl shadow-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
@@ -18,8 +18,8 @@
                         <p class="text-slate-600 mt-1">Kelola data tenaga kerja dan karyawan</p>
                     </div>
                 </div>
-                <a href="{{ route('admin.manpower.create') }}" 
-                   class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200">
+                     <a href="{{ route('admin.manpower.create') }}"
+                         class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-rose-700 hover:to-red-700 transition-all duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
@@ -30,12 +30,12 @@
 
         <!-- Success Message -->
         @if(session('success'))
-            <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
+            <div class="bg-rose-50 border-l-4 border-rose-500 rounded-lg p-4 shadow-sm">
                 <div class="flex items-start">
-                    <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-rose-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <div class="text-green-800">
+                    <div class="text-rose-800">
                         <p class="font-medium">{{ session('success') }}</p>
                     </div>
                 </div>
@@ -55,16 +55,16 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="text" name="search" value="{{ request('search') }}" 
-                                   placeholder="Cari NRP atau nama..." 
-                                   class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                   placeholder="Cari NRP atau nama..."
+                                   class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                         </div>
                     </div>
 
                     <!-- Filter Jenis Kelamin -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-2">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <select name="jenis_kelamin" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                             <option value="">Semua</option>
                             <option value="laki-laki" {{ request('jenis_kelamin') == 'laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                             <option value="perempuan" {{ request('jenis_kelamin') == 'perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -74,7 +74,7 @@
                     <!-- Filter Status Pegawai -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-2">Status Pegawai</label>
-                        <select name="status_pegawai" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <select name="status_pegawai" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                             <option value="">Semua Status</option>
                             <option value="tetap" {{ request('status_pegawai') == 'tetap' ? 'selected' : '' }}>Pegawai Tetap</option>
                             <option value="kontrak" {{ request('status_pegawai') == 'kontrak' ? 'selected' : '' }}>Pegawai Kontrak</option>
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors duration-200">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                         </svg>
@@ -107,8 +107,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-purple-100 rounded-lg">
-                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
                             </div>
@@ -130,8 +130,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 bg-rose-100 rounded-lg">
+                                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                             </div>
@@ -141,7 +141,7 @@
                             </div>
                         </div>
                         <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-green-600">{{ $manpowers->where('status_pegawai', 'tetap')->count() }}</p>
+                            <p class="text-3xl font-bold text-rose-600">{{ $manpowers->where('status_pegawai', 'tetap')->count() }}</p>
                             <span class="text-sm text-slate-500 mb-1">orang</span>
                         </div>
                     </div>
@@ -195,7 +195,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'from-pink-400 to-rose-500' : 'from-blue-400 to-indigo-500' }} flex items-center justify-center text-white font-bold shadow-md">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'from-pink-400 to-rose-500' : 'from-rose-400 to-red-500' }} flex items-center justify-center text-white font-bold shadow-md">
                                             {{ strtoupper(substr($manpower->nama, 0, 1)) }}
                                         </div>
                                         <div>
@@ -204,7 +204,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'bg-pink-100 text-pink-800 border border-pink-200' : 'bg-blue-100 text-blue-800 border border-blue-200' }}">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'bg-pink-100 text-pink-800 border border-pink-200' : 'bg-rose-100 text-rose-800 border border-rose-200' }}">
                                         @if(($manpower->jenis_kelamin ?? '')=='perempuan')
                                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
@@ -218,7 +218,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold {{ ($manpower->status_pegawai ?? '')=='tetap' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-800 border border-amber-200' }}">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold {{ ($manpower->status_pegawai ?? '')=='tetap' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-amber-100 text-amber-800 border border-amber-200' }}">
                                         @if(($manpower->status_pegawai ?? '')=='tetap')
                                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -233,7 +233,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="inline-flex items-center gap-2">
-                                        <a href="{{ route('admin.manpower.edit', $manpower) }}" 
+                                        <a href="{{ route('admin.manpower.edit', $manpower) }}"
                                            class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg font-medium transition-colors duration-150 border border-amber-200">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>

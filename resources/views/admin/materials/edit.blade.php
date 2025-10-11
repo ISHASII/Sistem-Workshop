@@ -3,11 +3,11 @@
 @section('title', 'Edit Material')
 
 @section('content')
-    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-        <h2 class="text-2xl font-bold text-slate-800 mb-6">Edit Material</h2>
+    <div class="bg-white rounded-lg shadow-sm border border-red-100 p-6">
+    <h2 class="text-2xl font-bold text-red-700 mb-6">Edit Material</h2>
 
         @if($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+            <div class="bg-rose-50 border border-rose-200 rounded-md p-4 mb-6">
                 <div class="flex">
                     <div class="ml-3">
                         <h3 class="text-sm font-medium text-red-800">Terdapat kesalahan:</h3>
@@ -30,13 +30,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="tanggal" class="block text-sm font-medium text-slate-700 mb-1">
-                        Tanggal <span class="text-red-500">*</span>
+                        Tanggal Input
                     </label>
-                    <input type="date" id="tanggal" name="tanggal" value="{{ old('tanggal', $material->tanggal->format('Y-m-d')) }}" required
-                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 @error('tanggal') border-red-500 @enderror">
-                    @error('tanggal')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    <input type="date" id="tanggal" name="tanggal" value="{{ optional($material->created_at)->format('Y-m-d') }}" readonly
+                           class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100 text-slate-500 cursor-not-allowed">
                 </div>
 
                 <div>
@@ -98,14 +95,15 @@
                 </div>
             </div>
 
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="jumlah" class="block text-sm font-medium text-slate-700 mb-1">
                         Jumlah Stok Awal <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" step="1" min="0" id="jumlah" name="jumlah"
-                           value="{{ old('jumlah', number_format($material->jumlah, 0)) }}" required
-                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 @error('jumlah') border-red-500 @enderror">
+              <input type="number" step="1" min="0" id="jumlah" name="jumlah"
+                  value="{{ old('jumlah', $material->getCurrentStok()) }}" readonly
+                  class="w-full px-3 py-2 border border-slate-300 bg-slate-100 text-slate-500 rounded-md cursor-not-allowed">
                     @error('jumlah')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -115,9 +113,9 @@
                     <label for="safety_stock" class="block text-sm font-medium text-slate-700 mb-1">
                         Safety Stock <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" step="1" min="0" id="safety_stock" name="safety_stock"
-                           value="{{ old('safety_stock', number_format($material->safety_stock, 0)) }}" required
-                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 @error('safety_stock') border-red-500 @enderror">
+              <input type="number" step="1" min="0" id="safety_stock" name="safety_stock"
+                  value="{{ old('safety_stock', number_format($material->safety_stock, 0)) }}" readonly
+                  class="w-full px-3 py-2 border border-slate-300 bg-slate-100 text-slate-500 rounded-md cursor-not-allowed">
                     @error('safety_stock')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -125,10 +123,10 @@
             </div>
 
             <div class="flex gap-2 pt-4">
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-md hover:from-red-700 hover:to-rose-700 transition">
                     Update
                 </button>
-                <a href="{{ route('admin.materials.index') }}" class="px-4 py-2 bg-slate-300 text-slate-700 rounded-md hover:bg-slate-400 transition">
+                <a href="{{ route('admin.materials.index') }}" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition">
                     Batal
                 </a>
             </div>

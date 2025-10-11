@@ -10,7 +10,6 @@ class Material extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tanggal',
         'nama',
         'spesifikasi',
         'jumlah',
@@ -20,7 +19,6 @@ class Material extends Model
     ];
 
     protected $casts = [
-        'tanggal' => 'date',
         'jumlah' => 'decimal:2',
         'safety_stock' => 'decimal:2'
     ];

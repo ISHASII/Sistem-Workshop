@@ -7,18 +7,18 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-yellow-100 rounded-lg">
-                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-rose-100 rounded-lg">
+                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold text-slate-800">Edit Perpindahan Stok</h2>
+                    <h2 class="text-2xl font-semibold text-red-700">Edit Perpindahan Stok</h2>
                     <p class="text-sm text-slate-600">Mengubah data perpindahan stok material</p>
                 </div>
             </div>
-            <a href="{{ route('admin.material-movements.index') }}"
-               class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium shadow hover:bg-slate-700 transition-all duration-200 flex items-center gap-2">
+                <a href="{{ route('admin.material-movements.index') }}"
+                    class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium shadow hover:bg-rose-700 transition-all duration-200 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -28,7 +28,7 @@
 
         <!-- Error Messages -->
         @if($errors->any())
-            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
                 <div class="flex items-start">
                     <svg class="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -56,8 +56,8 @@
                     <label for="material_id" class="block text-sm font-medium text-slate-700 mb-2">
                         Material <span class="text-red-500">*</span>
                     </label>
-                    <select id="material_id" name="material_id" required
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+            <select id="material_id" name="material_id" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                         <option value="" class="text-slate-500">Pilih Material</option>
                         @foreach($materials as $material)
                             <option value="{{ $material->id }}"

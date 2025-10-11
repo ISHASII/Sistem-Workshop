@@ -7,18 +7,18 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-red-100 rounded-lg">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold text-slate-800">Tambah Perpindahan Stok</h2>
+                    <h2 class="text-2xl font-semibold text-red-700">Tambah Perpindahan Stok</h2>
                     <p class="text-sm text-slate-600">Menambahkan data perpindahan stok material</p>
                 </div>
             </div>
-            <a href="{{ route('admin.material-movements.index') }}"
-               class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium shadow hover:bg-slate-700 transition-all duration-200 flex items-center gap-2">
+                <a href="{{ route('admin.material-movements.index') }}"
+                    class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium shadow hover:bg-rose-700 transition-all duration-200 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -28,7 +28,7 @@
 
         <!-- Error Messages -->
         @if($errors->any())
-            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
                 <div class="flex items-start">
                     <svg class="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -46,7 +46,7 @@
         @endif
 
         <!-- Form -->
-        <form action="{{ route('admin.material-movements.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.material-movements.store') }}" method="POST" class="space-y-6">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,8 +55,8 @@
                     <label for="material_id" class="block text-sm font-medium text-slate-700 mb-2">
                         Material <span class="text-red-500">*</span>
                     </label>
-                    <select id="material_id" name="material_id" required
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+            <select id="material_id" name="material_id" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                         <option value="" class="text-slate-500">Pilih Material</option>
                         @foreach($materials as $material)
                             <option value="{{ $material->id }}"

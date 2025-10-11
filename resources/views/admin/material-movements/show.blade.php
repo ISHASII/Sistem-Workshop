@@ -7,32 +7,26 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    @if($materialMovement->type == 'in')
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                    @else
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                        </svg>
-                    @endif
+                <div class="p-2 bg-rose-100 rounded-lg">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                    </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold text-slate-800">Detail Perpindahan Stok</h2>
+                    <h2 class="text-2xl font-semibold text-red-700">Detail Perpindahan Stok</h2>
                     <p class="text-sm text-slate-600">Informasi lengkap perpindahan stok material</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.material-movements.edit', $materialMovement) }}"
-                   class="px-4 py-2 bg-yellow-600 text-white rounded-lg text-sm font-medium shadow hover:bg-yellow-700 transition-all duration-200 flex items-center gap-2">
+                   class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium shadow hover:bg-rose-700 transition-all duration-200 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                     Edit
                 </a>
                 <a href="{{ route('admin.material-movements.index') }}"
-                   class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium shadow hover:bg-slate-700 transition-all duration-200 flex items-center gap-2">
+                   class="px-4 py-2 bg-rose-500 text-white rounded-lg text-sm font-medium shadow hover:bg-rose-600 transition-all duration-200 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>

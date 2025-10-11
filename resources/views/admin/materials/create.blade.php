@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="max-w-3xl mx-auto">
-        <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 border border-red-100">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-semibold">Tambah Material</h2>
+                <h2 class="text-2xl font-semibold text-red-700">Tambah Material</h2>
             </div>
 
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded">{{ session('success') }}</div>
+                <div class="mb-4 p-4 bg-rose-50 border border-rose-200 rounded">{{ session('success') }}</div>
             @endif
 
             <form action="{{ route('admin.materials.store') }}" method="POST" class="space-y-6">
@@ -71,8 +71,8 @@
                 </div>
 
                 <div class="pt-4 flex justify-between">
-                    <a href="{{ route('admin.materials.index') }}" class="px-5 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md shadow">Kembali</a>
-                    <button type="submit" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md shadow">Simpan</button>
+                    <a href="{{ route('admin.materials.index') }}" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md shadow">Kembali</a>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-md shadow">Simpan</button>
                 </div>
             </form>
         </div>

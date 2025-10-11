@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-4xl mx-auto">
         <!-- Header Card -->
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-lg p-6 mb-6">
+    <div class="bg-gradient-to-r from-red-600 to-rose-600 rounded-xl shadow-lg p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -15,11 +15,11 @@
                     </div>
                     <div>
                         <h2 class="text-2xl font-bold text-white">Stok Masuk Material</h2>
-                        <p class="text-green-50 text-sm mt-1">Input material yang masuk ke gudang</p>
+                        <p class="text-rose-50 text-sm mt-1">Input material yang masuk ke gudang</p>
                     </div>
                 </div>
-                <a href="{{ route('admin.material-movements.index') }}"
-                   class="px-5 py-2.5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 border border-white/20">
+                     <a href="{{ route('admin.material-movements.index') }}"
+                         class="px-5 py-2.5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 border border-white/20">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -33,12 +33,12 @@
 
         <!-- Success Message -->
         @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
                 <div class="flex items-start">
-                    <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-rose-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <div class="text-green-800">
+                    <div class="text-rose-800">
                         <p class="font-medium">{{ session('success') }}</p>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         Material <span class="text-red-500">*</span>
                     </label>
                     <select id="material_id" name="material_id" required onchange="updateStock()"
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                         <option value="" data-stock="" data-unit="">Pilih Material</option>
                         @foreach($materials as $material)
                             @php
@@ -107,20 +107,20 @@
             </div>
 
             <!-- Stock Info Display Card - Always Visible -->
-            <div id="stock-info-in" class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-5 shadow-sm">
+            <div id="stock-info-in" class="bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm">
                 <div class="flex items-center gap-4">
-                    <div class="p-3 bg-green-600 rounded-xl shadow-md">
+                    <div class="p-3 bg-red-600 rounded-xl shadow-md">
                         <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-green-700 mb-1">Stok Tersedia Saat Ini</p>
-                        <p id="stock-value-in" class="text-3xl font-bold text-green-900">-</p>
+                        <p class="text-sm font-semibold text-rose-700 mb-1">Stok Tersedia Saat Ini</p>
+                        <p id="stock-value-in" class="text-3xl font-bold text-rose-900">-</p>
                     </div>
                     <div class="hidden lg:block">
                         <div class="px-4 py-2 bg-white/70 rounded-lg">
-                            <p class="text-xs font-medium text-green-600 uppercase">Ready</p>
+                            <p class="text-xs font-medium text-rose-600 uppercase">Ready</p>
                         </div>
                     </div>
                 </div>
@@ -132,9 +132,9 @@
                     <label for="tanggal" class="block text-sm font-medium text-slate-700 mb-2">
                         Tanggal <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" id="tanggal" name="tanggal" required
-                           value="{{ old('tanggal') }}"
-                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 @error('tanggal') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                 <input type="date" id="tanggal" name="tanggal" required
+                     value="{{ old('tanggal') }}"
+                     class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 @error('tanggal') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                     @error('tanggal')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -145,10 +145,10 @@
                     <label for="jumlah" class="block text-sm font-medium text-slate-700 mb-2">
                         Jumlah <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" step="1" min="1" id="jumlah" name="jumlah" required inputmode="numeric" pattern="\d+"
-                           value="{{ old('jumlah') }}"
-                           placeholder="Masukkan jumlah"
-                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 @error('jumlah') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                 <input type="number" step="1" min="1" id="jumlah" name="jumlah" required inputmode="numeric" pattern="\d+"
+                     value="{{ old('jumlah') }}"
+                     placeholder="Masukkan jumlah"
+                     class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 @error('jumlah') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                     @error('jumlah')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -159,7 +159,7 @@
             <!-- Action Buttons -->
             <div class="md:col-span-2 flex flex-col sm:flex-row gap-4 pt-6">
                 <button type="submit"
-                        class="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 group">
+                        class="flex-1 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 group">
                     <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
                     </svg>
@@ -198,7 +198,7 @@
 
             if (stock && unit && select.value) {
                 stockDisplay.textContent = stock + ' ' + unit;
-                stockDisplay.className = 'text-3xl font-bold text-green-900';
+                stockDisplay.className = 'text-3xl font-bold text-rose-900';
             } else {
                 stockDisplay.textContent = '-';
                 stockDisplay.className = 'text-3xl font-bold text-gray-500';

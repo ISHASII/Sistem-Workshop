@@ -13,16 +13,16 @@
             </a>
             <div>
                 <h1 class="text-3xl font-bold text-slate-800">Edit Data Man Power</h1>
-                <p class="text-slate-600 mt-1">Perbarui informasi karyawan: <span class="font-semibold text-purple-600">{{ $manpower->nama }}</span></p>
+                <p class="text-slate-600 mt-1">Perbarui informasi karyawan: <span class="font-semibold text-rose-600">{{ $manpower->nama }}</span></p>
             </div>
         </div>
 
         <!-- Form Card -->
         <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
             <!-- Card Header -->
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-purple-100">
+            <div class="bg-gradient-to-r from-rose-50 to-red-50 px-6 py-4 border-b border-rose-100">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-purple-600 rounded-lg">
+                    <div class="p-2 bg-rose-600 rounded-lg">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -52,7 +52,7 @@
                         </div>
                         <input type="text" id="nrp" name="nrp" value="{{ old('nrp', $manpower->nrp) }}"
                                placeholder="Contoh: NRP001"
-                               class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 @error('nrp') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
+                               class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('nrp') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                required>
                     </div>
                     @error('nrp')
@@ -78,7 +78,7 @@
                         </div>
                         <input type="text" id="nama" name="nama" value="{{ old('nama', $manpower->nama) }}"
                                placeholder="Masukkan nama lengkap"
-                               class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 @error('nama') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
+                               class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('nama') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                required>
                     </div>
                     @error('nama')
@@ -105,7 +105,7 @@
                                 </svg>
                             </div>
                             <select id="jenis_kelamin" name="jenis_kelamin"
-                                    class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 @error('jenis_kelamin') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
+                                    class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('jenis_kelamin') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Jenis Kelamin --</option>
                                 <option value="laki-laki" {{ old('jenis_kelamin', $manpower->jenis_kelamin ?? '')=='laki-laki' ? 'selected' : '' }}>👨 Laki-laki</option>
@@ -134,7 +134,7 @@
                                 </svg>
                             </div>
                             <select id="status_pegawai" name="status_pegawai"
-                                    class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 @error('status_pegawai') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
+                                    class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('status_pegawai') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Status --</option>
                                 <option value="kontrak" {{ old('status_pegawai', $manpower->status_pegawai ?? '')=='kontrak' ? 'selected' : '' }}>⏱️ Kontrak</option>
@@ -167,7 +167,7 @@
 
                 <!-- Form Actions -->
                 <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
-                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200">
+                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-rose-700 hover:to-red-700 transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>

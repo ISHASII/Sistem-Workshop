@@ -40,6 +40,18 @@
 
             <!-- Form Body -->
             <form action="{{ route('admin.joborder.store') }}" method="POST" class="p-8">
+                @if ($errors->any())
+                    <div class="mb-6">
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <strong class="font-bold">Terjadi kesalahan!</strong>
+                            <ul class="mt-2 list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
                 @csrf
 
                 <!-- Project Information Section -->
@@ -211,7 +223,7 @@
                                 <select name="items[0][material_id]" class="material-select w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200">
                                     <option value="">Pilih material</option>
                                     @foreach($materials as $m)
-                                        <option value="{{ $m->id }}" data-unit="{{ $m->satuan ? $m->satuan->nama : '' }}" data-notes="{{ $m->spesifikasi }}">{{ $m->nama }} @if($m->satuan) ({{ $m->satuan->nama }}) @endif</option>
+                                        <option value="{{ $m->id }}" data-unit="{{ $m->satuan ? $m->satuan->name : '' }}" data-notes="{{ $m->spesifikasi }}" data-stok="{{ method_exists($m, 'getCurrentStok') ? $m->getCurrentStok() : $m->jumlah }}">{{ $m->nama }}@if($m->satuan && $m->satuan->name) ({{ $m->satuan->name }})@endif</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -225,7 +237,11 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-semibold text-slate-700 mb-1">Satuan</label>
-                                <input name="items[0][satuan]" type="text" class="unit-input w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200" placeholder="pcs/kg/m" />
+                                <input name="items[0][satuan]" type="text" class="unit-input w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200" placeholder="pcs/kg/m" readonly />
+                            </div>
+                            <div class="md:col-span-1">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Stok</label>
+                                <input type="text" class="stok-input w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200" placeholder="0" readonly />
                             </div>
                             <div class="md:col-span-1 flex items-end">
                                 <button type="button" class="remove-row hidden px-3 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300">Hapus</button>
@@ -291,18 +307,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const addBtn = document.getElementById('add-item');
     let index = 1;
 
+    // Validasi stok sebelum submit
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+        let message = '';
+        wrapper.querySelectorAll('.item-row').forEach(function(row, idx) {
+            const jumlahInput = row.querySelector('input[type="number"]');
+            const stokInput = row.querySelector('.stok-input');
+            if(jumlahInput && stokInput) {
+                const jumlah = parseFloat(jumlahInput.value || '0');
+                const stok = parseFloat(stokInput.value || '0');
+                if(jumlah > stok) {
+                    valid = false;
+                    message = `Jumlah material pada baris ${idx+1} melebihi stok tersedia!`;
+                }
+            }
+        });
+        if(!valid) {
+            e.preventDefault();
+            alert(message || 'Jumlah material melebihi stok tersedia!');
+        }
+    });
+
     function wireRow(row){
         const select = row.querySelector('.material-select');
         const specInput = row.querySelector('.spec-input');
         const unitInput = row.querySelector('.unit-input');
+        const stokInput = row.querySelector('.stok-input');
         const removeBtn = row.querySelector('.remove-row');
         if(select){
             select.addEventListener('change', function(){
                 const unit = this.options[this.selectedIndex]?.dataset?.unit || '';
                 const notes = this.options[this.selectedIndex]?.dataset?.notes || '';
-                if(!unitInput.value){ unitInput.value = unit; }
-                if(!specInput.value && notes){ specInput.value = notes; }
+                const stok = this.options[this.selectedIndex]?.dataset?.stok || '';
+                if(unitInput) unitInput.value = unit;
+                if(specInput && !specInput.value && notes) specInput.value = notes;
+                if(stokInput) stokInput.value = stok;
             });
+            // Trigger change on load to autofill if already selected
+            if(select.value) {
+                const event = new Event('change');
+                select.dispatchEvent(event);
+            }
         }
         if(removeBtn){
             removeBtn.addEventListener('click', function(){

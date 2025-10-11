@@ -3,16 +3,16 @@
 @section('title', 'Detail Material')
 
 @section('content')
-    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <div class="bg-white rounded-lg shadow-sm border border-red-100 p-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-slate-800">Detail Material: {{ $material->nama }}</h2>
+            <h2 class="text-2xl font-bold text-red-700">Detail Material: {{ $material->nama }}</h2>
             <div class="flex gap-2">
                 <a href="{{ route('admin.materials.index') }}"
-                   class="px-4 py-2 bg-slate-300 text-slate-700 rounded-md hover:bg-slate-400 transition">
+                   class="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition">
                     Kembali
                 </a>
                 <a href="{{ route('admin.materials.edit', $material) }}"
-                   class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition">
+                   class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-md hover:from-red-700 hover:to-rose-700 transition">
                     Edit
                 </a>
             </div>
@@ -21,11 +21,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Detail Material -->
             <div>
-                <h3 class="text-lg font-semibold text-slate-800 mb-4">Informasi Material</h3>
+                <h3 class="text-lg font-semibold text-red-700 mb-4">Informasi Material</h3>
                 <div class="space-y-3">
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Tanggal:</span>
-                        <span class="text-sm text-slate-800">{{ $material->tanggal->format('d/m/Y') }}</span>
+                        <span class="text-sm text-slate-800">{{ optional($material->tanggal)->format('d/m/Y') ?? '-' }}</span>
                     </div>
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Material:</span>
@@ -46,7 +46,7 @@
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Stok:</span>
                         @php($currentStock = $material->getCurrentStok())
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $currentStock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $currentStock > 0 ? 'bg-rose-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                             {{ number_format($currentStock, 0) }}
                         </span>
                     </div>
@@ -59,7 +59,7 @@
                         @if($material->isStokKurang())
                             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Stok Kurang</span>
                         @else
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Stok Aman</span>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-rose-100 text-green-800">Stok Aman</span>
                         @endif
                     </div>
                 </div>
@@ -67,27 +67,27 @@
 
             <!-- Ringkasan Stok -->
             <div>
-                <h3 class="text-lg font-semibold text-slate-800 mb-4">Ringkasan Stok</h3>
+                <h3 class="text-lg font-semibold text-red-700 mb-4">Ringkasan Stok</h3>
                 <div class="space-y-4">
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                     </svg>
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-green-800">Total Masuk</p>
-                                <p class="text-lg font-semibold text-green-900">
+                                <p class="text-sm font-medium text-red-800">Total Masuk</p>
+                                <p class="text-lg font-semibold text-red-900">
                                     {{ number_format($material->movements()->where('type', 'in')->sum('jumlah'), 0) }}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
@@ -126,7 +126,7 @@
                     <tbody class="bg-white divide-y divide-slate-200">
                         @forelse($material->movements()->orderBy('tanggal', 'desc')->get() as $movement)
                             <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3 text-sm text-slate-900">{{ $movement->tanggal->format('d/m/Y') }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-900">{{ optional($movement->tanggal)->format('d/m/Y') ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($movement->type == 'in')
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Masuk</span>

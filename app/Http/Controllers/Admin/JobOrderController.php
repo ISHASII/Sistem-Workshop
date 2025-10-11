@@ -66,7 +66,7 @@ class JobOrderController extends Controller
 
     public function create()
     {
-        $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get();
+    $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');
         return view('admin.joborders.create', compact('materials'));
     }
 
@@ -84,23 +84,46 @@ class JobOrderController extends Controller
             'items.*.jumlah' => 'nullable|integer',
             'items.*.satuan' => 'nullable|string|max:100',
         ]);
+
+        // Backend stok validation
+        foreach ($data['items'] as $idx => $item) {
+            if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                $mat = Material::find($item['material_id']);
+                if ($mat && $item['jumlah'] > $mat->getCurrentStok()) {
+                    return back()
+                        ->withInput()
+                        ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris ".($idx+1)." melebihi stok tersedia!"]);
+                }
+            }
+        }
+
         DB::transaction(function () use ($data) {
             $jo = JobOrder::create(collect($data)->only(['seksi','status','project','start','end'])->toArray());
             foreach ($data['items'] as $item) {
                 // Autofill unit/spec from material if not provided
                 if (!empty($item['material_id'])) {
-                    $mat = Material::find($item['material_id']);
+                    $mat = Material::with('satuan')->find($item['material_id']);
                     if ($mat) {
-                        if (empty($item['satuan'])) $item['satuan'] = $mat->unit;
+                        if (empty($item['satuan']) && $mat->satuan) $item['satuan'] = $mat->satuan->name;
                         if (empty($item['spesifikasi']) && !empty($mat->notes)) $item['spesifikasi'] = $mat->notes;
                     }
                 }
-                $jo->items()->create([
+                $createdItem = $jo->items()->create([
                     'material_id' => $item['material_id'] ?? null,
                     'spesifikasi' => $item['spesifikasi'] ?? null,
                     'jumlah' => $item['jumlah'] ?? null,
                     'satuan' => $item['satuan'] ?? null,
                 ]);
+                // Kurangi stok material dengan membuat MaterialMovement type 'out'
+                if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                    \App\Models\MaterialMovement::create([
+                        'material_id' => $item['material_id'],
+                        'type' => 'out',
+                        'tanggal' => now(),
+                        'jumlah' => $item['jumlah'],
+                        'keterangan' => 'Job Order #' . $jo->id,
+                    ]);
+                }
             }
         });
 
@@ -129,6 +152,19 @@ class JobOrderController extends Controller
             'items.*.jumlah' => 'nullable|integer',
             'items.*.satuan' => 'nullable|string|max:100',
         ]);
+
+        // Backend stok validation (edit)
+        foreach ($data['items'] as $idx => $item) {
+            if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                $mat = \App\Models\Material::find($item['material_id']);
+                if ($mat && $item['jumlah'] > $mat->getCurrentStok()) {
+                    return back()
+                        ->withInput()
+                        ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris ".($idx+1)." melebihi stok tersedia!"]);
+                }
+            }
+        }
+
         DB::transaction(function () use ($data, $joborder) {
             $joborder->update(collect($data)->only(['seksi','status','project','start','end'])->toArray());
 
@@ -139,9 +175,9 @@ class JobOrderController extends Controller
             foreach ($data['items'] as $item) {
                 // Autofill unit/spec from material if not provided
                 if (!empty($item['material_id'])) {
-                    $mat = Material::find($item['material_id']);
+                    $mat = \App\Models\Material::with('satuan')->find($item['material_id']);
                     if ($mat) {
-                        if (empty($item['satuan'])) $item['satuan'] = $mat->unit;
+                        if (empty($item['satuan']) && $mat->satuan) $item['satuan'] = $mat->satuan->name;
                         if (empty($item['spesifikasi']) && !empty($mat->notes)) $item['spesifikasi'] = $mat->notes;
                     }
                 }
@@ -154,11 +190,22 @@ class JobOrderController extends Controller
                         'satuan' => $item['satuan'] ?? null,
                     ]);
                 } else {
-                    $joborder->items()->create([
+                    $createdItem = $joborder->items()->create([
                         'material_id' => $item['material_id'] ?? null,
                         'spesifikasi' => $item['spesifikasi'] ?? null,
                         'jumlah' => $item['jumlah'] ?? null,
                         'satuan' => $item['satuan'] ?? null,
+                    ]);
+                }
+
+                // Kurangi stok material dengan membuat MaterialMovement type 'out' untuk setiap item
+                if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                    \App\Models\MaterialMovement::create([
+                        'material_id' => $item['material_id'],
+                        'type' => 'out',
+                        'tanggal' => now(),
+                        'jumlah' => $item['jumlah'],
+                        'keterangan' => 'Job Order Edit #' . $joborder->id,
                     ]);
                 }
             }

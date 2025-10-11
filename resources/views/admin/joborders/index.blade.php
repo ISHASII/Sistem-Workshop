@@ -6,10 +6,10 @@
     <div class="space-y-6">
         <!-- Header Section -->
         <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-blue-100">
+            <div class="bg-gradient-to-r from-red-50 to-rose-100 px-6 py-5 border-b border-red-100">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-600 rounded-lg">
+                        <div class="p-2 bg-red-600 rounded-lg">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
@@ -19,7 +19,7 @@
                             <p class="text-sm text-slate-600 mt-0.5">Kelola dan monitor project workshop</p>
                         </div>
                     </div>
-                    <a href="{{ route('admin.joborder.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200">
+                    <a href="{{ route('admin.joborder.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-red-700 hover:to-rose-700 transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -40,7 +40,7 @@
             @endif
 
             <!-- Search & Filter Section -->
-            <div class="px-6 py-4 bg-slate-50 border-y border-slate-200">
+            <div class="px-6 py-4 bg-rose-50 border-y border-rose-100">
                 <form method="GET" action="{{ route('admin.joborder.index') }}" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Search -->
@@ -52,16 +52,16 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                     </svg>
                                 </div>
-                                <input type="text" name="search" value="{{ request('search') }}" 
-                                       placeholder="Cari berdasarkan project atau seksi..." 
-                                       class="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari berdasarkan project atau seksi..."
+                        class="w-full pl-10 pr-4 py-2 bg-white border border-rose-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                             </div>
                         </div>
 
                         <!-- Filter Status -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-2">Status</label>
-                            <select name="status" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select name="status" class="w-full px-3 py-2 bg-white border border-rose-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                                 <option value="">Semua Status</option>
                                 <option value="Urgent" {{ request('status') == 'Urgent' ? 'selected' : '' }}>Urgent</option>
                                 <option value="High" {{ request('status') == 'High' ? 'selected' : '' }}>High</option>
@@ -73,7 +73,7 @@
                         <!-- Filter Seksi -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-2">Seksi</label>
-                            <select name="seksi" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select name="seksi" class="w-full px-3 py-2 bg-white border border-rose-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                                 <option value="">Semua Seksi</option>
                                 <option value="Gensub" {{ request('seksi') == 'Gensub' ? 'selected' : '' }}>Gensub</option>
                                 <option value="Assy Unit" {{ request('seksi') == 'Assy Unit' ? 'selected' : '' }}>Assy Unit</option>
@@ -88,7 +88,7 @@
                         <!-- Filter Evaluasi -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-2">Evaluasi</label>
-                            <select name="evaluasi" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select name="evaluasi" class="w-full px-3 py-2 bg-white border border-rose-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                                 <option value="">Semua Evaluasi</option>
                                 <option value="Tepat Waktu" {{ request('evaluasi') == 'Tepat Waktu' ? 'selected' : '' }}>Tepat Waktu</option>
                                 <option value="Terlambat" {{ request('evaluasi') == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
@@ -98,7 +98,7 @@
                         <!-- Filter Progress -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-2">Progress</label>
-                            <select name="progress" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <select name="progress" class="w-full px-3 py-2 bg-white border border-rose-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
                                 <option value="">Semua Progress</option>
                                 <option value="0-25" {{ request('progress') == '0-25' ? 'selected' : '' }}>0% - 25%</option>
                                 <option value="26-50" {{ request('progress') == '26-50' ? 'selected' : '' }}>26% - 50%</option>
@@ -109,7 +109,7 @@
 
                         <!-- Action Buttons -->
                         <div class="md:col-span-2 flex items-end gap-2">
-                            <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors duration-200">
+                            <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors duration-200">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                                 </svg>
@@ -149,16 +149,16 @@
                                     <tr class="hover:bg-slate-50 transition-colors duration-150">
                                         <!-- No. Project -->
                                         <td class="px-3 py-3 text-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-xs">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-700 font-bold text-xs">
                                                 {{ $index + 1 + ($joborders->currentPage() - 1) * $joborders->perPage() }}
                                             </span>
                                         </td>
-                                        
+
                                         <!-- Seksi -->
                                         <td class="px-3 py-3">
                                             <span class="font-medium text-slate-800">{{ $jo->seksi ?? '-' }}</span>
                                         </td>
-                                        
+
                                         <!-- Status -->
                                         <td class="px-3 py-3 text-center">
                                             @php
@@ -174,39 +174,39 @@
                                                 {{ $jo->status }}
                                             </span>
                                         </td>
-                                        
+
                                         <!-- Project -->
                                         <td class="px-3 py-3">
                                             <span class="text-slate-800 font-medium">{{ $jo->project }}</span>
                                         </td>
-                                        
+
                                         <!-- Start -->
                                         <td class="px-3 py-3 text-center">
                                             <span class="text-slate-600 text-xs">{{ $jo->start }}</span>
                                         </td>
-                                        
+
                                         <!-- End -->
                                         <td class="px-3 py-3 text-center">
                                             <span class="text-slate-600 text-xs">{{ $jo->end }}</span>
                                         </td>
-                                        
+
                                         <!-- Progress -->
                                         <td class="px-3 py-3 text-center">
-                                            <button onclick="openProgressModal({{ $jo->id }}, {{ $jo->progress ?? 0 }})" 
-                                                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors duration-150 text-xs font-semibold">
+                                            <button onclick="openProgressModal({{ $jo->id }}, {{ $jo->progress ?? 0 }})"
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors duration-150 text-xs font-semibold">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                                 {{ $jo->progress ?? 0 }}%
                                             </button>
                                         </td>
-                                        
+
                                         <!-- Actual -->
                                         <td class="px-3 py-3 text-center">
                                             @if($jo->actual)
                                                 <span class="text-slate-700 text-xs font-medium">{{ \Carbon\Carbon::parse($jo->actual)->format('d-M-y') }}</span>
                                             @else
-                                                <button onclick="openActualModal({{ $jo->id }})" 
+                                                <button onclick="openActualModal({{ $jo->id }})"
                                                         class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition-colors duration-150 text-xs font-semibold">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -215,7 +215,7 @@
                                                 </button>
                                             @endif
                                         </td>
-                                        
+
                                         <!-- Evaluasi -->
                                         <td class="px-3 py-3 text-center">
                                             @if($jo->evaluasi)
@@ -226,7 +226,7 @@
                                                 <span class="text-slate-400 text-xs">-</span>
                                             @endif
                                         </td>
-                                        
+
                                         <!-- Aksi -->
                                         <td class="px-3 py-3 text-center">
                                             <div class="flex justify-center items-center gap-1">
@@ -274,7 +274,7 @@
     <!-- Modal Edit Progress -->
     <div id="progressModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-blue-100 rounded-t-xl">
+            <div class="bg-gradient-to-r from-red-50 to-rose-100 px-6 py-4 border-b border-red-100 rounded-t-xl">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-bold text-slate-800">Edit Progress</h3>
                     <button onclick="closeProgressModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
@@ -289,8 +289,8 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Progress (%)</label>
-                        <input type="number" name="progress" id="progressInput" min="0" max="100" 
-                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200" 
+                        <input type="number" name="progress" id="progressInput" min="0" max="100"
+                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
                                required>
                     </div>
                     <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
@@ -327,8 +327,8 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Actual Selesai</label>
-                        <input type="date" name="actual" id="actualInput" 
-                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200" 
+                        <input type="date" name="actual" id="actualInput"
+                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200"
                                required>
                     </div>
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
