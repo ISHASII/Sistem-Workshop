@@ -312,60 +312,45 @@
                     <tbody class="bg-white divide-y divide-slate-100">
                         @forelse($materials as $index => $material)
                             <tr class="hover:bg-slate-50 transition-colors duration-200 group">
+                                <!-- NO -->
                                 <td class="px-3 py-3 whitespace-nowrap">
                                     <span class="w-6 h-6 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors duration-200">
-                                        {{ $index + 1 }}
+                                        {{ $materials->firstItem() + $index }}
                                     </span>
                                 </td>
+                                <!-- TANGGAL -->
                                 <td class="px-3 py-3 whitespace-nowrap">
                                     <div class="text-xs font-medium text-slate-900">
-                                        {{ $material->tanggal ? $material->tanggal->format('d/m/Y') : '-' }}
+                                        {{ $material->tanggal ? ($material->tanggal instanceof \Illuminate\Support\Carbon ? $material->tanggal->format('d-m-Y') : (is_string($material->tanggal) ? \Carbon\Carbon::parse($material->tanggal)->format('d-m-Y') : '-') ) : '-' }}
                                     </div>
-                                    @if($material->tanggal)
-                                        <div class="text-xs text-slate-500">{{ $material->tanggal->format('D') }}</div>
-                                    @endif
                                 </td>
+                                <!-- MATERIAL -->
                                 <td class="px-3 py-3">
                                     <div class="text-sm font-medium text-slate-900 truncate">{{ $material->nama }}</div>
-                                    @if($material->kategori)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800 mt-1">
-                                            {{ $material->kategori->name }}
-                                        </span>
-                                    @endif
                                 </td>
+                                <!-- SPESIFIKASI -->
                                 <td class="px-3 py-3">
-                                    <div class="text-sm text-slate-900 truncate">{{ $material->spesifikasi ?? '-' }}</div>
+                                    <div class="text-sm text-slate-900 truncate">{{ $material->spesifikasi ? $material->spesifikasi : '-' }}</div>
                                 </td>
+                                <!-- KATEGORI -->
                                 <td class="px-3 py-3 whitespace-nowrap">
-                                    @if($material->kategori)
-                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                            {{ $material->kategori->name }}
-                                        </span>
-                                    @else
-                                        <span class="text-sm text-slate-500">-</span>
-                                    @endif
+                                    <span class="text-sm text-slate-900">{{ $material->kategori ? ($material->kategori->nama ?? $material->kategori->name ?? '-') : '-' }}</span>
                                 </td>
+                                <!-- SATUAN -->
                                 <td class="px-3 py-3 whitespace-nowrap">
-                                    @if($material->satuan)
-                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                            {{ $material->satuan->name }}
-                                        </span>
-                                    @else
-                                        <span class="text-sm text-slate-500">-</span>
-                                    @endif
+                                    <span class="text-sm text-slate-900">{{ $material->satuan ? ($material->satuan->nama ?? $material->satuan->name ?? '-') : '-' }}</span>
                                 </td>
+                                <!-- STOK -->
                                 <td class="px-2 py-3 whitespace-nowrap text-center">
-                                    @php
-                                        $currentStock = $material->getCurrentStok();
-                                    @endphp
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border-2
-                                        {{ $currentStock > 0 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200' }}">
+                                    @php $currentStock = $material->getCurrentStok(); @endphp
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border-2 {{ $currentStock > 0 ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200' }}">
                                         {{ number_format($currentStock, 0, ',', '.') }}
                                     </span>
                                 </td>
+                                <!-- SAFETY -->
                                 <td class="px-2 py-3 whitespace-nowrap text-center">
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
-                                        {{ number_format($material->safety_stock, 0, ',', '.') }}
+                                        {{ number_format($material->safety_stock ?? 0, 0, ',', '.') }}
                                     </span>
                                 </td>
                                 <td class="px-2 py-3 whitespace-nowrap text-center">
@@ -384,36 +369,15 @@
                                     @endif
                                 </td>
                                 <td class="px-2 py-3 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <a href="{{ route('admin.materials.show', $material) }}"
-                                           class="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-md transition-all duration-200"
-                                           title="Lihat">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                            </svg>
-                                        </a>
-                                        <a href="{{ route('admin.materials.edit', $material) }}"
-                                           class="p-1.5 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100 rounded-md transition-all duration-200"
-                                           title="Edit">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                            </svg>
-                                        </a>
-                                        <form action="{{ route('admin.materials.destroy', $material) }}"
-                                              method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-md transition-all duration-200"
-                                                    onclick="return confirm('Yakin ingin menghapus material ini?')"
-                                                    title="Hapus">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
+                                    @include('admin.partials.action-buttons', [
+                                        'showRoute' => route('admin.materials.show', $material),
+                                        'editRoute' => route('admin.materials.edit', $material),
+                                        'destroyRoute' => route('admin.materials.destroy', $material),
+                                        'labelAlign' => 'center',
+                                        'deleteTitle' => 'Hapus material?',
+                                        'deleteText' => 'Yakin ingin menghapus material ' . ($material->nama ?? '') . '?',
+                                        'deleteConfirm' => 'Hapus'
+                                    ])
                                 </td>
                             </tr>
                         @empty

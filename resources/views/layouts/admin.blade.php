@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') - {{ config('app.name') }}</title>
     @if (app()->environment('local'))
@@ -12,7 +13,7 @@
         @vite(['resources/css/app.css','resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen" @if(session('success')) data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-flash-error="{{ session('error') }}" @endif>
     <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-lg shadow-slate-900/5 sticky top-0 z-50">
         <div class="w-full pr-4 sm:pr-6 lg:pr-8" style="padding-left: 0 !important; margin-left: 0 !important; margin-right: 0 !important;">
             <div class="flex justify-between items-center h-16">
@@ -385,6 +386,81 @@
             appearance: none;
         }
     </style>
+
+    <!-- Centralized SweetAlert2 and toast handling -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-container .swal2-actions .swal2-confirm { background-color: #d33 !important; color: #fff !important; }
+        .swal2-container .swal2-actions .swal2-cancel { background-color: #e2e8f0 !important; color: #1f2937 !important; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Global toast helper for Laravel session flashes
+            if (window.Swal) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true,
+                });
+
+                // Read flash messages inserted into DOM as data attributes
+                const flashSuccess = document.body.getAttribute('data-flash-success');
+                const flashError = document.body.getAttribute('data-flash-error');
+                if (flashSuccess) { Toast.fire({ icon: 'success', title: flashSuccess }); }
+                if (flashError) { Toast.fire({ icon: 'error', title: flashError }); }
+            }
+
+            // Delegate: attach confirm-cancel behavior to any element with data-swal-cancel
+            document.querySelectorAll('[data-swal-cancel]').forEach(function(el){
+                el.addEventListener('click', function(e){
+                    const href = el.getAttribute('href') || el.dataset.href;
+                    e.preventDefault();
+                    Swal.fire({
+                        title: el.dataset && el.dataset.swalTitle || el.getAttribute('data-swal-title') || 'Batalkan perubahan?',
+                        text: el.dataset && el.dataset.swalText || el.getAttribute('data-swal-text') || 'Perubahan yang belum disimpan akan hilang.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: el.dataset && el.dataset.swalConfirm || el.getAttribute('data-swal-confirm') || 'Ya, batal',
+                        cancelButtonText: el.dataset && el.dataset.swalCancelText || el.getAttribute('data-swal-cancel-text') || 'Kembali'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if(href){ window.location.href = href; }
+                        }
+                    });
+                });
+            });
+
+            // Delegate: confirm deletion for any form with class "swal-delete"
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (!form || !form.matches || !form.matches('form.swal-delete')) return;
+                e.preventDefault();
+                const title = form.getAttribute('data-swal-title') || (form.dataset && form.dataset.swalTitle) || 'Yakin ingin menghapus?';
+                const text = form.getAttribute('data-swal-text') || (form.dataset && form.dataset.swalText) || 'Data akan dihapus dan tidak dapat dikembalikan.';
+                const confirmText = form.getAttribute('data-swal-confirm') || (form.dataset && form.dataset.swalConfirm) || 'Ya, hapus!';
+                const cancelText = form.getAttribute('data-swal-cancel-text') || (form.dataset && form.dataset.swalCancelText) || 'Batal';
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: confirmText,
+                    cancelButtonText: cancelText
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

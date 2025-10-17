@@ -168,7 +168,7 @@
                         class="datepicker w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
                         placeholder="Pilih tanggal mulai"
                         autocomplete="off"
-                        value="{{ old('start') }}">
+                        value="{{ old('start') ? \Carbon\Carbon::parse(old('start'))->format('d-m-Y') : '' }}">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -191,7 +191,7 @@
                         class="datepicker w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
                         placeholder="Pilih tanggal selesai"
                         autocomplete="off"
-                        value="{{ old('end') }}">
+                        value="{{ old('end') ? \Carbon\Carbon::parse(old('end'))->format('d-m-Y') : '' }}">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -265,7 +265,7 @@
                         </span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('admin.joborder.index') }}" class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-all duration-200 font-medium">
+                        <a href="{{ route('admin.joborder.index') }}" id="cancelBtn" data-swal-cancel class="px-6 py-3 bg-slate-200 text-slate-800 rounded-xl hover:bg-slate-300 transition-all duration-200 font-medium">
                             Batal
                         </a>
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-200 transform hover:scale-105 font-medium flex items-center">
@@ -384,4 +384,5 @@ document.addEventListener('DOMContentLoaded', function() {
     wrapper.querySelectorAll('.item-row').forEach(wireRow);
 });
 </script>
+@endsection
 @endsection

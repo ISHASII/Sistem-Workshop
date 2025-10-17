@@ -25,7 +25,7 @@
                 <div class="space-y-3">
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Tanggal:</span>
-                        <span class="text-sm text-slate-800">{{ optional($material->tanggal)->format('d/m/Y') ?? '-' }}</span>
+                        <span class="text-sm text-slate-800">{{ optional($material->tanggal)->format('d-m-Y') ?? '-' }}</span>
                     </div>
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Material:</span>
@@ -126,7 +126,7 @@
                     <tbody class="bg-white divide-y divide-slate-200">
                         @forelse($material->movements()->orderBy('tanggal', 'desc')->get() as $movement)
                             <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3 text-sm text-slate-900">{{ optional($movement->tanggal)->format('d/m/Y') ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-900">{{ optional($movement->tanggal)->format('d-m-Y') ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($movement->type == 'in')
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Masuk</span>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\JobOrder;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Material;
 use App\Models\JobOrderItem;
 use Illuminate\Support\Facades\DB;
@@ -153,14 +154,22 @@ class JobOrderController extends Controller
             'items.*.satuan' => 'nullable|string|max:100',
         ]);
 
-        // Backend stok validation (edit)
+        // Backend stok validation (edit) hanya jika jumlah berubah
         foreach ($data['items'] as $idx => $item) {
             if (!empty($item['material_id']) && !empty($item['jumlah'])) {
-                $mat = \App\Models\Material::find($item['material_id']);
-                if ($mat && $item['jumlah'] > $mat->getCurrentStok()) {
-                    return back()
-                        ->withInput()
-                        ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris ".($idx+1)." melebihi stok tersedia!"]);
+                $existing = null;
+                if (!empty($item['id'])) {
+                    $existing = $joborder->items()->where('id', $item['id'])->first();
+                }
+                $oldJumlah = $existing ? $existing->jumlah : null;
+                // Validasi stok hanya jika item baru atau jumlah berubah
+                if ($oldJumlah === null || (int)$item['jumlah'] !== (int)$oldJumlah) {
+                    $mat = \App\Models\Material::find($item['material_id']);
+                    if ($mat && $item['jumlah'] > $mat->getCurrentStok()) {
+                        return back()
+                            ->withInput()
+                            ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris ".($idx+1)." melebihi stok tersedia!"]);
+                    }
                 }
             }
         }
@@ -183,12 +192,38 @@ class JobOrderController extends Controller
                 }
 
                 if (!empty($item['id'])) {
+                    // Cek apakah jumlah berubah
+                    $existing = $joborder->items()->where('id', $item['id'])->first();
+                    $oldJumlah = $existing ? $existing->jumlah : null;
                     $joborder->items()->where('id', $item['id'])->update([
                         'material_id' => $item['material_id'] ?? null,
                         'spesifikasi' => $item['spesifikasi'] ?? null,
                         'jumlah' => $item['jumlah'] ?? null,
                         'satuan' => $item['satuan'] ?? null,
                     ]);
+                    // Hanya kurangi stok jika jumlah berubah
+                    if (!empty($item['material_id']) && !empty($item['jumlah']) && $oldJumlah !== null && (int)$item['jumlah'] !== (int)$oldJumlah) {
+                        $selisih = (int)$item['jumlah'] - (int)$oldJumlah;
+                        if ($selisih > 0) {
+                            // Jika jumlah bertambah, kurangi stok sesuai selisih
+                            \App\Models\MaterialMovement::create([
+                                'material_id' => $item['material_id'],
+                                'type' => 'out',
+                                'tanggal' => now(),
+                                'jumlah' => $selisih,
+                                'keterangan' => 'Job Order Edit #' . $joborder->id . ' (tambah material)',
+                            ]);
+                        } else if ($selisih < 0) {
+                            // Jika jumlah berkurang, tambahkan stok kembali (type in)
+                            \App\Models\MaterialMovement::create([
+                                'material_id' => $item['material_id'],
+                                'type' => 'in',
+                                'tanggal' => now(),
+                                'jumlah' => abs($selisih),
+                                'keterangan' => 'Job Order Edit #' . $joborder->id . ' (kurangi material)',
+                            ]);
+                        }
+                    }
                 } else {
                     $createdItem = $joborder->items()->create([
                         'material_id' => $item['material_id'] ?? null,
@@ -196,17 +231,16 @@ class JobOrderController extends Controller
                         'jumlah' => $item['jumlah'] ?? null,
                         'satuan' => $item['satuan'] ?? null,
                     ]);
-                }
-
-                // Kurangi stok material dengan membuat MaterialMovement type 'out' untuk setiap item
-                if (!empty($item['material_id']) && !empty($item['jumlah'])) {
-                    \App\Models\MaterialMovement::create([
-                        'material_id' => $item['material_id'],
-                        'type' => 'out',
-                        'tanggal' => now(),
-                        'jumlah' => $item['jumlah'],
-                        'keterangan' => 'Job Order Edit #' . $joborder->id,
-                    ]);
+                    // Item baru, kurangi stok
+                    if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                        \App\Models\MaterialMovement::create([
+                            'material_id' => $item['material_id'],
+                            'type' => 'out',
+                            'tanggal' => now(),
+                            'jumlah' => $item['jumlah'],
+                            'keterangan' => 'Job Order Edit #' . $joborder->id . ' (item baru)',
+                        ]);
+                    }
                 }
             }
         });
@@ -251,5 +285,28 @@ class JobOrderController extends Controller
         ]);
 
         return back()->with('success', 'Tanggal actual berhasil diupdate.');
+    }
+
+    /**
+     * Export a single joborder to PDF
+     */
+    public function exportPdf(JobOrder $joborder)
+    {
+        $joborder->load('items.material');
+        $pdf = null;
+        try {
+            $pdf = Pdf::loadView('admin.joborders.pdf', compact('joborder'));
+        } catch (\Throwable $e) {
+            // Log error and return a readable message in UI
+            \Log::error('Export PDF error for JobOrder '.$joborder->id.': '.$e->getMessage());
+            return back()->with('error', 'Gagal membuat PDF: ' . $e->getMessage());
+        }
+
+        // If ?stream=1 is provided, render inline in browser for quick testing
+        if (request()->query('stream')) {
+            return $pdf->stream('joborder-'.$joborder->id.'.pdf');
+        }
+
+        return $pdf->download('joborder-'.$joborder->id.'.pdf');
     }
 }

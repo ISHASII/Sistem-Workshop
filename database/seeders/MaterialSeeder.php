@@ -80,11 +80,10 @@ class MaterialSeeder extends Seeder
             }
 
             Material::create([
-                'tanggal' => $today,
                 'nama' => $row['material'],
                 'spesifikasi' => $row['spesifikasi'],
-                'jumlah' => intval($row['jumlah']), // Convert to integer
-                'safety_stock' => rand(5, 20), // Random safety stock between 5-20 (already integer)
+                'jumlah' => intval($row['jumlah']),
+                'safety_stock' => rand(5, 20),
                 'satuan_id' => $satuan->id,
                 'kategori_id' => $kategori->id,
             ]);

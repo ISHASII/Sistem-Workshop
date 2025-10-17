@@ -302,7 +302,7 @@
                         </span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('admin.joborder.index') }}" class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-all duration-200 font-medium">
+                        <a href="{{ route('admin.joborder.index') }}" id="cancelBtn" data-swal-cancel class="px-6 py-3 bg-slate-200 text-slate-800 rounded-xl hover:bg-slate-300 transition-all duration-200 font-medium">
                             Batal
                         </a>
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-200 transform hover:scale-105 font-medium flex items-center">

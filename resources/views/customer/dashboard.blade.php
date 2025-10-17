@@ -7,10 +7,5 @@
         <h2 class="text-2xl font-bold mb-6 text-center">Customer Dashboard</h2>
         <p class="mb-4">Selamat datang, <span class="font-semibold">{{ auth()->user()->username ?? auth()->user()->name }}</span>!</p>
         <p>Role: <span class="font-semibold">{{ ucfirst(auth()->user()->role) }}</span></p>
-        <!-- Add customer-specific links here -->
-        <ul class="mt-4">
-            <li><a href="#" class="text-blue-600">My orders</a></li>
-            <li><a href="#" class="text-blue-600">Profile</a></li>
-        </ul>
     </div>
 @endsection

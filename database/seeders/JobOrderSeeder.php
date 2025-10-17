@@ -342,14 +342,14 @@ class JobOrderSeeder extends Seeder
             ];
         }
 
+
         DB::transaction(function() use ($jobOrders, $groupedItems) {
             foreach ($jobOrders as $joData) {
                 $no = $joData['no'];
-
-                // Convert tanggal format dari DD-MMM-YY ke YYYY-MM-DD
-                $start = $this->convertDate($joData['start']);
-                $end = $this->convertDate($joData['end']);
-                $actual = $this->convertDate($joData['actual']);
+                // Simpan ke database dengan format dd-mm-yyyy (sesuai permintaan user)
+                $start = $this->convertDateDMY($joData['start']);
+                $end = $this->convertDateDMY($joData['end']);
+                $actual = $this->convertDateDMY($joData['actual']);
 
                 // Create Job Order
                 $jo = JobOrder::create([
@@ -418,18 +418,35 @@ class JobOrderSeeder extends Seeder
             'Mei' => '05', 'Jun' => '06', 'Jul' => '07', 'Agu' => '08',
             'Sep' => '09', 'Okt' => '10', 'Nov' => '11', 'Des' => '12',
         ];
-
         // Parse format DD-MMM-YY (e.g., 12-Agu-24)
         $parts = explode('-', $date);
         if (count($parts) === 3) {
             $day = str_pad($parts[0], 2, '0', STR_PAD_LEFT);
             $month = $months[$parts[1]] ?? '01';
             $year = '20' . $parts[2]; // Assuming 20xx century
-
             return "$year-$month-$day";
         }
-
         return date('Y-m-d'); // Fallback to today
+    }
+
+    /**
+     * Convert date from DD-MMM-YY format to DD-MM-YYYY
+     */
+    private function convertDateDMY(string $date): string
+    {
+        $months = [
+            'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
+            'Mei' => '05', 'Jun' => '06', 'Jul' => '07', 'Agu' => '08',
+            'Sep' => '09', 'Okt' => '10', 'Nov' => '11', 'Des' => '12',
+        ];
+        $parts = explode('-', $date);
+        if (count($parts) === 3) {
+            $day = str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+            $month = $months[$parts[1]] ?? '01';
+            $year = '20' . $parts[2];
+            return "$day-$month-$year";
+        }
+        return date('d-m-Y');
     }
 
     private function normalizeMaterialName(string $name): string

@@ -39,6 +39,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/joborders/{joborder}/update-progress', [\App\Http\Controllers\Admin\JobOrderController::class, 'updateProgress'])->name('admin.joborder.updateProgress');
     Route::post('/admin/joborders/{joborder}/update-actual', [\App\Http\Controllers\Admin\JobOrderController::class, 'updateActual'])->name('admin.joborder.updateActual');
 
+    // PDF export for joborder
+    Route::get('/admin/joborders/{joborder}/export-pdf', [\App\Http\Controllers\Admin\JobOrderController::class, 'exportPdf'])->name('admin.joborder.exportPdf');
+
     // Material routes (admin)
     // Data Material (CRUD)
     Route::resource('admin/materials', \App\Http\Controllers\MaterialController::class, [

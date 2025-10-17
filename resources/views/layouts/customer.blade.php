@@ -41,40 +41,6 @@
                             </svg>
                             Job Order
                         </a>
-
-                        <!-- Kategori -->
-                        @if(Route::has('customer.kategori.index'))
-                        <a href="{{ route('customer.kategori.index') }}" class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('customer.kategori.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            Kategori
-                        </a>
-                        @else
-                        <a href="#" class="nav-link group flex items-center px-4 py-2 text-sm font-medium text-slate-400 rounded-xl opacity-60 cursor-not-allowed" aria-disabled="true">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            Kategori
-                        </a>
-                        @endif
-
-                        <!-- Satuan -->
-                        @if(Route::has('customer.satuan.index'))
-                        <a href="{{ route('customer.satuan.index') }}" class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('customer.satuan.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Satuan
-                        </a>
-                        @else
-                        <a href="#" class="nav-link group flex items-center px-4 py-2 text-sm font-medium text-slate-400 rounded-xl opacity-60 cursor-not-allowed" aria-disabled="true">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Satuan
-                        </a>
-                        @endif
                     </div>
                 </div>
 
@@ -254,7 +220,7 @@
             appearance: none;
         }
     </style>
-    
+
     @stack('scripts')
 </body>
 </html>

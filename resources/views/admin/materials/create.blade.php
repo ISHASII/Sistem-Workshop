@@ -19,7 +19,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-600">Tanggal</label>
-                        <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" class="mt-1 block w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200" required>
+                        <input type="text" name="tanggal" value="{{ old('tanggal', date('d-m-Y')) }}" class="mt-1 block w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200" required readonly>
                         @error('tanggal')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
                     </div>
 
