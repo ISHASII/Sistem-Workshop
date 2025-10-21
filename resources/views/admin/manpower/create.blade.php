@@ -107,8 +107,8 @@
                                     class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all duration-200 @error('jenis_kelamin') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="laki-laki" {{ old('jenis_kelamin')=='laki-laki' ? 'selected' : '' }}>👨 Laki-laki</option>
-                                <option value="perempuan" {{ old('jenis_kelamin')=='perempuan' ? 'selected' : '' }}>👩 Perempuan</option>
+                                <option value="laki-laki" {{ old('jenis_kelamin')=='laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="perempuan" {{ old('jenis_kelamin')=='perempuan' ? 'selected' : '' }}>Perempuan</option>
                             </select>
                         </div>
                         @error('jenis_kelamin')
@@ -136,8 +136,8 @@
                                     class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all duration-200 @error('status_pegawai') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Status --</option>
-                                <option value="kontrak" {{ old('status_pegawai')=='kontrak' ? 'selected' : '' }}>⏱️ Kontrak</option>
-                                <option value="tetap" {{ old('status_pegawai')=='tetap' ? 'selected' : '' }}>✅ Tetap</option>
+                                <option value="kontrak" {{ old('status_pegawai')=='kontrak' ? 'selected' : '' }}>Kontrak</option>
+                                <option value="tetap" {{ old('status_pegawai')=='tetap' ? 'selected' : '' }}>Tetap</option>
                             </select>
                         </div>
                         @error('status_pegawai')

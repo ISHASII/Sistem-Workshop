@@ -237,9 +237,55 @@
                 @endif
 
                 <!-- Pagination -->
-                <div class="mt-6">
-                    {{ $joborders->links() }}
-                </div>
+                @if($joborders->hasPages())
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 px-6 py-4 mt-6">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-sm text-slate-600">
+                                Menampilkan {{ $joborders->firstItem() }} - {{ $joborders->lastItem() }} dari {{ $joborders->total() }} project
+                            </div>
+                            <div class="flex items-center gap-2">
+                                {{-- Previous Page Link --}}
+                                @if ($joborders->onFirstPage())
+                                    <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </span>
+                                @else
+                                    <a href="{{ $joborders->appends(request()->input())->previousPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </a>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($joborders->getUrlRange(1, $joborders->lastPage()) as $page => $url)
+                                    @if ($page == $joborders->currentPage())
+                                        <span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ $page }}</span>
+                                    @else
+                                        <a href="{{ $url }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($joborders->hasMorePages())
+                                    <a href="{{ $joborders->appends(request()->input())->nextPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </a>
+                                @else
+                                    <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -57,7 +57,7 @@ class JobOrderController extends Controller
             }
         }
 
-        $joborders = $query->latest()->paginate(12)->withQueryString();
+    $joborders = $query->latest()->paginate(10)->withQueryString();
         return view('customer.joborders.index', compact('joborders'));
     }
 }
