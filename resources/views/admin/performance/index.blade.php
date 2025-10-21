@@ -15,13 +15,23 @@
                     <h2 class="text-2xl font-bold text-gray-900">Performance Man Power</h2>
                     <p class="text-gray-600 text-sm mt-1">Monitor dan analisis performa karyawan</p>
                 </div>
-                <a href="{{ route('admin.performance.create') }}"
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.performance.exportPdfAll', request()->all()) }}" target="_blank"
+                       class="inline-flex items-center px-3 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-all duration-200 shadow">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8"/>
+                        </svg>
+                        Export All PDF
+                    </a>
+
+                    <a href="{{ route('admin.performance.create') }}"
                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-all duration-200 shadow">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Tambah Performance
                 </a>
+                </div>
             </div>
 
             <!-- Search & Filter Form -->
@@ -157,6 +167,7 @@
                                                 'showRoute' => route('admin.performance.show', $performance),
                                                 'editRoute' => route('admin.performance.edit', $performance),
                                                 'destroyRoute' => route('admin.performance.destroy', $performance),
+                                                'pdfRoute' => route('admin.performance.exportPdf', $performance),
                                                 'labelAlign' => 'center',
                                                 'deleteTitle' => 'Hapus data performance?',
                                                 'deleteText' => 'Yakin ingin menghapus performance ' . ($performance->manpower?->nama ?? '' ) . '?',

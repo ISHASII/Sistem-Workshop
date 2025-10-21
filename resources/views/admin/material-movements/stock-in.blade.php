@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-4xl mx-auto">
         <!-- Header Card -->
-    <div class="bg-gradient-to-r from-red-600 to-rose-600 rounded-xl shadow-lg p-6 mb-6">
+    <div class="bg-gradient-to-r from-red-700 to-rose-600 rounded-xl shadow-lg p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -31,19 +31,7 @@
         <!-- Form Card -->
         <div class="bg-white rounded-xl shadow-lg p-8">
 
-        <!-- Success Message -->
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
-                <div class="flex items-start">
-                    <svg class="w-5 h-5 text-rose-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="text-rose-800">
-                        <p class="font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+        {{-- session success flash removed per user request --}}
 
         <!-- Error Messages -->
         @if($errors->any())
@@ -74,7 +62,7 @@
                     <label for="material_id" class="block text-sm font-medium text-slate-700 mb-2">
                         Material <span class="text-red-500">*</span>
                     </label>
-                    <select id="material_id" name="material_id" required onchange="updateStock()"
+                    <select id="material_id" name="material_id" required onchange="updateStockIn()"
                             class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-slate-700 @error('material_id') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
                         <option value="" data-stock="" data-unit="">Pilih Material</option>
                         @foreach($materials as $material)
@@ -85,6 +73,7 @@
                                     {{ old('material_id') == $material->id ? 'selected' : '' }}
                                     data-stock="{{ (int)$currentStock }}"
                                     data-unit="{{ $material->satuan->name ?? '' }}"
+                                    data-spesifikasi="{{ $material->spesifikasi ?? '' }}"
                                     class="text-slate-700">
                                 {{ $material->nama }}
                                 @if($material->spesifikasi)
@@ -106,21 +95,54 @@
                 </div>
             </div>
 
+            <!-- Material Info Display - Spesifikasi & Satuan -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Spesifikasi (Read-only) -->
+                <div>
+                    <label for="spesifikasi_display" class="block text-sm font-medium text-slate-700 mb-2">
+                        Spesifikasi Material
+                    </label>
+                    <input type="text" id="spesifikasi_display" readonly
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed"
+                           placeholder="-"
+                           value="-">
+                    <p class="mt-1 text-xs text-slate-500">Otomatis terisi dari material yang dipilih</p>
+                </div>
+
+                <!-- Satuan (Read-only) -->
+                <div>
+                    <label for="satuan_display" class="block text-sm font-medium text-slate-700 mb-2">
+                        Satuan
+                    </label>
+                    <input type="text" id="satuan_display" readonly
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed"
+                           placeholder="-"
+                           value="-">
+                    <p class="mt-1 text-xs text-slate-500">Satuan dari material yang dipilih</p>
+                </div>
+            </div>
+
             <!-- Stock Info Display Card - Always Visible -->
-            <div id="stock-info-in" class="bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-red-600 rounded-xl shadow-md">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-semibold text-rose-700 mb-1">Stok Tersedia Saat Ini</p>
-                        <p id="stock-value-in" class="text-3xl font-bold text-rose-900">-</p>
-                    </div>
-                    <div class="hidden lg:block">
-                        <div class="px-4 py-2 bg-white/70 rounded-lg">
-                            <p class="text-xs font-medium text-rose-600 uppercase">Ready</p>
+            <div id="stock-info" class="transition-all duration-300">
+                <div id="stock-card" class="bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="p-3 bg-red-600 rounded-xl shadow-md">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-rose-700 mb-1">Stok Tersedia Saat Ini</p>
+                                <p id="stock-value" class="text-3xl font-bold text-rose-900">-</p>
+                            </div>
+                        </div>
+                        <div id="stock-warning" class="hidden">
+                            <div class="p-3 bg-red-500 rounded-xl shadow-lg animate-pulse">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,11 +201,18 @@
 
     <!-- Stock Info Script - Simple & Direct -->
     <script>
-        function updateStock() {
-            const select = document.getElementById('material_id');
-            const stockDisplay = document.getElementById('stock-value-in');
+        let currentStockGlobal = 0;
+        let currentUnitGlobal = '';
 
-            if (!select || !stockDisplay) {
+        function updateStockIn() {
+            const select = document.getElementById('material_id');
+            const stockDisplay = document.getElementById('stock-value');
+            const stockCard = document.getElementById('stock-card');
+            const stockWarning = document.getElementById('stock-warning');
+            const spesifikasiDisplay = document.getElementById('spesifikasi_display');
+            const satuanDisplay = document.getElementById('satuan_display');
+
+            if (!select || !stockDisplay || !stockCard || !stockWarning) {
                 alert('ERROR: Element tidak ditemukan!');
                 return;
             }
@@ -191,26 +220,74 @@
             const selectedOption = select.options[select.selectedIndex];
             const stock = selectedOption.getAttribute('data-stock');
             const unit = selectedOption.getAttribute('data-unit');
+            const spesifikasi = selectedOption.getAttribute('data-spesifikasi');
 
             console.log('Selected:', select.value);
             console.log('Stock:', stock);
             console.log('Unit:', unit);
+            console.log('Spesifikasi:', spesifikasi);
+
+            currentStockGlobal = parseInt(stock) || 0;
+            currentUnitGlobal = unit || '';
 
             if (stock && unit && select.value) {
+                // Update stock display
                 stockDisplay.textContent = stock + ' ' + unit;
+
+                // Update spesifikasi dan satuan display
+                if (spesifikasiDisplay) {
+                    spesifikasiDisplay.value = spesifikasi || '-';
+                }
+                if (satuanDisplay) {
+                    satuanDisplay.value = unit || '-';
+                }
+
+                // keep rose theme for stock-in
+                stockCard.className = 'bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm';
                 stockDisplay.className = 'text-3xl font-bold text-rose-900';
+                stockWarning.classList.add('hidden');
+
+                validateStockIn();
             } else {
                 stockDisplay.textContent = '-';
                 stockDisplay.className = 'text-3xl font-bold text-gray-500';
+                stockWarning.classList.add('hidden');
+
+                if (spesifikasiDisplay) spesifikasiDisplay.value = '-';
+                if (satuanDisplay) satuanDisplay.value = '-';
+            }
+        }
+
+        function validateStockIn() {
+            const jumlahInput = document.getElementById('jumlah');
+            const stockDisplay = document.getElementById('stock-value');
+            const stockCard = document.getElementById('stock-card');
+            const stockWarning = document.getElementById('stock-warning');
+
+            if (!jumlahInput) return;
+
+            const jumlah = parseInt(jumlahInput.value) || 0;
+
+            // For stock-in we don't block when jumlah > currentStock; just show info
+            if (jumlah > 0) {
+                stockCard.className = 'bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm';
+                stockDisplay.className = 'text-3xl font-bold text-blue-900';
+                stockDisplay.textContent = currentStockGlobal + ' ' + currentUnitGlobal + ' (Akan ditambahkan: ' + jumlah + ')';
+                stockWarning.classList.add('hidden');
+            } else {
+                stockCard.className = 'bg-gradient-to-br from-rose-50 to-red-50 border-2 border-rose-200 rounded-xl p-5 shadow-sm';
+                stockDisplay.className = 'text-3xl font-bold text-rose-900';
+                stockDisplay.textContent = currentStockGlobal + ' ' + currentUnitGlobal;
+                stockWarning.classList.add('hidden');
             }
         }
 
         // Test saat page load
         window.onload = function() {
-            console.log('Page loaded - ready!');
+            console.log('Page loaded - Stock In ready!');
             const select = document.getElementById('material_id');
             if (select && select.value) {
-                updateStock();
+                updateStockIn();
             }
         };
     </script>

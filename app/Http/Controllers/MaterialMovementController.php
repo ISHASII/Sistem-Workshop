@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\MaterialMovement;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class MaterialMovementController extends Controller
 {
@@ -128,6 +129,55 @@ class MaterialMovementController extends Controller
 
         return redirect()->route('admin.material-movements.index')
             ->with('success', 'Perpindahan stok berhasil dihapus.');
+    }
+
+    /**
+     * Export filtered material movements to PDF
+     */
+    public function exportPdfAll(Request $request)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc');
+
+        // optional filters can be implemented if needed (material id, type, date range)
+        if ($request->filled('material_id')) {
+            $query->where('material_id', $request->material_id);
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->filled('start_date')) {
+            $query->where('tanggal', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('tanggal', '<=', $request->end_date);
+        }
+
+        $movements = $query->get();
+
+        $pdf = PDF::loadView('admin.material-movements.pdf.all', compact('movements'))
+                  ->setPaper('a4', 'landscape');
+
+        $filename = 'material_movements_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export single material movement to PDF
+     */
+    public function exportPdf(MaterialMovement $materialMovement)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $materialMovement->load('material');
+        $pdf = PDF::loadView('admin.material-movements.pdf.item', compact('materialMovement'));
+        $filename = 'material_movement_' . ($materialMovement->id ?? 'item') . '_' . now()->format('Ymd') . '.pdf';
+        return $pdf->download($filename);
     }
 
     /**

@@ -28,19 +28,7 @@
             </div>
         </div>
 
-        <!-- Success Message -->
-        @if(session('success'))
-            <div class="bg-rose-50 border-l-4 border-rose-500 rounded-lg p-4 shadow-sm">
-                <div class="flex items-start">
-                    <svg class="w-5 h-5 text-rose-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="text-rose-800">
-                        <p class="font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+        {{-- session success flash removed per user request --}}
 
         <!-- Search & Filter Section -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">

@@ -39,7 +39,7 @@
             </div>
 
             <!-- Form Body -->
-            <form action="{{ route('admin.joborder.update', $joborder->id) }}" method="POST" class="p-8">
+            <form action="{{ route('admin.joborder.update', $joborder->id) }}" method="POST" class="p-8" enctype="multipart/form-data">
                 @if ($errors->any())
                     <div class="mb-6">
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -136,6 +136,79 @@
                                     </svg>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Info: Area, Latar Belakang, Tujuan, Target -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-slate-800">Informasi Tambahan</h4>
+                            <p class="text-sm text-slate-500">Area, latar belakang, tujuan, dan target proyek</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Area</label>
+                            <input name="area" type="text" value="{{ old('area', $joborder->area) }}" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" placeholder="Masukkan area proyek" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Target</label>
+                            <input name="target" type="text" value="{{ old('target', $joborder->target) }}" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" placeholder="Contoh: Selesai 2 minggu" />
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Latar Belakang</label>
+                            <textarea name="latar_belakang" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" rows="4" placeholder="Jelaskan latar belakang proyek">{{ old('latar_belakang', $joborder->latar_belakang) }}</textarea>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tujuan</label>
+                            <textarea name="tujuan" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" rows="3" placeholder="Tujuan dari pekerjaan ini">{{ old('tujuan', $joborder->tujuan) }}</textarea>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Gambar (multiple)</label>
+                            <div id="image-inputs-edit" class="space-y-2">
+                                <div class="image-input-row flex items-start space-x-3">
+                                    <input class="image-input-edit" name="images[]" type="file" accept="image/*" />
+                                    <div class="flex-1">
+                                        <div class="images-preview-edit grid grid-cols-3 gap-3" data-preview-id="0"></div>
+                                    </div>
+                                    <button type="button" class="remove-image-input-edit hidden px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex items-center space-x-3">
+                                <button type="button" id="add-image-input-edit" class="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">+ Tambah Gambar</button>
+                                <p class="text-xs text-slate-400">Anda dapat menambahkan beberapa input gambar; setiap input punya preview dan tombol hapus.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Gambar Saat Ini</label>
+                            <div id="existing-images" class="grid grid-cols-3 gap-3">
+                                @if(is_array($joborder->images ?? null) && count($joborder->images))
+                                    @foreach($joborder->images as $i => $img)
+                                        <div class="relative border rounded overflow-hidden existing-image-slot" data-img-index="{{ $i }}">
+                                            <img src="{{ asset($img) }}" class="object-cover w-full h-24" />
+                                            <button type="button" class="remove-existing absolute top-1 right-1 bg-white/80 text-red-600 rounded-full p-1 border" data-img="{{ $img }}">&times;</button>
+                                            <input type="hidden" name="existing_images[{{ $i }}]" value="{{ $img }}" />
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-xs text-slate-400">Tidak ada gambar.</div>
+                                @endif
+                            </div>
+                            {{-- container to hold names of removed images to send to server --}}
+                            <div id="removed-images-inputs"></div>
                         </div>
                     </div>
                 </div>
@@ -423,6 +496,129 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addBtn.addEventListener('click', addNewRow);
     wrapper.querySelectorAll('.item-row').forEach(wireRow);
+
+    // Preview & removal for new uploads (edit form)
+    const newImagesInputEdit = document.getElementById('newImagesInputEdit');
+    const newPreviewEdit = document.getElementById('new-images-preview-edit');
+    if (newImagesInputEdit) {
+        newImagesInputEdit.addEventListener('change', function() {
+            newPreviewEdit.innerHTML = '';
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                const slot = document.createElement('div');
+                slot.className = 'relative border rounded overflow-hidden';
+                slot.style.height = '96px';
+                slot.style.display = 'flex';
+                slot.style.alignItems = 'center';
+                slot.style.justifyContent = 'center';
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'absolute top-1 right-1 bg-white/80 text-red-600 rounded-full p-1 border';
+                removeBtn.innerHTML = '&times;';
+
+                removeBtn.addEventListener('click', function(){
+                    const dt = new DataTransfer();
+                    Array.from(newImagesInputEdit.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+                    newImagesInputEdit.files = dt.files;
+                    slot.remove();
+                });
+
+                reader.onload = function(e){
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'object-cover w-full h-24';
+                    slot.appendChild(img);
+                    slot.appendChild(removeBtn);
+                }
+                reader.readAsDataURL(file);
+                newPreviewEdit.appendChild(slot);
+            });
+        });
+    }
+
+    // Remove existing images (mark for deletion)
+    document.querySelectorAll('.remove-existing').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            // confirmation before marking image for deletion
+            if(!confirm('Yakin ingin menghapus gambar ini? Tindakan ini akan dihapus saat Anda menyimpan perubahan.')){
+                return;
+            }
+            const imgPath = this.getAttribute('data-img');
+            const slot = this.closest('.existing-image-slot');
+            // add hidden input to signal server to remove this image
+            const holder = document.getElementById('removed-images-inputs');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'removed_images[]';
+            input.value = imgPath;
+            holder.appendChild(input);
+            slot.remove();
+        });
+    });
+
+    // Dynamic image input rows for edit form (reuse wiring for initial rows)
+    const imageInputsContainerEdit = document.getElementById('image-inputs-edit');
+    const addImageBtnEdit = document.getElementById('add-image-input-edit');
+    let imageRowIndexEdit = 1;
+
+    function wireImageInputRowEdit(row){
+        const input = row.querySelector('.image-input-edit');
+        const preview = row.querySelector('.images-preview-edit');
+        const removeBtn = row.querySelector('.remove-image-input-edit');
+        if(!input || !preview) return;
+
+        input.addEventListener('change', function(){
+            preview.innerHTML = '';
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                const slot = document.createElement('div');
+                slot.className = 'relative border rounded overflow-hidden';
+                slot.style.height = '96px';
+                reader.onload = function(e){
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'object-cover w-full h-24';
+                    slot.appendChild(img);
+                    const rb = document.createElement('button'); rb.type='button'; rb.className='absolute top-1 right-1 bg-white/80 text-red-600 rounded-full p-1 border'; rb.innerHTML='&times;';
+                    rb.addEventListener('click', function(){
+                        const dt = new DataTransfer();
+                        Array.from(input.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+                        input.files = dt.files;
+                        slot.remove();
+                    });
+                    slot.appendChild(rb);
+                };
+                reader.readAsDataURL(file);
+                preview.appendChild(slot);
+            });
+        });
+
+        if(removeBtn){ removeBtn.addEventListener('click', function(){ row.remove(); }); }
+    }
+
+    function createImageRowEdit(index){
+        const row = document.createElement('div');
+        row.className = 'image-input-row flex items-start space-x-3';
+        row.innerHTML = `
+            <input class="image-input-edit" name="images[]" type="file" accept="image/*" />
+            <div class="flex-1">
+                <div class="images-preview-edit grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
+            </div>
+            <button type="button" class="remove-image-input-edit px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+        `;
+        wireImageInputRowEdit(row);
+        return row;
+    }
+
+    // Wire existing static rows (initial row in markup)
+    imageInputsContainerEdit.querySelectorAll('.image-input-row').forEach(function(r){
+        wireImageInputRowEdit(r);
+    });
+
+    addImageBtnEdit.addEventListener('click', function(){
+        const r = createImageRowEdit(imageRowIndexEdit++);
+        imageInputsContainerEdit.appendChild(r);
+    });
 });
 </script>
 @endsection

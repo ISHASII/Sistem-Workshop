@@ -43,6 +43,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/joborders/{joborder}/export-pdf', [\App\Http\Controllers\Admin\JobOrderController::class, 'exportPdf'])->name('admin.joborder.exportPdf');
 
     // Material routes (admin)
+    // Export Materials to PDF (must be declared before resource to avoid conflicting with show route)
+    Route::get('/admin/materials/export-pdf', [\App\Http\Controllers\MaterialController::class, 'exportPdfAll'])->name('admin.materials.exportPdfAll');
+    Route::get('/admin/materials/{material}/export-pdf', [\App\Http\Controllers\MaterialController::class, 'exportPdf'])->name('admin.materials.exportPdf');
+
     // Data Material (CRUD)
     Route::resource('admin/materials', \App\Http\Controllers\MaterialController::class, [
         'names' => [
@@ -58,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Material Movements (Perpindahan Stok)
     Route::prefix('admin/material-movements')->name('admin.material-movements.')->group(function () {
+        // Export Material Movements to PDF (declare before dynamic routes)
+        Route::get('/export-pdf', [\App\Http\Controllers\MaterialMovementController::class, 'exportPdfAll'])->name('exportPdfAll');
+        Route::get('/{materialMovement}/export-pdf', [\App\Http\Controllers\MaterialMovementController::class, 'exportPdf'])->name('exportPdf');
+
         Route::get('/', [\App\Http\Controllers\MaterialMovementController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\MaterialMovementController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\MaterialMovementController::class, 'store'])->name('store');
@@ -105,7 +113,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('admin.performance.index');
     Route::get('/admin/performance/create', [\App\Http\Controllers\Admin\PerformanceController::class, 'create'])->name('admin.performance.create');
     Route::post('/admin/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'store'])->name('admin.performance.store');
+    // Export Performance to PDF
+    Route::get('/admin/performance/export-pdf', [\App\Http\Controllers\Admin\PerformanceController::class, 'exportPdfAll'])->name('admin.performance.exportPdfAll');
     Route::get('/admin/performance/{performance}', [\App\Http\Controllers\Admin\PerformanceController::class, 'show'])->name('admin.performance.show');
+    Route::get('/admin/performance/{performance}/export-pdf', [\App\Http\Controllers\Admin\PerformanceController::class, 'exportPdf'])->name('admin.performance.exportPdf');
     Route::get('/admin/performance/{performance}/edit', [\App\Http\Controllers\Admin\PerformanceController::class, 'edit'])->name('admin.performance.edit');
     Route::put('/admin/performance/{performance}', [\App\Http\Controllers\Admin\PerformanceController::class, 'update'])->name('admin.performance.update');
     Route::delete('/admin/performance/{performance}', [\App\Http\Controllers\Admin\PerformanceController::class, 'destroy'])->name('admin.performance.destroy');

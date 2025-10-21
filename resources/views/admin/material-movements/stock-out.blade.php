@@ -31,19 +31,7 @@
         <!-- Form Card -->
         <div class="bg-white rounded-xl shadow-lg p-8">
 
-        <!-- Success Message -->
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg">
-                <div class="flex items-start">
-                    <svg class="w-5 h-5 text-rose-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="text-rose-800">
-                        <p class="font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+        {{-- session success flash removed per user request --}}
 
         <!-- Error Messages -->
         @if($errors->any())

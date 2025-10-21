@@ -99,26 +99,48 @@ class DashboardController extends Controller
         return ((int)$date->format('Y') === (int)$tahun) && ((int)$date->format('m') === (int)$bulan);
     })->values();
 
-    // Ambil data material dan agregat stok
-    $materials = \App\Models\Material::with(['satuan'])
-        ->get()
-        ->map(function($m) {
-            // sum of stock = stok sekarang
-            $sum_stock = $m->getCurrentStok();
-            // sum of stock minimum = safety_stock
-            $sum_min = $m->safety_stock;
-            // sum of reorder point = safety_stock (atau bisa custom field jika ada)
-            $sum_reorder = $m->safety_stock;
-            // sum of stock maksimum = stok awal + semua masuk
-            $sum_max = $m->jumlah + $m->movements()->where('type','in')->sum('jumlah');
-            return [
-                'nama' => $m->nama,
-                'sum_stock' => (float) $sum_stock,
-                'sum_min' => (float) $sum_min,
-                'sum_reorder' => (float) $sum_reorder,
-                'sum_max' => (float) $sum_max,
-            ];
-        });
+    // Ambil data material dan agregat stok (juga kelompok per kategori)
+    $materialModels = \App\Models\Material::with(['satuan','kategori'])->get();
+
+    $materials = $materialModels->map(function($m) {
+        // sum of stock = stok sekarang
+        $sum_stock = $m->getCurrentStok();
+        // sum of stock minimum = safety_stock
+        $sum_min = $m->safety_stock;
+        // sum of reorder point = safety_stock (atau bisa custom field jika ada)
+        $sum_reorder = $m->safety_stock;
+        // sum of stock maksimum = stok awal + semua masuk
+        $sum_max = $m->jumlah + $m->movements()->where('type','in')->sum('jumlah');
+        return [
+            'nama' => $m->nama,
+            'sum_stock' => (float) $sum_stock,
+            'sum_min' => (float) $sum_min,
+            'sum_reorder' => (float) $sum_reorder,
+            'sum_max' => (float) $sum_max,
+            'kategori_nama' => isset($m->kategori) ? ($m->kategori->nama ?? ($m->kategori->name ?? 'Uncategorized')) : 'Uncategorized'
+        ];
+    });
+
+    // Group materials by kategori on server-side for the dashboard view
+    $materials_by_category = [];
+    foreach ($materialModels as $m) {
+        $catName = 'Uncategorized';
+        if (isset($m->kategori)) {
+            if (is_object($m->kategori)) $catName = $m->kategori->nama ?? ($m->kategori->name ?? $catName);
+            else $catName = $m->kategori ?? $catName;
+        }
+        $sum_stock = $m->getCurrentStok();
+        $sum_min = $m->safety_stock;
+        $sum_reorder = $m->safety_stock;
+        $sum_max = $m->jumlah + $m->movements()->where('type','in')->sum('jumlah');
+        $materials_by_category[$catName][] = [
+            'nama' => $m->nama,
+            'sum_stock' => (float)$sum_stock,
+            'sum_min' => (float)$sum_min,
+            'sum_reorder' => (float)$sum_reorder,
+            'sum_max' => (float)$sum_max,
+        ];
+    }
 
     $averagePerformances = \App\Models\Performance::selectRaw('manpower_id, AVG(score) as average_score')
         ->groupBy('manpower_id')
@@ -129,6 +151,7 @@ class DashboardController extends Controller
         'joborders',
         'joborders_monthly',
         'materials',
+        'materials_by_category',
         'critical_materials',
         'urgent_jobs',
         'urgent_projects',

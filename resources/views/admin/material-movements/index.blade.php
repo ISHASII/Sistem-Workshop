@@ -19,6 +19,13 @@
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3">
+                          <a href="{{ route('admin.material-movements.exportPdfAll', request()->all()) }}" target="_blank"
+                              class="px-4 py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-900 transition-all duration-200 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8"/>
+                        </svg>
+                        Export All PDF
+                    </a>
                           <a href="{{ route('admin.material-movements.stock-in') }}"
                               class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg font-semibold shadow-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 flex items-center gap-3">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,16 +116,7 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="text-green-800 font-medium">{{ session('success') }}</span>
-                </div>
-            </div>
-        @endif
+        {{-- session success flash removed per user request --}}
 
         <!-- Filter & Search Section -->
     <div class="bg-white rounded-lg shadow-sm border border-red-100 p-6">
@@ -345,7 +343,8 @@
                                         'labelAlign' => 'center',
                                         'deleteTitle' => 'Hapus perpindahan stok?',
                                         'deleteText' => 'Yakin ingin menghapus perpindahan stok untuk ' . ($movement->material?->nama ?? 'item ini') . '?',
-                                        'deleteConfirm' => 'Hapus'
+                                        'deleteConfirm' => 'Hapus',
+                                        'pdfRoute' => route('admin.material-movements.exportPdf', $movement)
                                     ])
                                 </td>
                             </tr>

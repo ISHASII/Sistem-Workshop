@@ -9,9 +9,7 @@
                 <h2 class="text-2xl font-semibold text-red-700">Tambah Material</h2>
             </div>
 
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-rose-50 border border-rose-200 rounded">{{ session('success') }}</div>
-            @endif
+            {{-- session success flash removed per user request --}}
 
             <form action="{{ route('admin.materials.store') }}" method="POST" class="space-y-6">
                 @csrf

@@ -15,12 +15,12 @@
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
     <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-lg shadow-slate-900/5 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-2 sm:px-4">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center h-auto md:h-16">
+            <div class="flex items-center justify-between h-16">
                 <!-- Left side - Logo and Navigation -->
                 <div class="flex items-center space-x-8">
                     <!-- Logo -->
                     <a href="{{ route('customer.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('image/logo-ahm.png') }}" alt="{{ config('app.name') }} logo" class="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain mr-4">
+                        <img src="{{ asset('image/logo-ahm.png') }}" alt="{{ config('app.name') }} logo" class="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain mr-4">
                         <div class="hidden md:flex flex-col leading-tight">
                             <span class="text-lg font-semibold text-slate-800">Sistem Workshop</span>
                         </div>

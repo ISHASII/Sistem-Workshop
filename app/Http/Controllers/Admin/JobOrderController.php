@@ -9,6 +9,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Material;
 use App\Models\JobOrderItem;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class JobOrderController extends Controller
 {
@@ -61,7 +63,7 @@ class JobOrderController extends Controller
             }
         }
 
-        $joborders = $query->latest()->paginate(12)->withQueryString();
+    $joborders = $query->latest()->paginate(10)->withQueryString();
         return view('admin.joborders.index', compact('joborders'));
     }
 
@@ -74,16 +76,21 @@ class JobOrderController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'seksi' => 'nullable|string|max:255',
+            'seksi' => 'required|string|max:255',
             'status' => 'required|in:Low,Medium,High,Urgent',
-            'project' => 'nullable|string|max:255',
-            'start' => 'nullable|string|max:255',
-            'end' => 'nullable|string|max:255',
+            'project' => 'required|string|max:255',
+            'start' => 'required|string|max:255',
+            'end' => 'required|string|max:255',
             'items' => 'required|array|min:1',
-            'items.*.material_id' => 'nullable|exists:materials,id',
+            'items.*.material_id' => 'required|exists:materials,id',
             'items.*.spesifikasi' => 'nullable|string',
             'items.*.jumlah' => 'nullable|integer',
             'items.*.satuan' => 'nullable|string|max:100',
+            'area' => 'nullable|string|max:255',
+            'latar_belakang' => 'nullable|string',
+            'tujuan' => 'nullable|string',
+            'target' => 'nullable|string|max:255',
+            'images.*' => 'nullable|image|max:5120', // max 5MB per image
         ]);
 
         // Backend stok validation
@@ -98,8 +105,24 @@ class JobOrderController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data) {
-            $jo = JobOrder::create(collect($data)->only(['seksi','status','project','start','end'])->toArray());
+        DB::transaction(function () use ($data, $request) {
+            $jo = JobOrder::create(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray());
+
+            // Handle uploaded images
+            $savedImages = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $f) {
+                    if ($f && $f->isValid()) {
+                        $filename = 'joborders/' . date('Y/m') . '/' . Str::random(8) . '_' . $f->getClientOriginalName();
+                        Storage::disk('public')->putFileAs(dirname($filename), $f, basename($filename));
+                        $savedImages[] = 'storage/' . $filename; // accessible path via asset()
+                    }
+                }
+            }
+            if (!empty($savedImages)) {
+                $jo->images = $savedImages;
+                $jo->save();
+            }
             foreach ($data['items'] as $item) {
                 // Autofill unit/spec from material if not provided
                 if (!empty($item['material_id'])) {
@@ -152,6 +175,13 @@ class JobOrderController extends Controller
             'items.*.spesifikasi' => 'nullable|string',
             'items.*.jumlah' => 'nullable|integer',
             'items.*.satuan' => 'nullable|string|max:100',
+            'area' => 'nullable|string|max:255',
+            'latar_belakang' => 'nullable|string',
+            'tujuan' => 'nullable|string',
+            'target' => 'nullable|string|max:255',
+            'images.*' => 'nullable|image|max:5120',
+            'removed_images' => 'nullable|array',
+            'removed_images.*' => 'nullable|string',
         ]);
 
         // Backend stok validation (edit) hanya jika jumlah berubah
@@ -175,7 +205,7 @@ class JobOrderController extends Controller
         }
 
         DB::transaction(function () use ($data, $joborder) {
-            $joborder->update(collect($data)->only(['seksi','status','project','start','end'])->toArray());
+            $joborder->update(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray());
 
             // Sync items: collect ids to retain
             $incomingIds = collect($data['items'])->pluck('id')->filter()->all();
@@ -242,6 +272,41 @@ class JobOrderController extends Controller
                         ]);
                     }
                 }
+            }
+            // Handle removal of existing images (if user removed some in edit form)
+            if (!empty($data['removed_images']) && is_array($data['removed_images'])) {
+                $existing = is_array($joborder->images) ? $joborder->images : [];
+                foreach ($data['removed_images'] as $rem) {
+                    // normalize stored path (we saved as 'storage/...')
+                    $normalized = ltrim(str_replace('\\', '/', $rem), '/');
+                    // if path starts with 'storage/', compute storage disk path
+                    if (strpos($normalized, 'storage/') === 0) {
+                        $diskPath = substr($normalized, strlen('storage/'));
+                        if (Storage::disk('public')->exists($diskPath)) {
+                            Storage::disk('public')->delete($diskPath);
+                        }
+                    }
+                    // remove from existing array
+                    $existing = array_values(array_filter($existing, function($v) use ($rem) {
+                        return $v !== $rem;
+                    }));
+                }
+                $joborder->images = $existing;
+                $joborder->save();
+            }
+
+            // Handle uploaded images (append)
+            if (request()->hasFile('images')) {
+                $existing = is_array($joborder->images) ? $joborder->images : [];
+                foreach (request()->file('images') as $f) {
+                    if ($f && $f->isValid()) {
+                        $filename = 'joborders/' . date('Y/m') . '/' . Str::random(8) . '_' . $f->getClientOriginalName();
+                        Storage::disk('public')->putFileAs(dirname($filename), $f, basename($filename));
+                        $existing[] = 'storage/' . $filename;
+                    }
+                }
+                $joborder->images = $existing;
+                $joborder->save();
             }
         });
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Performance;
 use App\Models\Manpower;
 use App\Models\JobOrder;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class PerformanceController extends Controller
 {
@@ -176,6 +177,51 @@ class PerformanceController extends Controller
     {
         $performance->delete();
         return redirect()->route('admin.performance.index')->with('success', 'Performance berhasil dihapus');
+    }
+
+    /**
+     * Export all (filtered) performances to PDF
+     */
+    public function exportPdfAll(Request $request)
+    {
+        // Reuse index query so filters behave the same as the listing
+        $query = Performance::with(['manpower','jobOrder']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('manpower', function($mq) use ($search) {
+                $mq->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nrp', 'like', "%{$search}%");
+            });
+        }
+        if ($request->filled('manpower')) {
+            $query->where('manpower_id', $request->manpower);
+        }
+        if ($request->filled('start_date')) {
+            $query->where('tanggal', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('tanggal', '<=', $request->end_date);
+        }
+
+        $performances = $query->latest()->get();
+
+        $pdf = PDF::loadView('admin.performance.pdf.all', compact('performances'))
+                  ->setPaper('a4', 'landscape');
+
+        $filename = 'performance_all_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export a single performance to PDF
+     */
+    public function exportPdf(Performance $performance)
+    {
+        $performance->load(['manpower','jobOrder']);
+        $pdf = PDF::loadView('admin.performance.pdf.item', compact('performance'));
+        $filename = 'performance_' . ($performance->manpower?->nrp ?? $performance->id) . '_' . $performance->created_at->format('Ymd') . '.pdf';
+        return $pdf->download($filename);
     }
 
     protected function ratingFromScore(int $score): string

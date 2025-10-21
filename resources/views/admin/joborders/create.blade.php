@@ -39,7 +39,7 @@
             </div>
 
             <!-- Form Body -->
-            <form action="{{ route('admin.joborder.store') }}" method="POST" class="p-8">
+            <form action="{{ route('admin.joborder.store') }}" method="POST" class="p-8" enctype="multipart/form-data">
                 @if ($errors->any())
                     <div class="mb-6">
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -79,10 +79,10 @@
                                 </span>
                             </label>
                             <div class="relative">
-                                <input name="seksi" type="text"
-                                       class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
-                                       placeholder="Enter department/section"
-                                       value="{{ old('seksi') }}">
+                    <input name="seksi" type="text" required
+                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
+                        placeholder="Enter department/section"
+                        value="{{ old('seksi') }}">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
@@ -101,7 +101,7 @@
                                 </span>
                             </label>
                             <div class="relative">
-                                <select name="status" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 appearance-none">
+                                <select name="status" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 appearance-none">
                                     <option value="Low" {{ old('status') == 'Low' ? 'selected' : '' }}>Low</option>
                                     <option value="Medium" {{ old('status') == 'Medium' ? 'selected' : '' }}>Medium</option>
                                     <option value="High" {{ old('status') == 'High' ? 'selected' : '' }}>High</option>
@@ -125,7 +125,7 @@
                                 </span>
                             </label>
                             <div class="relative">
-                                <input name="project" type="text"
+                    <input name="project" type="text" required
                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
                                        placeholder="Masukkan nama proyek"
                                        value="{{ old('project') }}">
@@ -134,6 +134,60 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                     </svg>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Info: Area, Latar Belakang, Tujuan, Target -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-slate-800">Informasi Tambahan</h4>
+                            <p class="text-sm text-slate-500">Area, latar belakang, tujuan, dan target proyek</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Area</label>
+                            <input name="area" type="text" value="{{ old('area') }}" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" placeholder="Masukkan area proyek" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Target</label>
+                            <input name="target" type="text" value="{{ old('target') }}" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" placeholder="Jelaskan Target" />
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Latar Belakang</label>
+                            <textarea name="latar_belakang" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" rows="4" placeholder="Jelaskan latar belakang proyek">{{ old('latar_belakang') }}</textarea>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tujuan</label>
+                            <textarea name="tujuan" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800" rows="3" placeholder="Tujuan dari pekerjaan ini">{{ old('tujuan') }}</textarea>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Gambar (multiple)</label>
+                            <div id="image-inputs" class="space-y-2">
+                                <div class="image-input-row flex items-start space-x-3">
+                                    <input class="image-input" name="images[]" type="file" accept="image/*" />
+                                    <div class="flex-1">
+                                        <div class="images-preview grid grid-cols-3 gap-3" data-preview-id="0"></div>
+                                    </div>
+                                    <button type="button" class="remove-image-input hidden px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex items-center space-x-3">
+                                <button type="button" id="add-image-input" class="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">+ Tambah Gambar</button>
+                                <p class="text-xs text-slate-400">Anda dapat menambahkan beberapa input gambar; setiap input punya preview dan tombol hapus.</p>
                             </div>
                         </div>
                     </div>
@@ -164,7 +218,7 @@
                                 </span>
                             </label>
                             <div class="relative">
-                    <input name="start" type="text"
+                    <input name="start" type="text" required
                         class="datepicker w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
                         placeholder="Pilih tanggal mulai"
                         autocomplete="off"
@@ -187,7 +241,7 @@
                                 </span>
                             </label>
                             <div class="relative">
-                    <input name="end" type="text"
+                    <input name="end" type="text" required
                         class="datepicker w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
                         placeholder="Pilih tanggal selesai"
                         autocomplete="off"
@@ -220,7 +274,7 @@
                         <div class="item-row grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50">
                             <div class="md:col-span-4">
                                 <label class="block text-xs font-semibold text-slate-700 mb-1">Material</label>
-                                <select name="items[0][material_id]" class="material-select w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200">
+                                <select name="items[0][material_id]" required class="material-select w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all duration-200">
                                     <option value="">Pilih material</option>
                                     @foreach($materials as $m)
                                         <option value="{{ $m->id }}" data-unit="{{ $m->satuan ? $m->satuan->name : '' }}" data-notes="{{ $m->spesifikasi }}" data-stok="{{ method_exists($m, 'getCurrentStok') ? $m->getCurrentStok() : $m->jumlah }}">{{ $m->nama }}@if($m->satuan && $m->satuan->name) ({{ $m->satuan->name }})@endif</option>
@@ -360,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function addNewRow(){
+        function addNewRow(){
         const template = wrapper.querySelector('.item-row');
         const clone = template.cloneNode(true);
         clone.querySelectorAll('input, select').forEach((el)=>{
@@ -369,6 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if(el.tagName === 'SELECT'){
                 el.selectedIndex = 0;
+                    // ensure required attribute remains on cloned selects
+                    if (!el.hasAttribute('required')) el.setAttribute('required', 'required');
             } else {
                 el.value = '';
             }
@@ -382,7 +438,116 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addBtn.addEventListener('click', addNewRow);
     wrapper.querySelectorAll('.item-row').forEach(wireRow);
+
+    // Image preview & removal for new uploads (create form)
+    const newImagesInput = document.getElementById('newImagesInput');
+    const newPreview = document.getElementById('new-images-preview');
+    if (newImagesInput) {
+        newImagesInput.addEventListener('change', function() {
+            // clear preview
+            newPreview.innerHTML = '';
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                const slot = document.createElement('div');
+                slot.className = 'relative border rounded overflow-hidden';
+                slot.style.height = '96px';
+                slot.style.display = 'flex';
+                slot.style.alignItems = 'center';
+                slot.style.justifyContent = 'center';
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'absolute top-1 right-1 bg-white/80 text-red-600 rounded-full p-1 border';
+                removeBtn.innerHTML = '&times;';
+
+                removeBtn.addEventListener('click', function(){
+                    // remove file from input (create a new DataTransfer)
+                    const dt = new DataTransfer();
+                    Array.from(newImagesInput.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+                    newImagesInput.files = dt.files;
+                    slot.remove();
+                });
+
+                reader.onload = function(e){
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'object-cover w-full h-24';
+                    slot.appendChild(img);
+                    slot.appendChild(removeBtn);
+                }
+                reader.readAsDataURL(file);
+                newPreview.appendChild(slot);
+            });
+        });
+    }
 });
 </script>
-@endsection
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const imageInputsContainer = document.getElementById('image-inputs');
+    const addImageBtn = document.getElementById('add-image-input');
+    let imageRowIndex = 1;
+    // central wiring for an image-input-row: attach preview and remove handlers
+    function wireImageInputRow(row){
+        const input = row.querySelector('.image-input');
+        const preview = row.querySelector('.images-preview');
+        const removeBtn = row.querySelector('.remove-image-input');
+
+        if(!input || !preview) return;
+
+        input.addEventListener('change', function(){
+            preview.innerHTML = '';
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                const slot = document.createElement('div');
+                slot.className = 'relative border rounded overflow-hidden';
+                slot.style.height = '96px';
+                reader.onload = function(e){
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'object-cover w-full h-24';
+                    slot.appendChild(img);
+                    const rb = document.createElement('button'); rb.type='button'; rb.className='absolute top-1 right-1 bg-white/80 text-red-600 rounded-full p-1 border'; rb.innerHTML='&times;';
+                    rb.addEventListener('click', function(){
+                        const dt = new DataTransfer();
+                        Array.from(input.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
+                        input.files = dt.files;
+                        slot.remove();
+                    });
+                    slot.appendChild(rb);
+                };
+                reader.readAsDataURL(file);
+                preview.appendChild(slot);
+            });
+        });
+
+        if(removeBtn){
+            removeBtn.addEventListener('click', function(){ row.remove(); });
+        }
+    }
+
+    function createImageRow(index){
+        const row = document.createElement('div');
+        row.className = 'image-input-row flex items-start space-x-3';
+        row.innerHTML = `
+            <input class="image-input" name="images[]" type="file" accept="image/*" />
+            <div class="flex-1">
+                <div class="images-preview grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
+            </div>
+            <button type="button" class="remove-image-input px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+        `;
+        wireImageInputRow(row);
+        return row;
+    }
+
+    // wire any existing static rows (the first row in the markup)
+    imageInputsContainer.querySelectorAll('.image-input-row').forEach(function(r){
+        wireImageInputRow(r);
+    });
+
+    addImageBtn.addEventListener('click', function(){
+        const r = createImageRow(imageRowIndex++);
+        imageInputsContainer.appendChild(r);
+    });
+});
+</script>
 @endsection

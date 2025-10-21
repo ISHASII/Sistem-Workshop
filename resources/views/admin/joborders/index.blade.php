@@ -28,27 +28,7 @@
                 </div>
             </div>
 
-            @if(session('success'))
-                <div class="mx-6 mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                    </div>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9V7a1 1 0 112 0v2a1 1 0 11-2 0zm0 4a1 1 0 112 0 1 1 0 11-2 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
-                    </div>
-                </div>
-            @endif
+            {{-- session flash notifications removed per user request --}}
 
             <!-- Search & Filter Section -->
             <div class="px-6 py-4 bg-rose-50 border-y border-rose-100">
@@ -272,9 +252,55 @@
                 @endif
 
                 <!-- Pagination -->
-                <div class="mt-6">
-                    {{ $joborders->links() }}
-                </div>
+                @if($joborders->hasPages())
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 px-6 py-4 mt-6">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-sm text-slate-600">
+                                Menampilkan {{ $joborders->firstItem() }} - {{ $joborders->lastItem() }} dari {{ $joborders->total() }} project
+                            </div>
+                            <div class="flex items-center gap-2">
+                                {{-- Previous Page Link --}}
+                                @if ($joborders->onFirstPage())
+                                    <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </span>
+                                @else
+                                    <a href="{{ $joborders->appends(request()->input())->previousPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </a>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($joborders->getUrlRange(1, $joborders->lastPage()) as $page => $url)
+                                    @if ($page == $joborders->currentPage())
+                                        <span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ $page }}</span>
+                                    @else
+                                        <a href="{{ $url }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($joborders->hasMorePages())
+                                    <a href="{{ $joborders->appends(request()->input())->nextPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </a>
+                                @else
+                                    <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -423,19 +449,7 @@
                 timerProgressBar: true,
             });
 
-            @if(session('success'))
-                Toast.fire({
-                    icon: 'success',
-                    title: {!! json_encode(session('success')) !!}
-                });
-            @endif
-
-            @if(session('error'))
-                Toast.fire({
-                    icon: 'error',
-                    title: {!! json_encode(session('error')) !!}
-                });
-            @endif
+            {{-- session success/error toasts removed per user request --}}
         });
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

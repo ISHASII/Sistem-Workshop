@@ -10,9 +10,7 @@
             <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-3 py-2 bg-slate-100 text-slate-700 rounded-md">Kembali</a>
         </div>
 
-        @if(session('success'))
-            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded text-sm">{{ session('success') }}</div>
-        @endif
+        {{-- session success flash removed per user request --}}
 
         @if($errors->any())
             <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">

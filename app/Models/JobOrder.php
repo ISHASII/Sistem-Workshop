@@ -10,11 +10,13 @@ class JobOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'seksi','status','project','start','end','progress','actual','evaluasi'
+        'seksi','status','project','start','end','progress','actual','evaluasi',
+        'area','latar_belakang','tujuan','target','images'
     ];
 
     protected $casts = [
         'actual' => 'date',
+        'images' => 'array',
     ];
 
     public function items()

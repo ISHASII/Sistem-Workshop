@@ -6,6 +6,7 @@ use App\Models\Material;
 use App\Models\Kategori;
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class MaterialController extends Controller
 {
@@ -90,6 +91,89 @@ class MaterialController extends Controller
         $satuans = Satuan::orderBy('name')->get();
 
         return view('admin.materials.index', compact('materials', 'totalMaterials', 'lowStockMaterials', 'emptyStockMaterials', 'safeStockMaterials', 'kategoris', 'satuans'));
+    }
+
+    /**
+     * Export filtered materials to PDF (all matching records, not paginated)
+     */
+    public function exportPdfAll(Request $request)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $query = Material::with(['kategori','satuan']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('spesifikasi', 'like', "%{$search}%");
+            });
+        }
+        if ($request->filled('kategori')) {
+            $query->where('kategori_id', $request->kategori);
+        }
+        if ($request->filled('satuan')) {
+            $query->where('satuan_id', $request->satuan);
+        }
+        if ($request->filled('stock_status')) {
+            switch ($request->stock_status) {
+                case 'empty':
+                    $query->where('jumlah', '<=', 0);
+                    break;
+                case 'low':
+                    $query->whereColumn('jumlah', '<', 'safety_stock')
+                          ->where('jumlah', '>', 0);
+                    break;
+                case 'safe':
+                    $query->whereColumn('jumlah', '>=', 'safety_stock');
+                    break;
+            }
+        }
+
+        // apply sorting if present
+        $sort = $request->get('sort', 'terbaru');
+        switch ($sort) {
+            case 'nama_asc':
+                $query->orderBy('nama', 'asc');
+                break;
+            case 'nama_desc':
+                $query->orderBy('nama', 'desc');
+                break;
+            case 'jumlah_asc':
+                $query->orderBy('jumlah', 'asc');
+                break;
+            case 'jumlah_desc':
+                $query->orderBy('jumlah', 'desc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        $materials = $query->get();
+
+        $pdf = PDF::loadView('admin.materials.pdf.all', compact('materials'))
+                  ->setPaper('a4', 'landscape');
+
+        $filename = 'materials_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export single material to PDF
+     */
+    public function exportPdf(Material $material)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $material->load(['kategori','satuan','movements']);
+        $pdf = PDF::loadView('admin.materials.pdf.item', compact('material'));
+        $filename = 'material_' . ($material->id ?? 'item') . '_' . now()->format('Ymd') . '.pdf';
+        return $pdf->download($filename);
     }
 
     /**
