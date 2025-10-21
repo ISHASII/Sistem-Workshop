@@ -133,20 +133,6 @@
                     Job Order
                 </a>
 
-                <a href="{{ Route::has('customer.kategori.index') ? route('customer.kategori.index') : '#' }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    Kategori
-                </a>
-
-                <a href="{{ Route::has('customer.satuan.index') ? route('customer.satuan.index') : '#' }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Satuan
-                </a>
-
                 <!-- Logout mobile -->
                 <form method="POST" action="{{ route('logout') }}" class="mt-6 pt-4 border-t border-slate-200/50">
                     @csrf
