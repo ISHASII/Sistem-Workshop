@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Manpower;
+use Illuminate\Support\Facades\Storage;
 
 class ManpowerController extends Controller
 {
@@ -56,7 +57,13 @@ class ManpowerController extends Controller
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'status_pegawai' => 'required|in:kontrak,tetap',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('manpowers', 'public');
+            $validated['photo'] = $path;
+        }
 
         Manpower::create($validated);
 
@@ -89,7 +96,17 @@ class ManpowerController extends Controller
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'status_pegawai' => 'required|in:kontrak,tetap',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            // delete old photo if exists
+            if ($manpower->photo) {
+                Storage::disk('public')->delete($manpower->photo);
+            }
+            $path = $request->file('photo')->store('manpowers', 'public');
+            $validated['photo'] = $path;
+        }
 
         $manpower->update($validated);
 
@@ -103,5 +120,19 @@ class ManpowerController extends Controller
     {
         $manpower->delete();
         return redirect()->route('admin.manpower.index')->with('success', 'Man Power berhasil dihapus');
+    }
+
+    /**
+     * Remove photo for the specified manpower.
+     */
+    public function destroyPhoto(Manpower $manpower)
+    {
+        if ($manpower->photo) {
+            Storage::disk('public')->delete($manpower->photo);
+            $manpower->photo = null;
+            $manpower->save();
+        }
+
+        return redirect()->route('admin.manpower.index')->with('success', 'Foto manpower berhasil dihapus');
     }
 }

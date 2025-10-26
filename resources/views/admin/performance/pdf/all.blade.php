@@ -17,7 +17,7 @@
     <div class="header">
         <div>
             <div class="title">Performance Report - All</div>
-            <div class="meta">Generated: {{ now()->format('d-m-Y H:i') }}</div>
+            <div class="meta">Generated: {{ \Illuminate\Support\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i') }}</div>
         </div>
         <div>
             <div class="meta">Total records: {{ $performances->groupBy('manpower_id')->count() }}</div>
@@ -40,7 +40,7 @@
                 @php
                     // Use the latest performance row for date and rating
                     $latest = $group->sortByDesc('created_at')->first();
-                    $tanggal = optional($latest->created_at)->format('d-m-Y');
+                    $tanggal = $latest->created_at ? (\Illuminate\Support\Carbon::parse($latest->created_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i')) : '-';
                     $man = $latest->manpower;
                     $nrp = $man?->nrp;
                     $nama = $man?->nama;

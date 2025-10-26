@@ -89,6 +89,10 @@
                     class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold text-lg shadow-md transition">
                     Login
                 </button>
+                
+                <div class="mt-3 text-center">
+                    <a href="{{ route('customer.register') }}" class="inline-block text-sm text-red-600 font-semibold">Belum punya akun? Daftar sebagai Customer</a>
+                </div>
             </form>
         </div>
     </main>

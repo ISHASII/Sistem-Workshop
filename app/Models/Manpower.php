@@ -16,5 +16,6 @@ class Manpower extends Model
         'nama',
         'jenis_kelamin',
         'status_pegawai',
+        'photo',
     ];
 }

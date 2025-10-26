@@ -17,7 +17,7 @@
     <div class="header">
         <div>
             <div class="title">Daftar Material</div>
-            <div class="meta">Generated: {{ now()->format('d-m-Y H:i') }}</div>
+        <div class="meta">Generated: {{ \Illuminate\Support\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i') }}</div>
         </div>
         <div class="meta">Total: {{ $materials->count() }}</div>
     </div>
@@ -40,7 +40,7 @@
             @foreach($materials as $i => $m)
                 <tr>
                     <td>{{ $i + 1 }}</td>
-                    <td>{{ $m->tanggal ? (\Illuminate\Support\Carbon::parse($m->tanggal)->format('d-m-Y')) : '-' }}</td>
+                    <td>{{ $m->tanggal ? (\Illuminate\Support\Carbon::parse($m->tanggal)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i')) : '-' }}</td>
                     <td>{{ $m->nama }}</td>
                     <td>{{ $m->spesifikasi ?? '-' }}</td>
                     <td>{{ $m->kategori?->nama ?? $m->kategori?->name ?? '-' }}</td>

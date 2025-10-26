@@ -35,7 +35,7 @@
             </div>
 
             <!-- Form Body -->
-            <form action="{{ route('admin.manpower.store') }}" method="POST" class="p-6 space-y-6">
+            <form action="{{ route('admin.manpower.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                 @csrf
 
                 <!-- NRP Field -->
@@ -151,6 +151,27 @@
                     </div>
                 </div>
 
+                <!-- Photo Upload -->
+                <div>
+                    <label for="photo" class="block text-sm font-semibold text-slate-700 mb-2">Foto (opsional)</label>
+                    <input type="file" id="photo" name="photo" accept="image/*"
+                           class="w-full text-sm text-slate-700 file:rounded-md file:border-0 file:px-3 file:py-2 file:bg-rose-50 file:text-rose-700" />
+                    @error('photo')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Photo Preview (client-side) -->
+                <div id="photo-preview-wrap" class="mt-3 hidden">
+                    <div class="flex items-start gap-3">
+                        <img id="photo-preview-img" src="" alt="Preview Foto" class="w-20 h-20 object-cover rounded-lg border" />
+                        <div class="flex-1">
+                            <button id="photo-clear-btn" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-red-600 rounded-lg shadow-sm hover:bg-slate-50">Hapus preview</button>
+                            <p class="text-xs text-slate-500 mt-1">Klik "Hapus preview" untuk mengosongkan file yang dipilih sebelum menyimpan.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Info Box -->
                 <div class="bg-rose-50 border border-rose-200 rounded-xl p-4">
                     <div class="flex items-start gap-3">
@@ -183,3 +204,35 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const input = document.getElementById('photo');
+            const previewWrap = document.getElementById('photo-preview-wrap');
+            const previewImg = document.getElementById('photo-preview-img');
+            const clearBtn = document.getElementById('photo-clear-btn');
+
+            if(!input) return;
+
+            input.addEventListener('change', function(){
+                const file = input.files && input.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    previewImg.src = url;
+                    previewWrap.classList.remove('hidden');
+                } else {
+                    previewImg.src = '';
+                    previewWrap.classList.add('hidden');
+                }
+            });
+
+            clearBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                input.value = '';
+                previewImg.src = '';
+                previewWrap.classList.add('hidden');
+            });
+        });
+    </script>
+@endpush

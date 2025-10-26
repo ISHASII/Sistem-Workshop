@@ -183,9 +183,24 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'from-pink-400 to-rose-500' : 'from-rose-400 to-red-500' }} flex items-center justify-center text-white font-bold shadow-md">
-                                            {{ strtoupper(substr($manpower->nama, 0, 1)) }}
-                                        </div>
+                                        @if($manpower->photo)
+                                            <div class="relative">
+                                                <img src="{{ asset('storage/'.$manpower->photo) }}" alt="{{ $manpower->nama }}" class="w-10 h-10 rounded-full object-cover shadow-md">
+                                                <form action="{{ route('admin.manpower.photo.destroy', $manpower) }}" method="POST" class="absolute -top-1 -right-1">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-5 h-5 bg-white rounded-full flex items-center justify-center text-red-600 border border-slate-200 hover:bg-slate-50" onclick="return confirm('Hapus foto ini?');" title="Hapus foto">
+                                                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br {{ ($manpower->jenis_kelamin ?? '')=='perempuan' ? 'from-pink-400 to-rose-500' : 'from-rose-400 to-red-500' }} flex items-center justify-center text-white font-bold shadow-md">
+                                                {{ strtoupper(substr($manpower->nama, 0, 1)) }}
+                                            </div>
+                                        @endif
                                         <div>
                                             <p class="text-sm font-semibold text-slate-800">{{ $manpower->nama }}</p>
                                         </div>

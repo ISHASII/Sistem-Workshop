@@ -14,12 +14,12 @@
 </head>
 <body>
     <div class="title">Detail Material</div>
-    <div class="meta">Generated: {{ now()->format('d-m-Y H:i') }}</div>
+    <div class="meta">Generated: {{ \Illuminate\Support\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i') }}</div>
 
     <table>
         <tr>
             <th>Tanggal</th>
-            <td>{{ $material->tanggal ? (\Illuminate\Support\Carbon::parse($material->tanggal)->format('d-m-Y')) : '-' }}</td>
+            <td>{{ $material->tanggal ? (\Illuminate\Support\Carbon::parse($material->tanggal)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i')) : '-' }}</td>
         </tr>
         <tr>
             <th>Nama</th>
@@ -73,7 +73,7 @@
             <tbody>
                 @foreach($material->movements as $mv)
                     <tr>
-                        <td>{{ optional($mv->tanggal)->format('d-m-Y') }}</td>
+                        <td>{{ $mv->tanggal ? (\Illuminate\Support\Carbon::parse($mv->tanggal)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i')) : '-' }}</td>
                         <td>{{ ucfirst($mv->type ?? '-') }}</td>
                         <td>{{ number_format($mv->jumlah ?? 0,0,',','.') }}</td>
                         <td>{{ $mv->keterangan ?? '-' }}</td>

@@ -7,6 +7,10 @@ use App\Http\Controllers\DashboardController;
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/captcha', [AuthController::class, 'captcha'])->name('captcha');
+
+// Public customer registration (simple public form)
+Route::get('/register-customer', [\App\Http\Controllers\CustomerRegistrationController::class, 'show'])->name('customer.register');
+Route::post('/register-customer', [\App\Http\Controllers\CustomerRegistrationController::class, 'store'])->name('customer.register.store');
 // OTP verification removed: login now authenticates directly without OTP
 
 Route::middleware(['auth'])->group(function () {
@@ -107,7 +111,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/manpower/{manpower}', [\App\Http\Controllers\Admin\ManpowerController::class, 'show'])->name('admin.manpower.show');
     Route::get('/admin/manpower/{manpower}/edit', [\App\Http\Controllers\Admin\ManpowerController::class, 'edit'])->name('admin.manpower.edit');
     Route::put('/admin/manpower/{manpower}', [\App\Http\Controllers\Admin\ManpowerController::class, 'update'])->name('admin.manpower.update');
+    Route::delete('/admin/manpower/{manpower}/photo', [\App\Http\Controllers\Admin\ManpowerController::class, 'destroyPhoto'])->name('admin.manpower.photo.destroy');
     Route::delete('/admin/manpower/{manpower}', [\App\Http\Controllers\Admin\ManpowerController::class, 'destroy'])->name('admin.manpower.destroy');
+
+    // Customer account management (admin)
+    Route::get('/admin/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers.index');
+    Route::get('/admin/customers/create', [\App\Http\Controllers\Admin\CustomerController::class, 'create'])->name('admin.customers.create');
+    Route::post('/admin/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'store'])->name('admin.customers.store');
+    Route::get('/admin/customers/{customer}', [\App\Http\Controllers\Admin\CustomerController::class, 'show'])->name('admin.customers.show');
+    Route::get('/admin/customers/{customer}/edit', [\App\Http\Controllers\Admin\CustomerController::class, 'edit'])->name('admin.customers.edit');
+    Route::put('/admin/customers/{customer}', [\App\Http\Controllers\Admin\CustomerController::class, 'update'])->name('admin.customers.update');
+    Route::delete('/admin/customers/{customer}', [\App\Http\Controllers\Admin\CustomerController::class, 'destroy'])->name('admin.customers.destroy');
+
+    // User account management (admin) - manage entries in `users` table (admin only)
+    Route::middleware([\App\Http\Middleware\EnsureUserIsAdmin::class])->group(function () {
+        Route::get('/admin/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/admin/users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('admin.users.create');
+        Route::post('/admin/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('admin.users.store');
+        Route::get('/admin/users/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+    });
 
     // Performance Man Power
     Route::get('/admin/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('admin.performance.index');

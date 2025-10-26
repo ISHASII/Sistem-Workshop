@@ -35,7 +35,7 @@
             </div>
 
             <!-- Form Body -->
-            <form action="{{ route('admin.manpower.update', $manpower) }}" method="POST" class="p-6 space-y-6">
+            <form action="{{ route('admin.manpower.update', $manpower) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -108,8 +108,8 @@
                                     class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('jenis_kelamin') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="laki-laki" {{ old('jenis_kelamin', $manpower->jenis_kelamin ?? '')=='laki-laki' ? 'selected' : '' }}>👨 Laki-laki</option>
-                                <option value="perempuan" {{ old('jenis_kelamin', $manpower->jenis_kelamin ?? '')=='perempuan' ? 'selected' : '' }}>👩 Perempuan</option>
+                                <option value="laki-laki" {{ old('jenis_kelamin', $manpower->jenis_kelamin ?? '')=='laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="perempuan" {{ old('jenis_kelamin', $manpower->jenis_kelamin ?? '')=='perempuan' ? 'selected' : '' }}>Perempuan</option>
                             </select>
                         </div>
                         @error('jenis_kelamin')
@@ -137,8 +137,8 @@
                                     class="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 @error('status_pegawai') border-red-300 focus:border-red-500 focus:ring-red-500/10 @enderror"
                                     required>
                                 <option value="">-- Pilih Status --</option>
-                                <option value="kontrak" {{ old('status_pegawai', $manpower->status_pegawai ?? '')=='kontrak' ? 'selected' : '' }}>⏱️ Kontrak</option>
-                                <option value="tetap" {{ old('status_pegawai', $manpower->status_pegawai ?? '')=='tetap' ? 'selected' : '' }}>✅ Tetap</option>
+                                <option value="kontrak" {{ old('status_pegawai', $manpower->status_pegawai ?? '')=='kontrak' ? 'selected' : '' }}>Kontrak</option>
+                                <option value="tetap" {{ old('status_pegawai', $manpower->status_pegawai ?? '')=='tetap' ? 'selected' : '' }}>Tetap</option>
                             </select>
                         </div>
                         @error('status_pegawai')
@@ -165,6 +165,26 @@
                     </div>
                 </div>
 
+                <!-- Photo Upload -->
+                <div>
+                    <label for="photo" class="block text-sm font-semibold text-slate-700 mb-2">Foto (opsional)</label>
+                    <div class="flex items-center gap-4">
+                        <input type="file" id="photo" name="photo" accept="image/*"
+                               class="text-sm text-slate-700 file:rounded-md file:border-0 file:px-3 file:py-2 file:bg-rose-50 file:text-rose-700" />
+
+                        <!-- Preview container: shows existing photo or newly chosen file -->
+                        <div id="photo-preview-wrap" class="w-20 h-20 rounded-md overflow-hidden border hidden">
+                            <img id="photo-preview-img" src="@if($manpower->photo){{ asset('storage/'.$manpower->photo) }}@endif" alt="Foto {{ $manpower->nama }}" class="w-full h-full object-cover" data-original="@if($manpower->photo){{ asset('storage/'.$manpower->photo) }}@endif" />
+                        </div>
+                        <div id="photo-preview-controls" class="ml-2">
+                            <button id="photo-clear-btn" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-red-600 rounded-lg shadow-sm hover:bg-slate-50">Hapus preview</button>
+                        </div>
+                    </div>
+                    @error('photo')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Form Actions -->
                 <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
                     <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-rose-700 hover:to-red-700 transition-all duration-200">
@@ -184,3 +204,57 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const input = document.getElementById('photo');
+            const previewWrap = document.getElementById('photo-preview-wrap');
+            const previewImg = document.getElementById('photo-preview-img');
+            const originalSrc = previewImg && previewImg.dataset ? previewImg.dataset.original : '';
+
+            if(!input) return;
+
+            // show existing photo initially if present
+            if (originalSrc) {
+                previewImg.src = originalSrc;
+                previewWrap.classList.remove('hidden');
+            }
+
+            const clearBtn = document.getElementById('photo-clear-btn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    // clear file input
+                    input.value = '';
+                    // revert to original if existed, otherwise hide
+                    if (originalSrc) {
+                        previewImg.src = originalSrc;
+                        previewWrap.classList.remove('hidden');
+                    } else {
+                        previewImg.src = '';
+                        previewWrap.classList.add('hidden');
+                    }
+                });
+            }
+
+            input.addEventListener('change', function(){
+                const file = input.files && input.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    previewImg.src = url;
+                    previewWrap.classList.remove('hidden');
+                } else {
+                    // revert to original if existed
+                    if (originalSrc) {
+                        previewImg.src = originalSrc;
+                        previewWrap.classList.remove('hidden');
+                    } else {
+                        previewImg.src = '';
+                        previewWrap.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+@endpush

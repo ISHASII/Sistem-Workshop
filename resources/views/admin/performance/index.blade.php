@@ -106,7 +106,7 @@
             <!-- Chart Section -->
             <div class="xl:col-span-3 bg-white rounded-lg shadow-md p-6 flex flex-col justify-center mb-6 xl:mb-0">
                 <div class="mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Rata-rata Performance per Karyawan</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Rata-rata Performance Karyawan</h3>
                     <p class="text-gray-600 text-sm">Visualisasi rata-rata performa keseluruhan setiap karyawan</p>
                 </div>
                 <div class="flex justify-center items-center flex-1">

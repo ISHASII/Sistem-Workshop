@@ -14,12 +14,17 @@
 </head>
 <body>
     <div class="title">Performance Detail</div>
-    <div class="meta">Generated: {{ now()->format('d-m-Y H:i') }}</div>
+    @php
+        $__generated_at = \Illuminate\Support\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i');
+        $__performance_tanggal = $performance->created_at ? (\Illuminate\Support\Carbon::parse($performance->created_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i')) : '-';
+    @endphp
+
+    <div class="meta">Generated: {{ $__generated_at }}</div>
 
     <table>
         <tr>
             <th>Tanggal</th>
-            <td>{{ optional($performance->created_at)->format('d-m-Y H:i') }}</td>
+            <td>{{ $__performance_tanggal }}</td>
         </tr>
         <tr>
             <th>NRP</th>
