@@ -145,6 +145,7 @@
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">End</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Actual</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Evaluasi</th>
+                                    <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -221,6 +222,17 @@
                                             @else
                                                 <span class="text-slate-400 text-xs">-</span>
                                             @endif
+                                        </td>
+                                        <!-- Aksi -->
+                                        <td class="px-3 py-3 text-center">
+                                            <div class="flex justify-center items-center gap-1">
+                                                @include('admin.partials.action-buttons', [
+                                                        'pdfRoute' => route('admin.joborder.exportPdf', $jo->id) . '?stream=1',
+                                                        'pdfLabel' => 'PDF',
+                                                        'pdfTarget' => '_blank',
+                                                        'labelAlign' => 'center'
+                                                    ])
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

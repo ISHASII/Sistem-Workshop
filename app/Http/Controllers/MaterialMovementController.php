@@ -18,9 +18,30 @@ class MaterialMovementController extends Controller
             abort(403);
         }
 
-        $movements = MaterialMovement::with('material')
-            ->orderBy('tanggal', 'desc')
-            ->paginate(20);
+        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc');
+
+        // Apply filters from the request
+        if (request()->filled('search')) {
+            $search = request('search');
+            $query->whereHas('material', function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('spesifikasi', 'like', "%{$search}%");
+            });
+        }
+
+        if (request()->filled('type')) {
+            $query->where('type', request('type'));
+        }
+
+        if (request()->filled('date')) {
+            $query->whereDate('tanggal', request('date'));
+        }
+
+        if (request()->filled('movement_type')) {
+            $query->where('movement_type', request('movement_type'));
+        }
+
+        $movements = $query->paginate(10)->withQueryString();
 
         return view('admin.material-movements.index', compact('movements'));
     }

@@ -25,7 +25,7 @@
                         <strong>Area:</strong> {{ $joborder->area ?? '' }}
                     </td>
                     <td style="width:40%; text-align:center; vertical-align:middle;">
-                        <!-- empty center cell to mimic provided layout -->
+
                     </td>
                     <td style="width:30%; text-align:right; vertical-align:top;">
                         <strong>Tanggal:</strong>
@@ -57,11 +57,9 @@
         <thead>
             <tr>
                 <th style="width:12%;">PART NUMBER</th>
-                <th style="width:34%;">NAMA PART</th>
-                <th style="width:14%; text-align:right;">KEBUTUHAN</th>
-                <th style="width:14%;">SATUAN</th>
-                <th style="width:13%; text-align:right;">PRICE</th>
-                <th style="width:13%; text-align:right;">TOTAL</th>
+                <th style="width:48%;">NAMA PART</th>
+                <th style="width:20%; text-align:right;">KEBUTUHAN</th>
+                <th style="width:20%;">SATUAN</th>
             </tr>
         </thead>
         <tbody>
@@ -72,26 +70,12 @@
                     $namaPart = $mat? $mat->nama : '';
                     $kebutuhan = $it->jumlah ?? 0;
                     $satuan = $it->satuan ?? ($mat && $mat->satuan ? $mat->satuan->name : '');
-                    $price = null;
-                    if(isset($mat->price)) {
-                        $price = $mat->price;
-                    } elseif(isset($mat->harga)) {
-                        $price = $mat->harga;
-                    }
-                    $priceFormatted = $price !== null ? number_format((float)$price, 2, ',', '.') : '';
-                    $total = '';
-                    if($price !== null && is_numeric($kebutuhan)) {
-                        $totalCalc = (float)$price * (float)$kebutuhan;
-                        $total = number_format($totalCalc, 2, ',', '.');
-                    }
                 @endphp
                 <tr>
                     <td>{{ $partNumber }}</td>
                     <td>{{ $namaPart }}</td>
                     <td style="text-align:right;">{{ $kebutuhan }}</td>
                     <td>{{ $satuan }}</td>
-                    <td style="text-align:right;">{{ $priceFormatted }}</td>
-                    <td style="text-align:right;">{{ $total }}</td>
                 </tr>
             @endforeach
         </tbody>

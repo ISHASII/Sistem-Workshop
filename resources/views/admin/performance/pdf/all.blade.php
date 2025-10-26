@@ -20,7 +20,7 @@
             <div class="meta">Generated: {{ now()->format('d-m-Y H:i') }}</div>
         </div>
         <div>
-            <div class="meta">Total records: {{ $performances->count() }}</div>
+            <div class="meta">Total records: {{ $performances->groupBy('manpower_id')->count() }}</div>
         </div>
     </div>
 
@@ -32,18 +32,31 @@
                 <th>Nama</th>
                 <th style="width:80px">Score</th>
                 <th style="width:120px">Rating</th>
-                <th>Job Order</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($performances as $p)
+            @php $grouped = $performances->groupBy('manpower_id'); @endphp
+            @foreach($grouped as $manpowerId => $group)
+                @php
+                    // Use the latest performance row for date and rating
+                    $latest = $group->sortByDesc('created_at')->first();
+                    $tanggal = optional($latest->created_at)->format('d-m-Y');
+                    $man = $latest->manpower;
+                    $nrp = $man?->nrp;
+                    $nama = $man?->nama;
+                    $avgScore = $group->avg('score');
+                    $avgScoreFormatted = is_numeric($avgScore) ? round($avgScore, 1) . '%' : '-';
+                    $rating = $latest->rating;
+                    // Collect unique job order codes
+                    $jobOrders = $group->pluck('jobOrder')->filter()->pluck('kode')->unique()->values()->all();
+                    $jobs = count($jobOrders) ? implode(', ', $jobOrders) : '-';
+                @endphp
                 <tr>
-                    <td>{{ optional($p->created_at)->format('d-m-Y') }}</td>
-                    <td>{{ $p->manpower?->nrp }}</td>
-                    <td>{{ $p->manpower?->nama }}</td>
-                    <td>{{ $p->score }}%</td>
-                    <td>{{ $p->rating }}</td>
-                    <td>{{ $p->jobOrder?->kode ?? '-' }}</td>
+                    <td>{{ $tanggal }}</td>
+                    <td>{{ $nrp }}</td>
+                    <td>{{ $nama }}</td>
+                    <td>{{ $avgScoreFormatted }}</td>
+                    <td>{{ $rating }}</td>
                 </tr>
             @endforeach
         </tbody>

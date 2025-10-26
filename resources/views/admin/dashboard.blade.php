@@ -183,8 +183,7 @@
                                 <tr>
                                     <th class="px-3 py-2 text-left font-semibold text-gray-700">Nama Material</th>
                                     <th class="px-3 py-2 text-right font-semibold text-gray-700">Stock</th>
-                                    <th class="px-3 py-2 text-right font-semibold text-gray-700">Reorder</th>
-                                    <th class="px-3 py-2 text-right font-semibold text-gray-700">Kebutuhan</th>
+
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200/50">
@@ -193,14 +192,14 @@
                                         // support both Eloquent models (objects) and arrays
                                         $name = is_array($m) ? ($m['nama'] ?? ($m['nama'] ?? '')) : ($m->nama ?? '');
                                         $stock = is_array($m) ? ($m['stock'] ?? 0) : ($m->stock ?? 0);
-                                        $reorder = is_array($m) ? ($m['reorder'] ?? 0) : ($m->reorder ?? 0);
-                                        $gap = max(0, (int)$reorder - (int)$stock);
+
+
                                     @endphp
                                     <tr>
                                         <td class="px-3 py-2 text-gray-700 truncate">{{ $name }}</td>
                                         <td class="px-3 py-2 text-right font-semibold text-gray-700">{{ number_format($stock) }}</td>
-                                        <td class="px-3 py-2 text-right text-gray-700">{{ number_format($reorder) }}</td>
-                                        <td class="px-3 py-2 text-right text-rose-600 font-bold">{{ $gap > 0 ? number_format($gap) : '-' }}</td>
+
+
                                     </tr>
                                 @empty
                                     <tr>

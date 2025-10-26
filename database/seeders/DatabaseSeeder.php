@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\ManpowerSeeder::class,
             \Database\Seeders\KategoriSeeder::class,
             \Database\Seeders\SatuanSeeder::class,
-            \Database\Seeders\MaterialSeeder::class,
-            // \Database\Seeders\MaterialMovementsSeeder::class,
-            // \Database\Seeders\MaterialMasukSeeder::class,
+            \Database\Seeders\MaterialMovementsSeeder::class,
             \Database\Seeders\JobOrderSeeder::class,
+            \Database\Seeders\MaterialSeeder::class,
+            \Database\Seeders\MaterialStockInSeeder::class,
             \Database\Seeders\PerformanceSeeder::class,
         ]);
 

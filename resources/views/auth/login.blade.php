@@ -14,22 +14,29 @@
     }
 </style>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center font-sans">
-    <main class="w-full max-w-md">
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+<body class="bg-gray-100 min-h-screen flex items-start justify-center font-sans">
+    <main class="w-full max-w-md px-4 pt-12">
 
-            <!-- Logo -->
-            <div class="flex justify-center mb-2">
-                <img src="{{ asset('image/logo-ahm.png') }}"
-                    alt="KYB"
-                    class="w-32 md:w-36 object-contain">
+        <!-- Top header: icon, title, subtitle -->
+        <div class="text-center mb-6">
+            <div class="mx-auto mb-4" style="width:78px; height:78px;">
+                <div class="rounded-full flex items-center justify-center" style="width:78px; height:78px; background: linear-gradient(135deg,#dc2626 0%,#b91c1c 100%); box-shadow: 0 8px 20px rgba(220,38,38,0.14);">
+                    <!-- lock icon -->
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 17a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="#fff"/>
+                        <path d="M17 9V7a5 5 0 10-10 0v2H5v10h14V9h-2zM9 7a3 3 0 116 0v2H9V7z" fill="#fff"/>
+                    </svg>
+                </div>
             </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900" style="font-family: Arial, Helvetica, sans-serif;">Sistem Workshop</h1>
+            <p class="text-sm text-gray-500 mt-1">Masuk untuk mengakses sistem workshop</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
 
             <!-- Form -->
             <form method="POST" action="{{ url('/login') }}" novalidate class="space-y-5">
                 @csrf
-
-               <!-- NPK -->
                 <div>
                     <label for="username" class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
                     <input id="username" type="text" name="username" value="{{ old('username') }}" autofocus

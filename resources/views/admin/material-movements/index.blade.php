@@ -126,7 +126,7 @@
                 </svg>
                 <h3 class="text-lg font-semibold text-slate-800">Filter & Pencarian</h3>
             </div>
-            <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <form method="GET" id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">Cari Material</label>
                     <div class="relative">
@@ -393,7 +393,58 @@
                             Menampilkan {{ $movements->firstItem() ?? 0 }} - {{ $movements->lastItem() ?? 0 }} dari {{ $movements->total() }} data
                         </div>
                         <div class="flex items-center space-x-2">
-                            {{ $movements->appends(request()->input())->links() }}
+                            @php
+                                $current = $movements->currentPage();
+                                $last = $movements->lastPage();
+                                $start = max(1, $current - 2);
+                                $end = min($last, $current + 2);
+                                if ($end - $start < 4) {
+                                    // extend window to 5 if possible
+                                    $start = max(1, min($start, $last - 4));
+                                    $end = min($last, max($end, $start + 4));
+                                }
+                                $qs = http_build_query(request()->except('page'));
+                                $qsPrefix = $qs ? '&' . $qs : '';
+                            @endphp
+
+                            {{-- Previous --}}
+                            @if($movements->onFirstPage())
+                                <span class="px-3 py-1 rounded-md bg-slate-100 text-slate-400">&laquo;</span>
+                            @else
+                                <a href="?page={{ max(1, $current - 1) }}{{ $qsPrefix }}" class="px-3 py-1 rounded-md bg-white border hover:bg-slate-50">&laquo;</a>
+                            @endif
+
+                            {{-- First page + ellipsis if needed --}}
+                            @if($start > 1)
+                                <a href="?page=1{{ $qsPrefix }}" class="px-3 py-1 rounded-md bg-white border hover:bg-slate-50">1</a>
+                                @if($start > 2)
+                                    <span class="px-2">...</span>
+                                @endif
+                            @endif
+
+                            {{-- Page window --}}
+                            @for($i = $start; $i <= $end; $i++)
+                                @if($i == $current)
+                                    <span class="px-3 py-1 rounded-md bg-red-600 text-white font-medium">{{ $i }}</span>
+                                @else
+                                    <a href="?page={{ $i }}{{ $qsPrefix }}" class="px-3 py-1 rounded-md bg-white border hover:bg-slate-50">{{ $i }}</a>
+                                @endif
+                            @endfor
+
+                            {{-- Last page + ellipsis if needed --}}
+                            @if($end < $last)
+                                @if($end < $last - 1)
+                                    <span class="px-2">...</span>
+                                @endif
+                                <a href="?page={{ $last }}{{ $qsPrefix }}" class="px-3 py-1 rounded-md bg-white border hover:bg-slate-50">{{ $last }}</a>
+                            @endif
+
+                            {{-- Next --}}
+                            @if($current >= $last)
+                                <span class="px-3 py-1 rounded-md bg-slate-100 text-slate-400">&raquo;</span>
+                            @else
+                                <a href="?page={{ min($last, $current + 1) }}{{ $qsPrefix }}" class="px-3 py-1 rounded-md bg-white border hover:bg-slate-50">&raquo;</a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -401,3 +452,27 @@
         </div>
     </div>
 @endsection
+
+        @push('scripts')
+        <script>
+            (function() {
+                const form = document.getElementById('filterForm');
+                if (!form) return;
+
+                // Auto-submit on change for select/input elements except when user is typing in the search field
+                const inputs = form.querySelectorAll('select, input[type="date"]');
+                inputs.forEach(i => i.addEventListener('change', () => form.submit()));
+
+                // For the search input, submit on Enter only
+                const search = form.querySelector('input[name="search"]');
+                if (search) {
+                    search.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            form.submit();
+                        }
+                    });
+                }
+            })();
+        </script>
+        @endpush
