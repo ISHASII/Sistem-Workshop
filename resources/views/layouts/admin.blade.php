@@ -27,66 +27,55 @@
 
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex items-center space-x-1">
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Dashboard -->
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                             </svg>
                             Dashboard
                         </a>
 
-                        <a href="{{ route('admin.joborder.index') }}" class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.joborder.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                            Job Order
-                        </a>
-
-                        <a href="{{ route('admin.users.index') }}" class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Manajemen Akun -->
+                        <a href="{{ route('admin.users.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z"></path>
                             </svg>
-                            Manajemen Akun
+                            Akun
                         </a>
 
                         <!-- Master Data Dropdown -->
                         <div class="relative group">
-                            <button class="nav-dropdown-button flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.kategori.*') || request()->routeIs('admin.satuan.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button class="nav-dropdown-button flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.kategori.*') || request()->routeIs('admin.satuan.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
                                 </svg>
                                 Master Data
-                                <svg class="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3 h-3 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9l-7 7l-7-7"></path>
                                 </svg>
                             </button>
 
-                            <div class="nav-dropdown absolute left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <div class="p-2">
+                            <div class="nav-dropdown absolute left-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                <div class="p-1.5">
                                     @if(Route::has('admin.kategori.index'))
-                                    <a href="{{ route('admin.kategori.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-50 text-violet-700' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-200' : 'bg-violet-100 group-hover:bg-violet-200' }}">
-                                            <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('admin.kategori.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-50 text-violet-700' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-200' : 'bg-violet-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                                             </svg>
                                         </div>
-                                        <div>
-                                            <div class="font-medium">Kategori</div>
-                                            <div class="text-xs text-slate-400">Material categories</div>
-                                        </div>
+                                        <div class="font-medium">Kategori</div>
                                     </a>
                                     @endif
 
                                     @if(Route::has('admin.satuan.index'))
-                                    <a href="{{ route('admin.satuan.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.satuan.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.satuan.*') ? 'bg-emerald-200' : 'bg-emerald-100 group-hover:bg-emerald-200' }}">
-                                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('admin.satuan.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.satuan.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.satuan.*') ? 'bg-emerald-200' : 'bg-emerald-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                                             </svg>
                                         </div>
-                                        <div>
-                                            <div class="font-medium">Satuan</div>
-                                            <div class="text-xs text-slate-400">Unit of measurements</div>
-                                        </div>
+                                        <div class="font-medium">Satuan</div>
                                     </a>
                                     @endif
                                 </div>
@@ -95,87 +84,63 @@
 
                         <!-- Material Dropdown -->
                         <div class="relative group">
-                            <button class="nav-dropdown-button flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.materials.*') || request()->routeIs('admin.material-movements.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button class="nav-dropdown-button flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.materials.*') || request()->routeIs('admin.material-movements.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                 </svg>
                                 Material
-                                <svg class="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3 h-3 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9l-7 7l-7-7"></path>
                                 </svg>
                             </button>
 
-                            <div class="nav-dropdown absolute left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <div class="p-2">
-                                    <a href="{{ route('admin.materials.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.materials.*') ? 'bg-purple-50 text-purple-700' : 'text-slate-600 hover:text-purple-600 hover:bg-purple-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.materials.*') ? 'bg-purple-200' : 'bg-purple-100 group-hover:bg-purple-200' }}">
-                                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="nav-dropdown absolute left-0 mt-2 w-52 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                <div class="p-1.5">
+                                    <a href="{{ route('admin.materials.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.materials.*') ? 'bg-purple-50 text-purple-700' : 'text-slate-600 hover:text-purple-600 hover:bg-purple-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.materials.*') ? 'bg-purple-200' : 'bg-purple-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                             </svg>
                                         </div>
-                                        <div>
-                                            <div class="font-medium">Data Material</div>
-                                            <div class="text-xs text-slate-400">Master data materials</div>
-                                        </div>
+                                        <div class="font-medium">Data Material</div>
                                     </a>
 
-                                    <a href="{{ route('admin.material-movements.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.material-movements.*') ? 'bg-green-50 text-green-700' : 'text-slate-600 hover:text-green-600 hover:bg-green-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.material-movements.*') ? 'bg-green-200' : 'bg-green-100 group-hover:bg-green-200' }}">
-                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('admin.material-movements.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.material-movements.*') ? 'bg-green-50 text-green-700' : 'text-slate-600 hover:text-green-600 hover:bg-green-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.material-movements.*') ? 'bg-green-200' : 'bg-green-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                                             </svg>
                                         </div>
-                                        <div>
-                                            <div class="font-medium">Perpindahan Stok</div>
-                                            <div class="text-xs text-slate-400">Stock movements</div>
-                                        </div>
+                                        <div class="font-medium">Perpindahan Stok</div>
                                     </a>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Man Power -->
+                        <a href="{{ route('admin.manpower.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Man Power
+                        </a>
 
+                        <!-- Performance -->
+                        <a href="{{ route('admin.performance.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            Performance
+                        </a>
 
-                        <!-- Man Power Dropdown -->
-                        <div class="relative group">
-                            <button class="nav-dropdown-button flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') || request()->routeIs('admin.performance.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-                                </svg>
-                                Man Power
-                                <svg class="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9l-7 7l-7-7"></path>
-                                </svg>
-                            </button>
+                        <!-- Job Order -->
+                        <a href="{{ route('admin.joborder.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.joborder.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            Job Order
+                        </a>
 
-                            <div class="nav-dropdown absolute left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <div class="p-2">
-                                    <a href="{{ route('admin.manpower.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-200' : 'bg-red-100 group-hover:bg-red-200' }}">
-                                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">Man Power</div>
-                                            <div class="text-xs text-slate-400">Man Power list & management</div>
-                                        </div>
-                                    </a>
-
-                                    <a href="{{ route('admin.performance.index') }}" class="flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-200' : 'bg-red-100 group-hover:bg-red-200' }}">
-                                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path fill-rule="evenodd" d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">Performance</div>
-                                            <div class="text-xs text-slate-400">Performance Man Power</div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -242,22 +207,19 @@
                 <!-- (mobile user info moved below with logout) -->
 
                 <!-- Navigation links mobile -->
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m8 5l4-4l4 4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     </svg>
                     Dashboard
                 </a>
 
-                <a href="{{ route('admin.joborder.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
+                <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z"></path>
                     </svg>
-                    Job Order
+                    Manajemen Akun
                 </a>
-
-
 
                 <!-- Master Data Dropdown -->
                 <div class="space-y-1">
@@ -285,26 +247,21 @@
                     @endif
                 </div>
 
-                <div class="space-y-1">
-                    <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">Man Power</div>
-                    <a href="{{ Route::has('admin.manpower.index') ? route('admin.manpower.index') : '#' }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : '' }}">
-                        <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        Man Power
-                    </a>
+                <!-- Man Power (separate link) -->
+                <a href="{{ route('admin.manpower.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Man Power
+                </a>
 
-                    <a href="{{ Route::has('admin.performance.index') ? route('admin.performance.index') : '#' }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : '' }}">
-                        <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm6-12v10" />
-                            </svg>
-                        </div>
-                        Performance Man Power
-                    </a>
-                </div>
+                <!-- Performance (separate link) -->
+                <a href="{{ route('admin.performance.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Performance
+                </a>
 
                 <div class="space-y-1">
                     <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">Material</div>
@@ -327,7 +284,13 @@
                     </a>
                 </div>
 
-                <!-- Mobile user info and logout -->
+                <!-- Job Order -->
+                <a href="{{ route('admin.joborder.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.joborder.*') ? 'bg-red-50 text-red-700' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Job Order
+                </a>                <!-- Mobile user info and logout -->
                 <div class="px-4 pt-4 pb-6">
                     <div class="flex items-center space-x-3 bg-slate-50 rounded-xl px-4 py-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
@@ -344,12 +307,6 @@
                     </div>
 
                     <!-- Navigation links mobile -->
-                    <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z"></path>
-                        </svg>
-                        Manajemen Akun
-                    </a>
             </div>
         </div>
 

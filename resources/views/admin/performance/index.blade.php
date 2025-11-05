@@ -10,27 +10,27 @@
     <div class="bg-gray-50 p-4">
         <!-- Header Section -->
         <div class="bg-white rounded-lg shadow-md p-4 md:p-5 mb-4">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Performance Man Power</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-900">Performance Man Power</h2>
                     <p class="text-gray-600 text-sm mt-1">Monitor dan analisis performa karyawan</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <a href="{{ route('admin.performance.exportPdfAll', request()->all()) }}" target="_blank"
-                       class="inline-flex items-center px-3 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-all duration-200 shadow">
+                       class="inline-flex items-center justify-center px-3 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-all duration-200 shadow">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8"/>
                         </svg>
-                        Export All PDF
+                        <span class="whitespace-nowrap">Export All PDF</span>
                     </a>
 
                     <a href="{{ route('admin.performance.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-all duration-200 shadow">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Tambah Performance
-                </a>
+                       class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-all duration-200 shadow">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span class="whitespace-nowrap">Tambah Performance</span>
+                    </a>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="md:col-span-1 flex items-end gap-2">
+                    <div class="md:col-span-2 flex items-end gap-2">
                         <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors duration-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
@@ -102,86 +102,90 @@
         </div>
 
         <!-- Main Content Section -->
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 lg:gap-8">
             <!-- Chart Section -->
-            <div class="xl:col-span-3 bg-white rounded-lg shadow-md p-6 flex flex-col justify-center mb-6 xl:mb-0">
-                <div class="mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Rata-rata Performance Karyawan</h3>
-                    <p class="text-gray-600 text-sm">Visualisasi rata-rata performa keseluruhan setiap karyawan</p>
+            <div class="xl:col-span-3 bg-white rounded-lg shadow-md p-4 md:p-6 flex flex-col justify-center">
+                <div class="mb-4">
+                    <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-1">Rata-rata Performance Karyawan</h3>
+                    <p class="text-gray-600 text-xs md:text-sm">Visualisasi rata-rata performa keseluruhan setiap karyawan</p>
                 </div>
                 <div class="flex justify-center items-center flex-1">
-                    <div class="w-full">
+                    <div class="w-full max-w-sm mx-auto">
                         <canvas id="performancePieChart"></canvas>
                     </div>
                 </div>
                 <!-- Custom Legend -->
-                <div class="mt-6 space-y-3 max-h-56 overflow-auto pr-1">
+                <div class="mt-4 md:mt-6 space-y-2 md:space-y-3 max-h-48 md:max-h-56 overflow-auto pr-1">
                     @php
                         $legendColors = ['#EF4444','#F59E0B','#10B981','#3B82F6','#8B5CF6','#EC4899','#06B6D4','#84CC16'];
                     @endphp
                     @foreach($averagePerformances as $i => $performance)
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-6 h-3 rounded" style="background-color: {{ $legendColors[$i % count($legendColors)] }}"></span>
-                            <span class="text-gray-800 text-sm">{{ $performance->manpower->nama }}</span>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <span class="inline-block w-5 h-2.5 md:w-6 md:h-3 rounded flex-shrink-0" style="background-color: {{ $legendColors[$i % count($legendColors)] }}"></span>
+                            <span class="text-gray-800 text-xs md:text-sm truncate">{{ $performance->manpower->nama }}</span>
                         </div>
                     @endforeach
                 </div>
             </div>
 
             <!-- Data Table Section -->
-            <div class="xl:col-span-9 bg-white rounded-lg shadow-md flex flex-col p-6">
-                <div class="px-4 py-4 border-b border-gray-200 mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900">Data Performance</h3>
-                    <p class="text-gray-600 text-sm">Daftar semua data performance karyawan</p>
+            <div class="xl:col-span-9 bg-white rounded-lg shadow-md flex flex-col p-4 md:p-6">
+                <div class="px-2 md:px-4 py-3 md:py-4 border-b border-gray-200 mb-4">
+                    <h3 class="text-base md:text-lg font-semibold text-gray-900">Data Performance</h3>
+                    <p class="text-gray-600 text-xs md:text-sm mt-1">Daftar semua data performance karyawan</p>
                 </div>
 
-                <div>
-                    <table class="w-full min-w-max table-fixed text-sm" style="min-width: 900px;">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NRP</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($performances as $performance)
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $performance->created_at->format('d-m-Y') }}
-                                    </td>
-                                    <td class="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $performance->manpower?->nrp }}
-                                    </td>
-                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $performance->manpower?->nama }}
-                                    </td>
-                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-900">
-                                        <span class="font-semibold">{{ $performance->score }}%</span>
-                                    </td>
-                                    <td class="px-6 py-5 whitespace-nowrap text-center text-sm font-medium">
-                                        <div class="flex items-center justify-center space-x-3">
-                                            @include('admin.partials.action-buttons', [
-                                                'showRoute' => route('admin.performance.show', $performance),
-                                                'editRoute' => route('admin.performance.edit', $performance),
-                                                'destroyRoute' => route('admin.performance.destroy', $performance),
-                                                'pdfRoute' => route('admin.performance.exportPdf', $performance),
-                                                'labelAlign' => 'center',
-                                                'deleteTitle' => 'Hapus data performance?',
-                                                'deleteText' => 'Yakin ingin menghapus performance ' . ($performance->manpower?->nama ?? '' ) . '?',
-                                                'deleteConfirm' => 'Hapus'
-                                            ])
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="mt-6 flex justify-end">
-                        {{ $performances->links() }}
+                <div class="overflow-x-auto -mx-4 md:-mx-6">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tanggal</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">NRP</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Nama</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Score</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($performances as $performance)
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                            <td class="px-4 md:px-6 py-4 md:py-5 whitespace-nowrap text-xs md:text-sm text-gray-900">
+                                                {{ $performance->created_at->format('d-m-Y') }}
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 md:py-5 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900">
+                                                {{ $performance->manpower?->nrp }}
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 md:py-5 whitespace-nowrap text-xs md:text-sm text-gray-900">
+                                                {{ $performance->manpower?->nama }}
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 md:py-5 whitespace-nowrap text-xs md:text-sm text-gray-900">
+                                                <span class="font-semibold">{{ $performance->score }}%</span>
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 md:py-5 whitespace-nowrap text-center text-xs md:text-sm font-medium">
+                                                <div class="flex items-center justify-center space-x-2 md:space-x-3">
+                                                    @include('admin.partials.action-buttons', [
+                                                        'showRoute' => route('admin.performance.show', $performance),
+                                                        'editRoute' => route('admin.performance.edit', $performance),
+                                                        'destroyRoute' => route('admin.performance.destroy', $performance),
+                                                        'pdfRoute' => route('admin.performance.exportPdf', $performance),
+                                                        'labelAlign' => 'center',
+                                                        'deleteTitle' => 'Hapus data performance?',
+                                                        'deleteText' => 'Yakin ingin menghapus performance ' . ($performance->manpower?->nama ?? '' ) . '?',
+                                                        'deleteConfirm' => 'Hapus'
+                                                    ])
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </div>
+                <div class="mt-4 md:mt-6 flex justify-end px-2 md:px-0">
+                    {{ $performances->links() }}
                 </div>
             </div>
         </div>

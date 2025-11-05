@@ -5,128 +5,128 @@
 @section('content')
     <div class="min-h-screen bg-gray-50 p-4 flex flex-col">
         <!-- Header Section -->
-    <div class="bg-gradient-to-r from-red-50 to-rose-100 rounded-lg p-6 border border-red-100 mb-6">
+    <div class="bg-gradient-to-r from-red-50 to-rose-100 rounded-lg p-4 md:p-6 border border-red-100 mb-4 md:mb-6">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-red-600 rounded-lg">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center gap-3 md:gap-4">
+                    <div class="p-2 md:p-3 bg-red-600 rounded-lg flex-shrink-0">
+                        <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-slate-800">Data Material</h1>
-                        <p class="text-slate-600 mt-1">Kelola dan monitor inventory material workshop</p>
+                        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-slate-800">Data Material</h1>
+                        <p class="text-xs md:text-sm text-slate-600 mt-1">Kelola dan monitor inventory material workshop</p>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
                     <a href="{{ route('admin.materials.exportPdfAll', request()->all()) }}" target="_blank"
-                       class="px-4 py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-900 transition-all duration-200 flex items-center gap-2">
+                       class="px-4 py-2.5 md:py-3 bg-slate-800 text-white rounded-lg text-sm font-semibold hover:bg-slate-900 transition-all duration-200 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8"/>
                         </svg>
-                        Export All PDF
+                        <span class="whitespace-nowrap">Export All PDF</span>
                     </a>
 
                     <a href="{{ route('admin.materials.create') }}"
-                       class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg font-semibold shadow-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 flex items-center gap-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg text-sm font-semibold shadow-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 flex items-center justify-center gap-2 md:gap-3">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
-                        Tambah Material
+                        <span class="whitespace-nowrap">Tambah Material</span>
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
             <!-- Total Materials -->
-            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-4 md:p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-red-100 rounded-lg">
-                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                            <div class="p-1.5 md:p-2 bg-red-100 rounded-lg flex-shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-600">Total Material</p>
-                                <p class="text-xs text-slate-500">Semua jenis material</p>
+                                <p class="text-xs md:text-sm font-medium text-slate-600">Total Material</p>
+                                <p class="text-xs text-slate-500 hidden md:block">Semua jenis material</p>
                             </div>
                         </div>
-                        <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-red-700">{{ $totalMaterials }}</p>
-                            <span class="text-sm text-slate-500 mb-1">jenis</span>
+                        <div class="flex items-end gap-1 md:gap-2">
+                            <p class="text-2xl md:text-3xl font-bold text-red-700">{{ $totalMaterials }}</p>
+                            <span class="text-xs md:text-sm text-slate-500 mb-0.5 md:mb-1">jenis</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Low Stock Materials -->
-            <div class="bg-white rounded-xl shadow-sm border border-yellow-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-yellow-200 p-4 md:p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-yellow-100 rounded-lg">
-                                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                            <div class="p-1.5 md:p-2 bg-yellow-100 rounded-lg flex-shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-600">Stok Kurang</p>
-                                <p class="text-xs text-slate-500">Dibawah safety stock</p>
+                                <p class="text-xs md:text-sm font-medium text-slate-600">Stok Kurang</p>
+                                <p class="text-xs text-slate-500 hidden md:block">Dibawah safety stock</p>
                             </div>
                         </div>
-                        <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-yellow-600">{{ $lowStockMaterials }}</p>
-                            <span class="text-sm text-slate-500 mb-1">material</span>
+                        <div class="flex items-end gap-1 md:gap-2">
+                            <p class="text-2xl md:text-3xl font-bold text-yellow-600">{{ $lowStockMaterials }}</p>
+                            <span class="text-xs md:text-sm text-slate-500 mb-0.5 md:mb-1">material</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Empty Stock Materials -->
-            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-red-200 p-4 md:p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-red-100 rounded-lg">
-                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                            <div class="p-1.5 md:p-2 bg-red-100 rounded-lg flex-shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-600">Stok Habis</p>
-                                <p class="text-xs text-slate-500">Material kosong</p>
+                                <p class="text-xs md:text-sm font-medium text-slate-600">Stok Habis</p>
+                                <p class="text-xs text-slate-500 hidden md:block">Material kosong</p>
                             </div>
                         </div>
-                        <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-red-600">{{ $emptyStockMaterials }}</p>
-                            <span class="text-sm text-slate-500 mb-1">material</span>
+                        <div class="flex items-end gap-1 md:gap-2">
+                            <p class="text-2xl md:text-3xl font-bold text-red-600">{{ $emptyStockMaterials }}</p>
+                            <span class="text-xs md:text-sm text-slate-500 mb-0.5 md:mb-1">material</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Safe Stock Materials -->
-            <div class="bg-white rounded-xl shadow-sm border border-green-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl shadow-sm border border-green-200 p-4 md:p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                            <div class="p-1.5 md:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-600">Stok Aman</p>
-                                <p class="text-xs text-slate-500">Diatas safety stock</p>
+                                <p class="text-xs md:text-sm font-medium text-slate-600">Stok Aman</p>
+                                <p class="text-xs text-slate-500 hidden md:block">Diatas safety stock</p>
                             </div>
                         </div>
-                        <div class="flex items-end gap-2">
-                            <p class="text-3xl font-bold text-green-600">{{ $safeStockMaterials }}</p>
-                            <span class="text-sm text-slate-500 mb-1">material</span>
+                        <div class="flex items-end gap-1 md:gap-2">
+                            <p class="text-2xl md:text-3xl font-bold text-green-600">{{ $safeStockMaterials }}</p>
+                            <span class="text-xs md:text-sm text-slate-500 mb-0.5 md:mb-1">material</span>
                         </div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
         {{-- session success flash removed per user request --}}
 
         <!-- Search & Filter Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-red-100 p-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-red-100 p-4 md:p-6 mb-4 md:mb-6">
             <form method="GET" action="{{ route('admin.materials.index') }}" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Search -->
@@ -225,24 +225,24 @@
 
         <!-- Data Table -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden flex-1">
-            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="px-4 md:px-6 py-3 md:py-4 border-b border-slate-200 bg-slate-50">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-0">
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h2.586a1 1 0 00.707-.293l2.414-2.414A1 1 0 0011 16.586V7a2 2 0 00-2-2z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5h2a2 2 0 012 2v11a2 2 0 01-2 2h-2.586a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 0110 16.586V7a2 2 0 012-2z"/>
                         </svg>
-                        <h3 class="text-lg font-semibold text-slate-800">Daftar Material</h3>
+                        <h3 class="text-base md:text-lg font-semibold text-slate-800">Daftar Material</h3>
                     </div>
                     @if($totalMaterials > 0)
-                        <span class="px-3 py-1 bg-blue-100 text-red-800 text-sm font-medium rounded-full">
+                        <span class="px-2 md:px-3 py-1 bg-blue-100 text-red-800 text-xs md:text-sm font-medium rounded-full">
                             {{ $totalMaterials }} material terdaftar
                         </span>
                     @endif
                 </div>
             </div>
 
-            <div class="overflow-auto" style="height: calc(100vh - 400px);">
+            <div class="overflow-x-auto">
                 <table class="w-full min-w-max table-fixed" style="min-width: 1120px;">
                     <colgroup>
                         <col style="width: 50px;">
@@ -411,46 +411,69 @@
 
         <!-- Pagination -->
         @if($materials->hasPages())
-            <div class="bg-white rounded-lg shadow-sm border border-slate-200 px-6 py-4">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 px-4 md:px-6 py-3 md:py-4">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="text-sm text-slate-600">
+                    <div class="text-xs md:text-sm text-slate-600 text-center sm:text-left">
                         Menampilkan {{ $materials->firstItem() }} - {{ $materials->lastItem() }} dari {{ $materials->total() }} material
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1 md:gap-2">
+                        @php
+                            $current = $materials->currentPage();
+                            $last = $materials->lastPage();
+                            $start = max(1, $current - 1);
+                            $end = min($last, $current + 1);
+                        @endphp
+
                         {{-- Previous Page Link --}}
                         @if ($materials->onFirstPage())
-                            <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="px-2 py-1.5 md:px-3 md:py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                 </svg>
                             </span>
                         @else
-                            <a href="{{ $materials->previousPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="{{ $materials->previousPageUrl() }}" class="px-2 py-1.5 md:px-3 md:py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                 </svg>
                             </a>
                         @endif
 
-                        {{-- Pagination Elements --}}
-                        @foreach ($materials->getUrlRange(1, $materials->lastPage()) as $page => $url)
-                            @if ($page == $materials->currentPage())
-                                <span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ $page }}</span>
-                            @else
-                                <a href="{{ $url }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">{{ $page }}</a>
+                        {{-- First page + ellipsis if needed --}}
+                        @if($start > 1)
+                            <a href="{{ $materials->url(1) }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">1</a>
+                            @if($start > 2)
+                                <span class="px-1 md:px-2 text-slate-400 text-xs md:text-sm">...</span>
                             @endif
-                        @endforeach
+                        @endif
+
+                        {{-- Page window --}}
+                        @for($i = $start; $i <= $end; $i++)
+                            @if($i == $current)
+                                <span class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm bg-red-600 text-white rounded-lg font-medium">{{ $i }}</span>
+                            @else
+                                <a href="{{ $materials->url($i) }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">{{ $i }}</a>
+                            @endif
+                        @endfor
+
+                        {{-- Last page + ellipsis if needed --}}
+                        @if($end < $last)
+                            @if($end < $last - 1)
+                                <span class="px-1 md:px-2 text-slate-400 text-xs md:text-sm">...</span>
+                            @endif
+                            <a href="{{ $materials->url($last) }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">{{ $last }}</a>
+                        @endif
 
                         {{-- Next Page Link --}}
                         @if ($materials->hasMorePages())
-                            <a href="{{ $materials->nextPageUrl() }}" class="px-3 py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="{{ $materials->nextPageUrl() }}" class="px-2 py-1.5 md:px-3 md:py-2 text-sm bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-colors duration-200">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </a>
                         @else
-                            <span class="px-3 py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="px-2 py-1.5 md:px-3 md:py-2 text-sm bg-slate-100 text-slate-400 rounded-lg cursor-not-allowed">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </span>
