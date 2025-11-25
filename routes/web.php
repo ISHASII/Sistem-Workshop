@@ -34,9 +34,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/joborders', [\App\Http\Controllers\Admin\JobOrderController::class, 'index'])->name('admin.joborder.index');
     Route::get('/customer/joborders', [\App\Http\Controllers\Customer\JobOrderController::class, 'index'])->name('customer.joborder.index');
 
+    // Customer joborder CRUD
+    Route::get('/customer/joborders/create', [\App\Http\Controllers\Customer\JobOrderController::class, 'create'])->name('customer.joborder.create');
+    Route::post('/customer/joborders', [\App\Http\Controllers\Customer\JobOrderController::class, 'store'])->name('customer.joborder.store');
+    Route::get('/customer/joborders/{joborder}/edit', [\App\Http\Controllers\Customer\JobOrderController::class, 'edit'])->name('customer.joborder.edit');
+    Route::put('/customer/joborders/{joborder}', [\App\Http\Controllers\Customer\JobOrderController::class, 'update'])->name('customer.joborder.update');
+    Route::delete('/customer/joborders/{joborder}', [\App\Http\Controllers\Customer\JobOrderController::class, 'destroy'])->name('customer.joborder.destroy');
+    Route::post('/customer/joborders/{joborder}/update-progress', [\App\Http\Controllers\Customer\JobOrderController::class, 'updateProgress'])->name('customer.joborder.updateProgress');
+    Route::post('/customer/joborders/{joborder}/update-actual', [\App\Http\Controllers\Customer\JobOrderController::class, 'updateActual'])->name('customer.joborder.updateActual');
+
+    // Customer PDF export for joborder
+    Route::get('/customer/joborders/{joborder}/export-pdf', [\App\Http\Controllers\Customer\JobOrderController::class, 'exportPdf'])->name('customer.joborder.exportPdf');
+
     // Admin joborder CRUD
     Route::get('/admin/joborders/create', [\App\Http\Controllers\Admin\JobOrderController::class, 'create'])->name('admin.joborder.create');
     Route::post('/admin/joborders', [\App\Http\Controllers\Admin\JobOrderController::class, 'store'])->name('admin.joborder.store');
+    Route::get('/admin/joborders/{joborder}', [\App\Http\Controllers\Admin\JobOrderController::class, 'show'])->name('admin.joborder.show');
     Route::get('/admin/joborders/{joborder}/edit', [\App\Http\Controllers\Admin\JobOrderController::class, 'edit'])->name('admin.joborder.edit');
     Route::put('/admin/joborders/{joborder}', [\App\Http\Controllers\Admin\JobOrderController::class, 'update'])->name('admin.joborder.update');
     Route::delete('/admin/joborders/{joborder}', [\App\Http\Controllers\Admin\JobOrderController::class, 'destroy'])->name('admin.joborder.destroy');
@@ -132,6 +145,13 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
         Route::delete('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
     });
+
+    // Admin Notifications
+    Route::get('/admin/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/admin/notifications/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'show'])->name('admin.notifications.show');
+    Route::post('/admin/notifications/{notification}/mark-as-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+    Route::post('/admin/notifications/mark-all-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('admin.notifications.markAllAsRead');
+    Route::get('/admin/notifications/unread-count', [\App\Http\Controllers\Admin\NotificationController::class, 'getUnreadCount'])->name('admin.notifications.unreadCount');
 
     // Performance Man Power
     Route::get('/admin/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('admin.performance.index');

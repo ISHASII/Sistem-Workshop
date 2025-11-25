@@ -31,10 +31,10 @@
                             <span class="text-xs text-slate-500">{{ now()->format('d M Y') }}</span>
                         </div>
                         <div class="h-56 sm:h-64 md:h-72 overflow-hidden rounded-xl border border-slate-100">
-                                                <div id="customer-progress-joborder-scroll-wrapper" class="w-full h-full overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-blue-300/50 scrollbar-track-transparent">
-                                                    <div id="customer-progress-joborder-chart-wrapper" class="w-full min-h-full"></div>
-                                                </div>
-                                            </div>
+                            <div id="customer-progress-joborder-scroll-wrapper" class="w-full h-full overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-blue-300/50 scrollbar-track-transparent">
+                                <div id="customer-progress-joborder-chart-wrapper" class="w-full min-h-full" style="min-width: 100%; visibility: visible;"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Job Order Perbulan -->
@@ -166,7 +166,7 @@
             const progressScrollWrapper = document.getElementById('customer-progress-joborder-scroll-wrapper');
             const progressChartWrapper = document.getElementById('customer-progress-joborder-chart-wrapper');
 
-            (function renderProgressChart(){
+            function renderProgressChart(){
                 const itemCount = progressJobOrders.length;
                 // compact layout constants
                 const rowHeight = 40; // smaller row height for compact view
@@ -180,45 +180,89 @@
 
                 // Vertical scrolling for many items (keep behavior)
                 if (itemCount > 10) {
-                    if (progressScrollWrapper) { progressScrollWrapper.style.overflowY = 'auto'; progressScrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; }
-                } else { if (progressScrollWrapper) { progressScrollWrapper.style.overflowY = 'hidden'; progressScrollWrapper.style.maxHeight = ''; } }
+                    if (progressScrollWrapper) { 
+                        progressScrollWrapper.style.overflowY = 'auto'; 
+                        progressScrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; 
+                    }
+                } else { 
+                    if (progressScrollWrapper) { 
+                        progressScrollWrapper.style.overflowY = 'hidden'; 
+                        progressScrollWrapper.style.maxHeight = ''; 
+                    } 
+                }
 
                 if (!progressChartWrapper) return;
-                // set a wider inner container so the canvas can be scrolled horizontally
-                progressChartWrapper.innerHTML = `<div style="width:${canvasWidth}px;"><canvas id="customerProgressJobOrderBarChart" width="${canvasWidth}" height="${maxHeight}" style="display:block;" ></canvas></div>`;
-                const canvas = document.getElementById('customerProgressJobOrderBarChart');
-                if (!canvas) return;
-                // ensure CSS allows horizontal scroll on outer wrapper
-                if (progressScrollWrapper) { progressScrollWrapper.style.overflowX = 'auto'; }
-                const ctx = canvas.getContext('2d');
+                
+                // Clear and set up container with proper visibility
+                progressChartWrapper.style.visibility = 'visible';
+                progressChartWrapper.innerHTML = `<div style="width:${canvasWidth}px; min-height:${maxHeight}px;"><canvas id="customerProgressJobOrderBarChart" width="${canvasWidth}" height="${maxHeight}" style="display:block; width:100%; height:100%;" ></canvas></div>`;
+                
+                // Wait for DOM update
+                setTimeout(() => {
+                    const canvas = document.getElementById('customerProgressJobOrderBarChart');
+                    if (!canvas) return;
+                    
+                    // ensure CSS allows horizontal scroll on outer wrapper
+                    if (progressScrollWrapper) { progressScrollWrapper.style.overflowX = 'auto'; }
+                    const ctx = canvas.getContext('2d');
 
-                try { if (window._customerProgressChart && window._customerProgressChart.destroy) { window._customerProgressChart.destroy(); } } catch(e) {}
+                    try { if (window._customerProgressChart && window._customerProgressChart.destroy) { window._customerProgressChart.destroy(); } } catch(e) {}
 
-                window._customerProgressChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: progressJobOrders.map(j => j.project ?? '-'),
-                        datasets: [{
-                        label: 'Progress (%)',
-                            data: progressJobOrders.map(j => (typeof j.progress === 'number' ? j.progress : (parseInt(j.progress) || 0))),
-                            backgroundColor: 'rgba(59,130,246,0.8)',
-                            borderColor: '#3b82f6',
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            maxBarThickness: 20
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#3b82f6', font: { weight: '600', size: 11 }, offset: 3, formatter: v => `${v}%` } },
-                        scales: { x: { min: 0, max: 120, display: false, grid: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 11 }, align: 'start', padding: 8 } } },
-                        animation: { duration: 1500, easing: 'easeOutQuart' }
-                    },
-                    plugins: [ChartDataLabels]
-                });
-            })();
+                    window._customerProgressChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: progressJobOrders.map(j => j.project ?? '-'),
+                            datasets: [{
+                                label: 'Progress (%)',
+                                data: progressJobOrders.map(j => (typeof j.progress === 'number' ? j.progress : (parseInt(j.progress) || 0))),
+                                backgroundColor: 'rgba(59,130,246,0.8)',
+                                borderColor: '#3b82f6',
+                                borderRadius: 8,
+                                borderWidth: 1,
+                                maxBarThickness: 20
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { display: false }, 
+                                datalabels: { 
+                                    anchor: 'end', 
+                                    align: 'right', 
+                                    color: '#3b82f6', 
+                                    font: { weight: '600', size: 11 }, 
+                                    offset: 3, 
+                                    formatter: v => `${v}%` 
+                                } 
+                            },
+                            scales: { 
+                                x: { min: 0, max: 120, display: false, grid: { display: false } }, 
+                                y: { grid: { display: false }, ticks: { font: { size: 11 }, align: 'start', padding: 8 } } 
+                            },
+                            animation: { 
+                                duration: 800, 
+                                easing: 'easeOutQuart',
+                                onComplete: function() {
+                                    // Ensure visibility after animation
+                                    if (progressChartWrapper) {
+                                        progressChartWrapper.style.visibility = 'visible';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: [ChartDataLabels]
+                    });
+                }, 100);
+            }
+            
+            // Call with proper timing
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', renderProgressChart);
+            } else {
+                setTimeout(renderProgressChart, 50);
+            }
         })();
 
         // === Job Order Monthly (simple table already rendered server-side) ===
@@ -396,42 +440,172 @@
             if(container) container.innerHTML = '<div class="p-4 text-sm text-gray-500">Tidak ada data material.</div>';
         }
 
-        // === Responsive resize handler ===
+        // === Chart visibility and resize handler ===
         (function(){
             let resizeTimer = null;
+            let visibilityObserver = null;
+            
+            function ensureChartVisibility(){
+                const chartWrapper = document.getElementById('customer-progress-joborder-chart-wrapper');
+                const canvas = document.getElementById('customerProgressJobOrderBarChart');
+                
+                if (chartWrapper) {
+                    chartWrapper.style.visibility = 'visible';
+                    chartWrapper.style.opacity = '1';
+                }
+                
+                if (canvas) {
+                    canvas.style.visibility = 'visible';
+                    canvas.style.display = 'block';
+                }
+                
+                if (window._customerProgressChart) {
+                    try {
+                        window._customerProgressChart.update('none'); // Update without animation
+                    } catch(e) {}
+                }
+            }
+            
+            function setupVisibilityObserver(){
+                if ('IntersectionObserver' in window) {
+                    const chartWrapper = document.getElementById('customer-progress-joborder-chart-wrapper');
+                    if (chartWrapper && !visibilityObserver) {
+                        visibilityObserver = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    setTimeout(ensureChartVisibility, 50);
+                                }
+                            });
+                        }, { threshold: 0.1 });
+                        
+                        visibilityObserver.observe(chartWrapper);
+                    }
+                }
+            }
+            
             function recomputeProgressHeight(){
                 try{
                     const items = Array.isArray(customerProgressJobOrders) ? customerProgressJobOrders : [];
                     const itemCount = items.length || 0;
-                    const rowHeight = 48;
-                    const minHeight = 240;
-                    const canvasHeight = Math.max(minHeight, Math.min(2000, itemCount * rowHeight));
+                    const rowHeight = 40; // Match the chart rowHeight
+                    const minHeight = 200;
+                    const canvasHeight = Math.max(minHeight, Math.min(1600, itemCount * rowHeight));
                     const scrollWrapper = document.getElementById('customer-progress-joborder-scroll-wrapper');
                     const chartCanvas = document.getElementById('customerProgressJobOrderBarChart');
+                    
                     if (scrollWrapper) {
-                        if (itemCount > 10) { scrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; scrollWrapper.style.overflowY = 'auto'; }
-                        else { scrollWrapper.style.maxHeight = ''; scrollWrapper.style.overflowY = 'hidden'; }
+                        if (itemCount > 10) { 
+                            scrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; 
+                            scrollWrapper.style.overflowY = 'auto'; 
+                        } else { 
+                            scrollWrapper.style.maxHeight = ''; 
+                            scrollWrapper.style.overflowY = 'hidden'; 
+                        }
                     }
+                    
                     if (chartCanvas) {
                         chartCanvas.height = canvasHeight;
-                        const ch = window.customerCharts && window.customerCharts.progressChart;
-                        if (ch && typeof ch.resize === 'function') ch.resize();
                     }
+                    
+                    if (window._customerProgressChart && typeof window._customerProgressChart.resize === 'function') {
+                        window._customerProgressChart.resize();
+                    }
+                    
+                    // Ensure visibility after resize
+                    setTimeout(ensureChartVisibility, 100);
                 }catch(e){ console.warn('resize progress error', e); }
             }
+            
             function handleResize(){
                 if (resizeTimer) clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(function(){
-                    // resize all stored charts
-                    if (window.customerCharts) Object.values(window.customerCharts).forEach(c => { try{ if (c && typeof c.resize === 'function') c.resize(); } catch(e){} });
                     recomputeProgressHeight();
+                    ensureChartVisibility();
                 }, 150);
             }
+            
+            function handleScroll(){
+                ensureChartVisibility();
+            }
+            
+            // Event listeners
             window.addEventListener('resize', handleResize);
-            // run once after DOM ready
-            document.addEventListener('DOMContentLoaded', function(){ setTimeout(handleResize, 200); });
-            // also run immediately in case DOMContentLoaded already fired
-            setTimeout(handleResize, 300);
+            
+            // Add scroll listener to the scroll wrapper
+            setTimeout(() => {
+                const scrollWrapper = document.getElementById('customer-progress-joborder-scroll-wrapper');
+                if (scrollWrapper) {
+                    scrollWrapper.addEventListener('scroll', handleScroll);
+                }
+            }, 500);
+            
+            // Setup observers and initial calls
+            document.addEventListener('DOMContentLoaded', function(){
+                setTimeout(() => {
+                    setupVisibilityObserver();
+                    recomputeProgressHeight();
+                    ensureChartVisibility();
+                }, 200);
+            });
+            
+            // Also run immediately in case DOMContentLoaded already fired
+            setTimeout(() => {
+                setupVisibilityObserver();
+                recomputeProgressHeight();
+                ensureChartVisibility();
+            }, 300);
+            
+            // Periodic visibility check (as backup)
+            setInterval(ensureChartVisibility, 2000);
         })();
     </script>
+
+    <style>
+        /* Ensure chart containers are always visible */
+        #customer-progress-joborder-chart-wrapper {
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: 200px;
+        }
+        
+        #customerProgressJobOrderBarChart {
+            visibility: visible !important;
+            display: block !important;
+        }
+        
+        /* Smooth scroll behavior */
+        #customer-progress-joborder-scroll-wrapper {
+            scroll-behavior: smooth;
+        }
+        
+        /* Prevent chart flicker during transitions */
+        .chart-container {
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Ensure proper chart rendering */
+        canvas {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+        
+        /* Fix scrollbar styling */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(59, 130, 246, 0.3);
+            border-radius: 3px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(59, 130, 246, 0.5);
+        }
+    </style>
 @endsection

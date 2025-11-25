@@ -67,6 +67,15 @@ class JobOrderController extends Controller
         return view('admin.joborders.index', compact('joborders'));
     }
 
+    /**
+     * Show the specified job order.
+     */
+    public function show(JobOrder $joborder)
+    {
+        $joborder->load(['items.material.satuan', 'creator']);
+        return view('admin.joborders.show', compact('joborder'));
+    }
+
     public function create()
     {
     $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');

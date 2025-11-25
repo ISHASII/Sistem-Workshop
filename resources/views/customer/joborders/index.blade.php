@@ -19,19 +19,16 @@
                             <p class="text-sm text-slate-600 mt-0.5">Kelola dan monitor project workshop</p>
                         </div>
                     </div>
+                    <a href="{{ route('customer.joborder.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-red-700 hover:to-rose-700 transition-all duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Tambah Job Order
+                    </a>
                 </div>
             </div>
 
-            @if(session('success'))
-                <div class="mx-6 mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                    </div>
-                </div>
-            @endif
+            {{-- session flash notifications removed per user request --}}
 
             @if(session('error'))
                 <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
@@ -143,6 +140,7 @@
                                     <th class="px-3 py-3 text-left text-xs font-bold text-slate-700 uppercase">Project</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Start</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">End</th>
+                                    <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Progress</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Actual</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Evaluasi</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Aksi</th>
@@ -198,6 +196,17 @@
                                             </span>
                                         </td>
 
+                                        <!-- Progress -->
+                                        <td class="px-3 py-3 text-center">
+                                            <button onclick="openProgressModal({{ $jo->id }}, {{ $jo->progress ?? 0 }})"
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors duration-150 text-xs font-semibold">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                {{ $jo->progress ?? 0 }}%
+                                            </button>
+                                        </td>
+
                                         <!-- Actual -->
                                         <td class="px-3 py-3 text-center">
                                             @if($jo->actual)
@@ -227,10 +236,13 @@
                                         <td class="px-3 py-3 text-center">
                                             <div class="flex justify-center items-center gap-1">
                                                 @include('admin.partials.action-buttons', [
-                                                        'pdfRoute' => route('admin.joborder.exportPdf', $jo->id) . '?stream=1',
-                                                        'pdfLabel' => 'PDF',
-                                                        'pdfTarget' => '_blank',
-                                                        'labelAlign' => 'center'
+                                                        'editRoute' => route('customer.joborder.edit', $jo->id),
+                                                        'destroyRoute' => route('customer.joborder.destroy', $jo->id),
+                                                        'pdfRoute' => route('customer.joborder.exportPdf', $jo->id) . '?stream=1',
+                                                        'labelAlign' => 'center',
+                                                        'deleteTitle' => 'Hapus job order?',
+                                                        'deleteText' => 'Yakin ingin menghapus job order ini?',
+                                                        'deleteConfirm' => 'Hapus'
                                                     ])
                                             </div>
                                         </td>
@@ -299,6 +311,44 @@
                     </div>
                 @endif
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Progress -->
+    <div id="progressModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-red-50 to-rose-100 px-6 py-4 border-b border-red-100 rounded-t-xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-800">Edit Progress</h3>
+                    <button onclick="closeProgressModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="progressForm" method="POST" class="p-6">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Progress (%)</label>
+                        <input type="number" name="progress" id="progressInput" min="0" max="100"
+                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                               required>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
+                        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Simpan
+                        </button>
+                        <button type="button" onclick="closeProgressModal()" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-semibold transition-colors duration-200">
+                            Batal
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -383,10 +433,14 @@
                         text: 'Data job order akan dihapus dan tidak dapat dikembalikan.',
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
                         confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
+                        cancelButtonText: 'Batal',
+                        customClass: {
+                            confirmButton: 'swal2-confirm-red',
+                            cancelButton: 'swal2-cancel-gray'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // submit the form programmatically
@@ -407,13 +461,6 @@
                 timer: 3500,
                 timerProgressBar: true,
             });
-
-            @if(session('success'))
-                Toast.fire({
-                    icon: 'success',
-                    title: {!! json_encode(session('success')) !!}
-                });
-            @endif
 
             @if(session('error'))
                 Toast.fire({
@@ -483,4 +530,30 @@
             }
         });
     </script>
+
+    <style>
+        /* Custom SweetAlert button styling */
+        .swal2-confirm-red {
+            background-color: #dc2626 !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 600 !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+        }
+        .swal2-confirm-red:hover {
+            background-color: #b91c1c !important;
+        }
+        .swal2-cancel-gray {
+            background-color: #6b7280 !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 600 !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+        }
+        .swal2-cancel-gray:hover {
+            background-color: #4b5563 !important;
+        }
+    </style>
 @endsection

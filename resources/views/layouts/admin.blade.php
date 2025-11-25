@@ -117,21 +117,40 @@
                             </div>
                         </div>
 
-                        <!-- Man Power -->
-                        <a href="{{ route('admin.manpower.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            Man Power
-                        </a>
+                        <!-- Manpower + Performance Dropdown -->
+                        <div class="relative group">
+                            <button class="nav-dropdown-button flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') || request()->routeIs('admin.performance.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Manpower
+                                <svg class="w-3 h-3 ml-1 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9l-7 7l-7-7"></path>
+                                </svg>
+                            </button>
 
-                        <!-- Performance -->
-                        <a href="{{ route('admin.performance.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                            Performance
-                        </a>
+                            <div class="nav-dropdown absolute left-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                <div class="p-1.5">
+                                    <a href="{{ route('admin.manpower.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-200' : 'bg-red-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.58 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </div>
+                                        <div class="font-medium">Data Manpower</div>
+                                    </a>
+
+                                    <a href="{{ route('admin.performance.index') }}" class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.performance.*') ? 'bg-red-200' : 'bg-red-100' }}">
+                                            <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                        </div>
+                                        <div class="font-medium">Performance</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Job Order -->
                         <a href="{{ route('admin.joborder.index') }}" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.joborder.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
@@ -144,8 +163,30 @@
                     </div>
                 </div>
 
-                <!-- Right side - Profile dropdown and mobile menu -->
+                <!-- Right side - Notifications, Profile dropdown and mobile menu -->
                 <div class="flex items-center space-x-4">
+                    <!-- Notifications (admin only) -->
+                    @if(auth()->user()->role === 'admin')
+                        <div class="hidden md:block relative">
+                            <a href="{{ route('admin.notifications.index') }}" class="relative flex items-center justify-center w-10 h-10 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 group-hover:scale-110 transition-transform duration-200">
+                                    <path d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
+                                    <path fill-rule="evenodd" d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.91 32.91 0 0 0 3.256.508 3.5 3.5 0 0 0 6.972 0 32.903 32.903 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6Zm0 14.5a2 2 0 0 1-1.95-1.557 33.54 33.54 0 0 0 3.9 0A2 2 0 0 1 10 16.5Z" clip-rule="evenodd" />
+                                </svg>
+                                <!-- Notification count badge -->
+                                @php
+                                    $unreadCount = auth()->user()->unreadNotificationsCount();
+                                @endphp
+                                <!-- Notification count badge -->
+                                @if($unreadCount > 0)
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                    </span>
+                                @endif
+                            </a>
+                        </div>
+                    @endif
+
                     <!-- Profile dropdown (desktop) -->
                     <div class="hidden md:block relative group">
                         <button class="nav-dropdown-button flex items-center px-4 py-2 text-sm font-medium text-slate-600 hover:text-red-600 rounded-xl hover:bg-red-50 transition-all duration-200">
@@ -214,6 +255,32 @@
                     Dashboard
                 </a>
 
+                <!-- Notifications mobile -->
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.notifications.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.notifications.*') ? 'bg-red-50 text-red-700' : '' }}">
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-3">
+                                <path d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
+                                <path fill-rule="evenodd" d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.91 32.91 0 0 0 3.256.508 3.5 3.5 0 0 0 6.972 0 32.903 32.903 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6Zm0 14.5a2 2 0 0 1-1.95-1.557 33.54 33.54 0 0 0 3.9 0A2 2 0 0 1 10 16.5Z" clip-rule="evenodd" />
+                            </svg>
+                            @php
+                                $mobileUnreadCount = auth()->user()->unreadNotificationsCount();
+                            @endphp
+                            @if($mobileUnreadCount > 0)
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                                    {{ $mobileUnreadCount > 9 ? '9+' : $mobileUnreadCount }}
+                                </span>
+                            @endif
+                        </div>
+                        Notifications
+                        @if($mobileUnreadCount > 0)
+                            <span class="ml-auto bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">
+                                {{ $mobileUnreadCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
+
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z"></path>
@@ -247,21 +314,26 @@
                     @endif
                 </div>
 
-                <!-- Man Power (separate link) -->
-                <a href="{{ route('admin.manpower.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Man Power
-                </a>
+                <div class="space-y-1">
+                    <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">Manpower</div>
+                    <a href="{{ route('admin.manpower.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-50 text-red-700' : '' }}">
+                        <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center mr-3 {{ request()->routeIs('admin.manpower.*') ? 'bg-red-200' : 'bg-red-100' }}">
+                            <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.58 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        Data Manpower
+                    </a>
 
-                <!-- Performance (separate link) -->
-                <a href="{{ route('admin.performance.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Performance
-                </a>
+                    <a href="{{ route('admin.performance.index') }}" class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.performance.*') ? 'bg-red-50 text-red-700' : '' }}">
+                        <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center mr-3 {{ request()->routeIs('admin.performance.*') ? 'bg-red-200' : 'bg-red-100' }}">
+                            <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        Performance
+                    </a>
+                </div>
 
                 <div class="space-y-1">
                     <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">Material</div>
