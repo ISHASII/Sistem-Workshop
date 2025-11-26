@@ -86,7 +86,7 @@ class DashboardController extends Controller
     $bulan = request('bulan', now()->month);
     $tahun = request('tahun', now()->year);
     // Solusi paksa: ambil semua, filter manual di PHP berdasarkan bulan/tahun dari field start (string)
-    $all_joborders = \App\Models\JobOrder::orderBy('start', 'desc')->get(['project', 'start', 'evaluasi']);
+    $all_joborders = \App\Models\JobOrder::orderBy('start', 'desc')->get(['project', 'start', 'end', 'evaluasi']);
     $joborders_monthly = $all_joborders->filter(function($jo) use ($bulan, $tahun) {
         if (!$jo->start) return false;
         $date = null;

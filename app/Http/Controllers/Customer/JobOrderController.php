@@ -78,7 +78,46 @@ class JobOrderController extends Controller
     public function create()
     {
         $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');
-        return view('customer.joborders.create', compact('materials'));
+        // Fetch booked ranges to disable on the datepicker
+        $bookedRanges = JobOrder::select('start', 'end')->get()->map(function($r){
+            // Convert to Y-m-d format for flatpickr
+            try {
+                $start = \Carbon\Carbon::createFromFormat('d-m-Y', $r->start);
+                $end = \Carbon\Carbon::createFromFormat('d-m-Y', $r->end);
+            } catch (\Throwable $e) {
+                try {
+                    $start = \Carbon\Carbon::createFromFormat('Y-m-d', $r->start);
+                    $end = \Carbon\Carbon::createFromFormat('Y-m-d', $r->end);
+                } catch (\Throwable $e2) {
+                    return null;
+                }
+            }
+            return ['from' => $start->format('Y-m-d'), 'to' => $end->format('Y-m-d')];
+        })->filter()->values()->toArray();
+
+        // Compute earliest allowed start: day after the latest existing end (in d-m-Y format)
+        $allJobOrders = JobOrder::all();
+        $latestEnd = null;
+        foreach ($allJobOrders as $jo) {
+            try {
+                // Try d-m-Y format first
+                $joEnd = \Carbon\Carbon::createFromFormat('d-m-Y', $jo->end);
+            } catch (\Throwable $e) {
+                try {
+                    // Fallback to Y-m-d format
+                    $joEnd = \Carbon\Carbon::createFromFormat('Y-m-d', $jo->end);
+                } catch (\Throwable $e2) {
+                    continue;
+                }
+            }
+
+            if ($latestEnd === null || $joEnd->greaterThan($latestEnd)) {
+                $latestEnd = $joEnd;
+            }
+        }
+        $earliestAllowedStart = $latestEnd ? $latestEnd->addDay()->format('d-m-Y') : null;
+
+        return view('customer.joborders.create', compact('materials', 'bookedRanges', 'earliestAllowedStart'));
     }
 
     public function store(Request $request)
@@ -100,6 +139,83 @@ class JobOrderController extends Controller
             'target' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|max:5120', // max 5MB per image
         ]);
+
+        // Validate date parsing and prevent overlapping job orders
+        $start = null;
+        $end = null;
+
+        try {
+            // Try d-m-Y format first (from form input)
+            $start = \Carbon\Carbon::createFromFormat('d-m-Y', $data['start'])->startOfDay();
+        } catch (\Throwable $e) {
+            try {
+                // Fallback to auto-parsing (Y-m-d, etc)
+                $start = \Carbon\Carbon::parse($data['start'])->startOfDay();
+            } catch (\Throwable $e2) {
+                return back()->withInput()->withErrors(['start' => 'Format tanggal mulai tidak valid. Gunakan format d-m-Y (contoh: 01-11-2025).']);
+            }
+        }
+
+        try {
+            // Try d-m-Y format first (from form input)
+            $end = \Carbon\Carbon::createFromFormat('d-m-Y', $data['end'])->endOfDay();
+        } catch (\Throwable $e) {
+            try {
+                // Fallback to auto-parsing (Y-m-d, etc)
+                $end = \Carbon\Carbon::parse($data['end'])->endOfDay();
+            } catch (\Throwable $e2) {
+                return back()->withInput()->withErrors(['end' => 'Format tanggal selesai tidak valid. Gunakan format d-m-Y (contoh: 30-11-2025).']);
+            }
+        }
+
+        // Check for ANY overlap with existing job orders
+        $allJobOrders = JobOrder::all();
+        $hasOverlap = false;
+        $latestEnd = null;
+
+        foreach ($allJobOrders as $jo) {
+            try {
+                // Try d-m-Y format first
+                $joStart = \Carbon\Carbon::createFromFormat('d-m-Y', $jo->start)->startOfDay();
+            } catch (\Throwable $e) {
+                try {
+                    // Fallback to Y-m-d format
+                    $joStart = \Carbon\Carbon::createFromFormat('Y-m-d', $jo->start)->startOfDay();
+                } catch (\Throwable $e2) {
+                    continue;
+                }
+            }
+
+            try {
+                // Try d-m-Y format first
+                $joEnd = \Carbon\Carbon::createFromFormat('d-m-Y', $jo->end)->endOfDay();
+            } catch (\Throwable $e) {
+                try {
+                    // Fallback to Y-m-d format
+                    $joEnd = \Carbon\Carbon::createFromFormat('Y-m-d', $jo->end)->endOfDay();
+                } catch (\Throwable $e2) {
+                    continue;
+                }
+            }
+
+            // Track latest end date
+            if ($latestEnd === null || $joEnd->greaterThan($latestEnd)) {
+                $latestEnd = $joEnd;
+            }
+
+            // Check if new job order overlaps with this existing one
+            // Overlap if: new_start <= existing_end AND new_end >= existing_start
+            if ($start->lessThanOrEqualTo($joEnd) && $end->greaterThanOrEqualTo($joStart)) {
+                $hasOverlap = true;
+            }
+        }
+
+        // If there's ANY overlap, reject and suggest date after latest end
+        if ($hasOverlap) {
+            $suggest = $latestEnd ? $latestEnd->copy()->addDay()->format('d-m-Y') : $start->format('d-m-Y');
+            $msg = "Rentang tanggal bentrok dengan job order yang sudah ada. Job order baru harus dimulai setelah: " . ($latestEnd ? $latestEnd->format('d-m-Y') : 'tanggal terakhir') . ". Tanggal mulai tersedia: $suggest";
+            return back()->withInput()->withErrors(['start' => $msg]);
+        }
 
         // Backend stok validation
         foreach ($data['items'] as $idx => $item) {
@@ -172,7 +288,23 @@ class JobOrderController extends Controller
     {
         $joborder->load('items');
         $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get();
-        return view('customer.joborders.edit', compact('joborder','materials'));
+        // Exclude current joborder so its own dates remain selectable while editing
+        $bookedRanges = JobOrder::where('id', '!=', $joborder->id)->select('start', 'end')->get()->map(function($r){
+            // Convert to Y-m-d format for flatpickr
+            try {
+                $start = \Carbon\Carbon::createFromFormat('d-m-Y', $r->start);
+                $end = \Carbon\Carbon::createFromFormat('d-m-Y', $r->end);
+            } catch (\Throwable $e) {
+                try {
+                    $start = \Carbon\Carbon::createFromFormat('Y-m-d', $r->start);
+                    $end = \Carbon\Carbon::createFromFormat('Y-m-d', $r->end);
+                } catch (\Throwable $e2) {
+                    return null;
+                }
+            }
+            return ['from' => $start->format('Y-m-d'), 'to' => $end->format('Y-m-d')];
+        })->filter()->values()->toArray();
+        return view('customer.joborders.edit', compact('joborder','materials', 'bookedRanges'));
     }
 
     public function update(Request $request, JobOrder $joborder)
@@ -197,6 +329,88 @@ class JobOrderController extends Controller
             'removed_images' => 'nullable|array',
             'removed_images.*' => 'nullable|string',
         ]);
+
+        // Validate date parsing and prevent overlapping job orders (exclude current)
+        $start = null;
+        $end = null;
+
+        if (isset($data['start'])) {
+            try {
+                // Try d-m-Y format first (from form input)
+                $start = \Carbon\Carbon::createFromFormat('d-m-Y', $data['start'])->startOfDay();
+            } catch (\Throwable $e) {
+                try {
+                    // Fallback to auto-parsing (Y-m-d, etc)
+                    $start = \Carbon\Carbon::parse($data['start'])->startOfDay();
+                } catch (\Throwable $e2) {
+                    return back()->withInput()->withErrors(['start' => 'Format tanggal mulai tidak valid. Gunakan format d-m-Y (contoh: 01-11-2025).']);
+                }
+            }
+        }
+
+        if (isset($data['end'])) {
+            try {
+                // Try d-m-Y format first (from form input)
+                $end = \Carbon\Carbon::createFromFormat('d-m-Y', $data['end'])->endOfDay();
+            } catch (\Throwable $e) {
+                try {
+                    // Fallback to auto-parsing (Y-m-d, etc)
+                    $end = \Carbon\Carbon::parse($data['end'])->endOfDay();
+                } catch (\Throwable $e2) {
+                    return back()->withInput()->withErrors(['end' => 'Format tanggal selesai tidak valid. Gunakan format d-m-Y (contoh: 30-11-2025).']);
+                }
+            }
+        }
+
+        if ($start && $end) {
+            // Check overlap: no date ranges should overlap
+            $allJobOrders = JobOrder::where('id', '!=', $joborder->id)->get();
+            $hasOverlap = false;
+            $latestEnd = null;
+
+            foreach ($allJobOrders as $jo) {
+                try {
+                    // Try d-m-Y format first
+                    $joStart = \Carbon\Carbon::createFromFormat('d-m-Y', $jo->start)->startOfDay();
+                } catch (\Throwable $e) {
+                    try {
+                        // Fallback to Y-m-d format
+                        $joStart = \Carbon\Carbon::createFromFormat('Y-m-d', $jo->start)->startOfDay();
+                    } catch (\Throwable $e2) {
+                        continue;
+                    }
+                }
+
+                try {
+                    // Try d-m-Y format first
+                    $joEnd = \Carbon\Carbon::createFromFormat('d-m-Y', $jo->end)->endOfDay();
+                } catch (\Throwable $e) {
+                    try {
+                        // Fallback to Y-m-d format
+                        $joEnd = \Carbon\Carbon::createFromFormat('Y-m-d', $jo->end)->endOfDay();
+                    } catch (\Throwable $e2) {
+                        continue;
+                    }
+                }
+
+                // Track latest end date
+                if ($latestEnd === null || $joEnd->greaterThan($latestEnd)) {
+                    $latestEnd = $joEnd;
+                }
+
+                // Check if new job order overlaps with this existing one
+                // Overlap if: new_start <= existing_end AND new_end >= existing_start
+                if ($start->lessThanOrEqualTo($joEnd) && $end->greaterThanOrEqualTo($joStart)) {
+                    $hasOverlap = true;
+                }
+            }
+
+            if ($hasOverlap) {
+                $suggest = $latestEnd ? $latestEnd->copy()->addDay()->format('d-m-Y') : $start->format('d-m-Y');
+                $msg = "Rentang tanggal bentrok dengan job order yang sudah ada. Job order baru harus dimulai setelah: " . ($latestEnd ? $latestEnd->format('d-m-Y') : 'tanggal terakhir') . ". Tanggal mulai tersedia: $suggest";
+                return back()->withInput()->withErrors(['start' => $msg]);
+            }
+        }
 
         // Backend stok validation (edit) hanya jika jumlah berubah
         foreach ($data['items'] as $idx => $item) {
@@ -341,35 +555,14 @@ class JobOrderController extends Controller
 
     public function updateProgress(Request $request, JobOrder $joborder)
     {
-        $request->validate([
-            'progress' => 'required|integer|min:0|max:100',
-        ]);
-
-        $joborder->update([
-            'progress' => $request->progress,
-        ]);
-
-        return back()->with('success', 'Progress berhasil diupdate.');
+        // Customers are not allowed to update progress. Only admins can update this field.
+        abort(403, 'Forbidden: only admins can update progress.');
     }
 
     public function updateActual(Request $request, JobOrder $joborder)
     {
-        $request->validate([
-            'actual' => 'required|date',
-        ]);
-
-        $actual = \Carbon\Carbon::parse($request->actual);
-        $end = \Carbon\Carbon::parse($joborder->end);
-
-        // Tentukan evaluasi
-        $evaluasi = $actual->lte($end) ? 'Tepat Waktu' : 'Terlambat';
-
-        $joborder->update([
-            'actual' => $request->actual,
-            'evaluasi' => $evaluasi,
-        ]);
-
-        return back()->with('success', 'Tanggal actual berhasil diupdate.');
+        // Customers are not allowed to set actual completion date. Only admins can update this field.
+        abort(403, 'Forbidden: only admins can update actual completion date.');
     }
 
     /**

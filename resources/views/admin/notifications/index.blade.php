@@ -185,22 +185,72 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch('/admin/notifications/mark-all-read', {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Marking all notifications as read',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (!csrfToken) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'CSRF token not found',
+                            icon: 'error'
+                        });
+                        return;
+                    }
+
+                    fetch('{{ route("admin.notifications.markAllAsRead") }}', {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
+                        credentials: 'same-origin'
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                throw new Error(`HTTP ${response.status}: ${text}`);
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Response data:', data);
                         if (data.success) {
-                            location.reload();
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'All notifications marked as read',
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: data.message || 'Failed to mark notifications as read',
+                                icon: 'error'
+                            });
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error('Fetch error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: error.message || 'Something went wrong',
+                            icon: 'error'
+                        });
                     });
                 }
             });

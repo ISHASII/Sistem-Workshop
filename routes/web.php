@@ -8,6 +8,9 @@ Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/captcha', [AuthController::class, 'captcha'])->name('captcha');
 
+// Public monitoring page (guest access)
+Route::get('/monitor', [\App\Http\Controllers\MonitorController::class, 'index'])->name('monitor');
+
 // Public customer registration (simple public form)
 Route::get('/register-customer', [\App\Http\Controllers\CustomerRegistrationController::class, 'show'])->name('customer.register');
 Route::post('/register-customer', [\App\Http\Controllers\CustomerRegistrationController::class, 'store'])->name('customer.register.store');

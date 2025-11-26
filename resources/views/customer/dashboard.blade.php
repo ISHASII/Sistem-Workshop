@@ -77,11 +77,19 @@
                                         @forelse($joborders_monthly ?? [] as $jo)
                                             @php
                                                 $joStart = data_get($jo, 'start');
+                                                $joEnd = data_get($jo, 'end');
                                                 $joProject = data_get($jo, 'project');
                                                 $joEvaluasi = data_get($jo, 'evaluasi');
+
+                                                // Format dates
+                                                $startFormatted = $joStart ? \Carbon\Carbon::parse($joStart)->format('d M Y') : '-';
+                                                $endFormatted = $joEnd ? \Carbon\Carbon::parse($joEnd)->format('d M Y') : '-';
+                                                $dateRange = ($startFormatted !== '-' && $endFormatted !== '-')
+                                                    ? $startFormatted . ' - ' . $endFormatted
+                                                    : ($startFormatted !== '-' ? $startFormatted : $endFormatted);
                                             @endphp
                                             <tr>
-                                                <td class="px-2 py-1 align-top text-xs">{{ $joStart ? \Carbon\Carbon::parse($joStart)->format('d M Y') : '-' }}</td>
+                                                <td class="px-2 py-1 align-top text-xs">{{ $dateRange }}</td>
                                                 <td class="px-2 py-1 align-top text-xs break-words whitespace-normal max-w-[36ch]">{{ $joProject }}</td>
                                                 <td class="px-2 py-1 align-top text-xs break-words whitespace-normal">{{ $joEvaluasi ?? '-' }}</td>
                                             </tr>
@@ -180,28 +188,28 @@
 
                 // Vertical scrolling for many items (keep behavior)
                 if (itemCount > 10) {
-                    if (progressScrollWrapper) { 
-                        progressScrollWrapper.style.overflowY = 'auto'; 
-                        progressScrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; 
+                    if (progressScrollWrapper) {
+                        progressScrollWrapper.style.overflowY = 'auto';
+                        progressScrollWrapper.style.maxHeight = (rowHeight * 10) + 'px';
                     }
-                } else { 
-                    if (progressScrollWrapper) { 
-                        progressScrollWrapper.style.overflowY = 'hidden'; 
-                        progressScrollWrapper.style.maxHeight = ''; 
-                    } 
+                } else {
+                    if (progressScrollWrapper) {
+                        progressScrollWrapper.style.overflowY = 'hidden';
+                        progressScrollWrapper.style.maxHeight = '';
+                    }
                 }
 
                 if (!progressChartWrapper) return;
-                
+
                 // Clear and set up container with proper visibility
                 progressChartWrapper.style.visibility = 'visible';
                 progressChartWrapper.innerHTML = `<div style="width:${canvasWidth}px; min-height:${maxHeight}px;"><canvas id="customerProgressJobOrderBarChart" width="${canvasWidth}" height="${maxHeight}" style="display:block; width:100%; height:100%;" ></canvas></div>`;
-                
+
                 // Wait for DOM update
                 setTimeout(() => {
                     const canvas = document.getElementById('customerProgressJobOrderBarChart');
                     if (!canvas) return;
-                    
+
                     // ensure CSS allows horizontal scroll on outer wrapper
                     if (progressScrollWrapper) { progressScrollWrapper.style.overflowX = 'auto'; }
                     const ctx = canvas.getContext('2d');
@@ -226,23 +234,23 @@
                             indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { 
-                                legend: { display: false }, 
-                                datalabels: { 
-                                    anchor: 'end', 
-                                    align: 'right', 
-                                    color: '#3b82f6', 
-                                    font: { weight: '600', size: 11 }, 
-                                    offset: 3, 
-                                    formatter: v => `${v}%` 
-                                } 
+                            plugins: {
+                                legend: { display: false },
+                                datalabels: {
+                                    anchor: 'end',
+                                    align: 'right',
+                                    color: '#3b82f6',
+                                    font: { weight: '600', size: 11 },
+                                    offset: 3,
+                                    formatter: v => `${v}%`
+                                }
                             },
-                            scales: { 
-                                x: { min: 0, max: 120, display: false, grid: { display: false } }, 
-                                y: { grid: { display: false }, ticks: { font: { size: 11 }, align: 'start', padding: 8 } } 
+                            scales: {
+                                x: { min: 0, max: 120, display: false, grid: { display: false } },
+                                y: { grid: { display: false }, ticks: { font: { size: 11 }, align: 'start', padding: 8 } }
                             },
-                            animation: { 
-                                duration: 800, 
+                            animation: {
+                                duration: 800,
                                 easing: 'easeOutQuart',
                                 onComplete: function() {
                                     // Ensure visibility after animation
@@ -256,7 +264,7 @@
                     });
                 }, 100);
             }
-            
+
             // Call with proper timing
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', renderProgressChart);
@@ -444,28 +452,28 @@
         (function(){
             let resizeTimer = null;
             let visibilityObserver = null;
-            
+
             function ensureChartVisibility(){
                 const chartWrapper = document.getElementById('customer-progress-joborder-chart-wrapper');
                 const canvas = document.getElementById('customerProgressJobOrderBarChart');
-                
+
                 if (chartWrapper) {
                     chartWrapper.style.visibility = 'visible';
                     chartWrapper.style.opacity = '1';
                 }
-                
+
                 if (canvas) {
                     canvas.style.visibility = 'visible';
                     canvas.style.display = 'block';
                 }
-                
+
                 if (window._customerProgressChart) {
                     try {
                         window._customerProgressChart.update('none'); // Update without animation
                     } catch(e) {}
                 }
             }
-            
+
             function setupVisibilityObserver(){
                 if ('IntersectionObserver' in window) {
                     const chartWrapper = document.getElementById('customer-progress-joborder-chart-wrapper');
@@ -477,12 +485,12 @@
                                 }
                             });
                         }, { threshold: 0.1 });
-                        
+
                         visibilityObserver.observe(chartWrapper);
                     }
                 }
             }
-            
+
             function recomputeProgressHeight(){
                 try{
                     const items = Array.isArray(customerProgressJobOrders) ? customerProgressJobOrders : [];
@@ -492,30 +500,30 @@
                     const canvasHeight = Math.max(minHeight, Math.min(1600, itemCount * rowHeight));
                     const scrollWrapper = document.getElementById('customer-progress-joborder-scroll-wrapper');
                     const chartCanvas = document.getElementById('customerProgressJobOrderBarChart');
-                    
+
                     if (scrollWrapper) {
-                        if (itemCount > 10) { 
-                            scrollWrapper.style.maxHeight = (rowHeight * 10) + 'px'; 
-                            scrollWrapper.style.overflowY = 'auto'; 
-                        } else { 
-                            scrollWrapper.style.maxHeight = ''; 
-                            scrollWrapper.style.overflowY = 'hidden'; 
+                        if (itemCount > 10) {
+                            scrollWrapper.style.maxHeight = (rowHeight * 10) + 'px';
+                            scrollWrapper.style.overflowY = 'auto';
+                        } else {
+                            scrollWrapper.style.maxHeight = '';
+                            scrollWrapper.style.overflowY = 'hidden';
                         }
                     }
-                    
+
                     if (chartCanvas) {
                         chartCanvas.height = canvasHeight;
                     }
-                    
+
                     if (window._customerProgressChart && typeof window._customerProgressChart.resize === 'function') {
                         window._customerProgressChart.resize();
                     }
-                    
+
                     // Ensure visibility after resize
                     setTimeout(ensureChartVisibility, 100);
                 }catch(e){ console.warn('resize progress error', e); }
             }
-            
+
             function handleResize(){
                 if (resizeTimer) clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(function(){
@@ -523,14 +531,14 @@
                     ensureChartVisibility();
                 }, 150);
             }
-            
+
             function handleScroll(){
                 ensureChartVisibility();
             }
-            
+
             // Event listeners
             window.addEventListener('resize', handleResize);
-            
+
             // Add scroll listener to the scroll wrapper
             setTimeout(() => {
                 const scrollWrapper = document.getElementById('customer-progress-joborder-scroll-wrapper');
@@ -538,7 +546,7 @@
                     scrollWrapper.addEventListener('scroll', handleScroll);
                 }
             }, 500);
-            
+
             // Setup observers and initial calls
             document.addEventListener('DOMContentLoaded', function(){
                 setTimeout(() => {
@@ -547,14 +555,14 @@
                     ensureChartVisibility();
                 }, 200);
             });
-            
+
             // Also run immediately in case DOMContentLoaded already fired
             setTimeout(() => {
                 setupVisibilityObserver();
                 recomputeProgressHeight();
                 ensureChartVisibility();
             }, 300);
-            
+
             // Periodic visibility check (as backup)
             setInterval(ensureChartVisibility, 2000);
         })();
@@ -567,43 +575,43 @@
             opacity: 1 !important;
             min-height: 200px;
         }
-        
+
         #customerProgressJobOrderBarChart {
             visibility: visible !important;
             display: block !important;
         }
-        
+
         /* Smooth scroll behavior */
         #customer-progress-joborder-scroll-wrapper {
             scroll-behavior: smooth;
         }
-        
+
         /* Prevent chart flicker during transitions */
         .chart-container {
             transition: opacity 0.3s ease;
         }
-        
+
         /* Ensure proper chart rendering */
         canvas {
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
-        
+
         /* Fix scrollbar styling */
         .scrollbar-thin::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb {
             background-color: rgba(59, 130, 246, 0.3);
             border-radius: 3px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background-color: rgba(59, 130, 246, 0.5);
         }

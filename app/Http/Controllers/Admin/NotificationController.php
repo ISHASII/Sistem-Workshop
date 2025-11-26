@@ -46,13 +46,23 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request)
     {
-        $count = $this->notificationService->markAllAsRead(auth()->user());
+        try {
+            $count = $this->notificationService->markAllAsRead(auth()->user());
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'count' => $count]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true, 'count' => $count]);
+            }
+
+            return back()->with('success', "Marked {$count} notifications as read.");
+        } catch (\Exception $e) {
+            \Log::error('Mark all as read error: ' . $e->getMessage());
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+
+            return back()->with('error', 'Failed to mark notifications as read.');
         }
-
-        return back()->with('success', "Marked {$count} notifications as read.");
     }
 
     /**
