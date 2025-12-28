@@ -695,12 +695,12 @@
                 const row = document.createElement('div');
                 row.className = 'image-input-row flex items-start space-x-3';
                 row.innerHTML = `
-                                                                                                        <input class="image-input-edit" name="images[]" type="file" accept="image/*" />
-                                                                                                        <div class="flex-1">
-                                                                                                            <div class="images-preview-edit grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
-                                                                                                        </div>
-                                                                                                        <button type="button" class="remove-image-input-edit px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
-                                                                                                    `;
+                                                                                                                                                                                                                                            <input class="image-input-edit" name="images[]" type="file" accept="image/*" />
+                                                                                                                                                                                                                                            <div class="flex-1">
+                                                                                                                                                                                                                                                <div class="images-preview-edit grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
+                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                            <button type="button" class="remove-image-input-edit px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+                                                                                                                                                                                                                                        `;
                 wireImageInputRowEdit(row);
                 return row;
             }
@@ -722,9 +722,9 @@
 <!-- Flatpickr: disable already-booked ranges -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
-    /* Custom styling for disabled dates in flatpickr */
-    .flatpickr-day.flatpickr-disabled,
-    .flatpickr-day.flatpickr-disabled:hover {
+    /* Custom styling for booked ranges in flatpickr (distinct from generic disabled) */
+    .flatpickr-day.flatpickr-booked-range,
+    .flatpickr-day.flatpickr-booked-range:hover {
         background: repeating-linear-gradient(45deg,
                 #fee2e2,
                 #fee2e2 10px,
@@ -738,7 +738,7 @@
         font-weight: bold;
     }
 
-    .flatpickr-day.flatpickr-disabled::before {
+    .flatpickr-day.flatpickr-booked-range::before {
         content: '🔒';
         position: absolute;
         top: 2px;
@@ -753,6 +753,18 @@
         border-color: #3b82f6 !important;
     }
 
+    .flatpickr-day.flatpickr-disabled,
+    .flatpickr-day.flatpickr-disabled:hover {
+        background: #f1f5f9 !important;
+        /* light gray */
+        color: #9ca3af !important;
+        /* gray text */
+        cursor: not-allowed !important;
+        opacity: 0.6 !important;
+        text-decoration: none !important;
+        font-weight: normal;
+    }
+
     .flatpickr-day.selected {
         background-color: #dc2626 !important;
         border-color: #dc2626 !important;
@@ -761,7 +773,6 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Show popup if there's a validation error specifically on 'start'
         const startError = {!! json_encode($errors->first('start')) !!};
         if (startError) {
             Swal.fire({
@@ -781,60 +792,196 @@
         const joborderStart = @json($joborder->start ?? '');
         const joborderEnd = @json($joborder->end ?? '');
 
-        console.log('=== FLATPICKR DEBUG (ADMIN EDIT) ===');
-        console.log('JobOrder Start from DB:', joborderStart);
-        console.log('JobOrder End from DB:', joborderEnd);
-        console.log('Total booked ranges:', booked.length);
-        console.log('Booked ranges:', JSON.stringify(booked, null, 2));
 
-        const disabled = booked.map(function (r) { return { from: r.from, to: r.to }; });
-        console.log('Disabled ranges for flatpickr:', JSON.stringify(disabled, null, 2));
+        const rawBooked = booked.map(function (r) { return { from: r.from, to: r.to }; }).filter(function (x) { return x && x.from && x.to; });
+        rawBooked.sort(function (a, b) { return a.from.localeCompare(b.from); });
+        const bookedDateRanges = rawBooked.map(function (r) { try { var pf = String(r.from).split('-'); var pt = String(r.to).split('-'); var fd = new Date(parseInt(pf[0], 10), parseInt(pf[1], 10) - 1, parseInt(pf[2], 10)); var td = new Date(parseInt(pt[0], 10), parseInt(pt[1], 10) - 1, parseInt(pt[2], 10)); td.setHours(23, 59, 59, 999); return { from: fd, to: td }; } catch (e) { return null; } }).filter(function (x) { return !!x; });
+        const disabledDateRanges = bookedDateRanges.map(function (br) { return { from: new Date(br.from.getFullYear(), br.from.getMonth(), br.from.getDate()), to: new Date(br.to.getFullYear(), br.to.getMonth(), br.to.getDate()) }; });
+        const disabled = rawBooked.slice(0);
 
-        // Keep track of flatpickr instances
         const fpInstances = [];
 
         document.querySelectorAll('.datepicker').forEach(function (el) {
             const rawDate = (el.getAttribute('data-date') || '').trim();
-            console.log('Input field:', el.name, 'Raw date from DB:', rawDate);
 
             let parsedDate = null;
-
             if (rawDate) {
-                console.log('Processing date for', el.name, ':', rawDate);
-                // Parse date from Y-m-d format to Date object
-                if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
-                    const [y, m, d] = rawDate.split('-');
-                    // Create Date object (month is 0-indexed in JavaScript)
-                    parsedDate = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-                    console.log('Parsed date object:', parsedDate);
+                // Accept many date formats including datetimes and ISO strings
+                parsedDate = parseDateInput(rawDate);
+                if (!parsedDate) {
+                    // fallback to simple Y-m-d format
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+                        const [y, m, d] = rawDate.split('-');
+                        parsedDate = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+                    }
                 }
             }
 
-            const opts = {
-                // Display dates as Y-m-d so it matches DB presentation
-                dateFormat: 'Y-m-d',
-                disable: disabled,
-                allowInput: true,
-                defaultDate: parsedDate,
-                onChange: function (selectedDates, dateStr, instance) {
-                    console.log('Date changed:', dateStr);
-                }
+            var disableFn = function (date) {
+                try { var dd = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime(); for (var i = 0; i < bookedDateRanges.length; i++) { var br = bookedDateRanges[i]; if (br && br.from && br.to && dd >= br.from.getTime() && dd <= br.to.getTime()) return true; } } catch (e) { return false; } return false;
             };
 
-            // Initialize flatpickr and store instance
-            const fp = flatpickr(el, opts);
-            fpInstances.push({ el: el, instance: fp });
+            const opts = {
+                dateFormat: 'd-m-Y',
+                disable: ((disabledDateRanges && disabledDateRanges.length) ? disabledDateRanges.concat([disableFn]) : [disableFn]),
+                // Disable manual typing to prevent invalid date formats; rely on calendar selection
+                allowInput: false,
+                defaultDate: parsedDate,
+                onDayCreate: function (dObj, dStr, fp, dayElem) {
+                    try {
+                        var dd = new Date(dayElem.dateObj.getFullYear(), dayElem.dateObj.getMonth(), dayElem.dateObj.getDate()).getTime();
+                        var isBooked = false;
+                        for (var k = 0; k < bookedDateRanges.length; k++) {
+                            var br = bookedDateRanges[k];
+                            if (!br) continue;
+                            if (dd >= br.from.getTime() && dd <= br.to.getTime()) {
+                                dayElem.classList.add('flatpickr-booked-range');
+                                // Do NOT manually add flatpickr-disabled; rely on flatpickr disable logic
+                                var fm = br.from.getDate().toString().padStart(2, '0') + '-' + (br.from.getMonth() + 1).toString().padStart(2, '0') + '-' + br.from.getFullYear();
+                                var tm = br.to.getDate().toString().padStart(2, '0') + '-' + (br.to.getMonth() + 1).toString().padStart(2, '0') + '-' + br.to.getFullYear();
+                                dayElem.setAttribute('title', 'Booked: ' + fm + ' → ' + tm);
+                                dayElem.setAttribute('aria-disabled', 'true');
+                                dayElem.setAttribute('aria-label', 'Booked: ' + fm + ' to ' + tm + ' (unavailable)');
+                                dayElem.setAttribute('tabindex', '-1');
+                                dayElem.dataset.bookedFrom = fm;
+                                dayElem.dataset.bookedTo = tm;
+                                isBooked = true;
+                                break;
+                            }
+                        }
+                        if (!isBooked) {
+                            dayElem.classList.remove('flatpickr-booked-range');
+                            dayElem.removeAttribute('aria-disabled');
+                            dayElem.removeAttribute('aria-label');
+                            try {
+                                if (el && el.name === 'start') {
+                                    dayElem.classList.remove('flatpickr-disabled');
+                                    dayElem.removeAttribute('tabindex');
+                                }
+                            } catch (e) { }
+                        }
+                    } catch (e) { }
+                },
+                onChange: function (selectedDates, dateStr, instance) {
+                },
+                onReady: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                onOpen: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                onMonthChange: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                onYearChange: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } }
+            };
 
-            // Force set date after initialization with a small delay (fixes timing issues)
+            // If defaultDate was not set but rawDate exists and is parseable, use it
+            try {
+                if (!parsedDate && rawDate) {
+                    var fb = parseDateInput(rawDate);
+                    if (fb) { opts.defaultDate = fb; parsedDate = fb; }
+                }
+            } catch (e) { }
+
+            const fp = flatpickr(el, opts);
+            try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { }
+            fpInstances.push({ el: el, instance: fp });
+            if (el.name === 'start') {
+                window._fpStart = fp;
+                el.addEventListener('blur', function () {
+                    try {
+                        if (!window._fpEnd) return;
+                        var endPicker = window._fpEnd;
+                        var parsed = parseDateInput(el.value);
+                        if (!parsed) { endPicker.set('minDate', null); endPicker.set('maxDate', null); return; }
+                        endPicker.set('minDate', parsed);
+                        try { endPicker.jumpToDate(parsed); } catch (e) { }
+                        var t = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()).getTime();
+                        var ns = null;
+                        for (var i = 0; i < bookedDateRanges.length; i++) { var b = bookedDateRanges[i]; if (b && b.from && b.from.getTime() > t) { ns = b.from; break; } }
+                        if (ns) { var newMax = new Date(ns.getTime() - 86400000); endPicker.set('maxDate', newMax); try { endPicker.redraw(); } catch (e) { } } else { endPicker.set('maxDate', null); }
+                        if (endPicker.selectedDates && endPicker.selectedDates[0] && ns && endPicker.selectedDates[0].getTime() > newMax.getTime()) endPicker.clear();
+                        try { updateMonthNavigation(endPicker, getMinDateForFp(document.querySelector('input[name="end"]'))); } catch (e) { }
+                    } catch (e) { console.warn('Error updating end on blur (admin edit)', e); }
+                });
+            }
+            if (el.name === 'end') window._fpEnd = fp;
+            if (fp && fp.calendarContainer) {
+                fp.calendarContainer.addEventListener('click', function (ev) { var day = ev.target.closest('.flatpickr-day.flatpickr-booked-range'); if (day) { ev.preventDefault(); ev.stopImmediatePropagation(); day.classList.add('flatpickr-booked-attempt'); setTimeout(function () { day.classList.remove('flatpickr-booked-attempt'); }, 300); } }, true);
+                fp.calendarContainer.addEventListener('keydown', function (ev) { var focused = document.activeElement; if (focused && focused.classList && focused.classList.contains('flatpickr-day') && focused.classList.contains('flatpickr-booked-range')) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopImmediatePropagation(); } } }, true);
+            }
+
             if (parsedDate) {
                 setTimeout(function () {
-                    fp.setDate(parsedDate, true);
-                    console.log('Date force set for', el.name, '-> Display value:', el.value);
+                    try { fp.setDate(parsedDate, true); } catch (e) { }
+                    try {
+                        var ddv = String(parsedDate.getDate()).padStart(2, '0');
+                        var mmv = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                        var yv = String(parsedDate.getFullYear());
+                        el.value = ddv + '-' + mmv + '-' + yv;
+                    } catch (e) { }
                 }, 100);
             }
+            else {
+                // If no parsed Date but rawDate is present, attempt to present a formatted value
+                try {
+                    if (rawDate && (!el.value || !el.value.trim())) {
+                        var b = String(rawDate).split(' ')[0].split('T')[0];
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(b)) {
+                            var [yy, mm2, dd2] = b.split('-');
+                            el.value = dd2.padStart(2, '0') + '-' + mm2.padStart(2, '0') + '-' + yy;
+                        } else if (/^\d{2}-\d{2}-\d{4}$/.test(b)) {
+                            el.value = b;
+                        }
+                    }
+                } catch (er) { }
+            }
+
+            if (el.name === 'start') {
+                fp.config.onChange.push(function (selectedDates) {
+                    try {
+                        if (!window._fpEnd) return;
+                        var endPicker = window._fpEnd;
+                        if (!selectedDates || !selectedDates[0]) { endPicker.set('minDate', null); endPicker.set('maxDate', null); return; }
+                        var sel = selectedDates[0];
+                        endPicker.set('minDate', sel);
+                        try { endPicker.jumpToDate(sel); } catch (e) { }
+                        var selTime = new Date(sel.getFullYear(), sel.getMonth(), sel.getDate()).getTime();
+                        var ns = null;
+                        for (var i = 0; i < bookedDateRanges.length; i++) { var b = bookedDateRanges[i]; if (b && b.from && b.from.getTime() > selTime) { ns = b.from; break; } }
+                        if (ns) {
+                            var newMax = new Date(ns.getTime() - 86400000);
+                            endPicker.set('maxDate', newMax);
+                            try { endPicker.redraw(); } catch (e) { }
+                            if (endPicker.selectedDates && endPicker.selectedDates[0] && endPicker.selectedDates[0].getTime() > newMax.getTime()) endPicker.clear();
+                        } else {
+                            endPicker.set('maxDate', null);
+                        }
+                    } catch (e) { console.warn('Error linking start->end:', e); }
+                    try { if (window._fpEnd) updateMonthNavigation(window._fpEnd, getMinDateForFp(document.querySelector('input[name="end"]'))); } catch (e) { }
+                });
+            }
+
+            function fmtYmd(d) { var y = d.getFullYear(); var m = (d.getMonth() + 1).toString().padStart(2, '0'); var dd = d.getDate().toString().padStart(2, '0'); return y + '-' + m + '-' + dd; }
+
+            function parseDateInput(str) {
+                if (!str) return null;
+                str = String(str).trim();
+                var bare = str.split(' ')[0].split('T')[0];
+                if (/^\d{2}-\d{2}-\d{4}$/.test(bare)) { const [dd, mm, yyyy] = bare.split('-'); return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10)); }
+                if (/^\d{4}-\d{2}-\d{2}$/.test(bare)) { const [yyyy, mm, dd] = bare.split('-'); return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10)); }
+                try { return new Date(bare); } catch (e) { return null; }
+            }
+
+            function getMinDateForFp(el) {
+                if (!el) return null;
+                if (el.name === 'start') return null;
+                if (el.name === 'end') {
+                    const startVal = (document.querySelector('input[name="start"]') || {}).value;
+                    if (startVal) return parseDateInput(startVal);
+                    return null;
+                }
+                return null;
+            }
+
+            function updateMonthNavigation(fp, minDate) { if (!fp || !fp.calendarContainer) return; const prevBtn = fp.calendarContainer.querySelector('.flatpickr-prev-month'); if (!prevBtn) return; if (!minDate) { prevBtn.style.pointerEvents = ''; prevBtn.style.opacity = ''; return; } const displayedFirst = new Date(fp.currentYear, fp.currentMonth, 1); const minFirst = new Date(minDate.getFullYear(), minDate.getMonth(), 1); if (displayedFirst.getTime() <= minFirst.getTime()) { prevBtn.style.pointerEvents = 'none'; prevBtn.style.opacity = '0.45'; } else { prevBtn.style.pointerEvents = ''; prevBtn.style.opacity = ''; } }
         });
 
-        // Convert displayed Y-m-d to d-m-Y before actual form submission
         const formEl = document.querySelector('form');
         if (formEl) {
             formEl.addEventListener('submit', function () {
@@ -845,9 +992,9 @@
                         const dd = String(d.getDate()).padStart(2, '0');
                         const mm = String(d.getMonth() + 1).padStart(2, '0');
                         const yyyy = String(d.getFullYear());
-                        // Set value to d-m-Y before submit
+
                         el.value = dd + '-' + mm + '-' + yyyy;
-                        console.log('Converted submit value for', el.name, '=>', el.value);
+                        // Converted submit value logging removed
                     }
                 });
             });

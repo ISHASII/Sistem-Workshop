@@ -374,7 +374,6 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex items-center justify-between pt-6 border-t border-slate-200">
                         <div class="text-sm text-slate-500">
                             <span class="flex items-center">
@@ -431,7 +430,6 @@
             const addBtn = document.getElementById('add-item');
             let index = 1;
 
-            // Validasi stok sebelum submit
             const form = document.querySelector('form');
             form.addEventListener('submit', function (e) {
                 let valid = true;
@@ -469,7 +467,7 @@
                         if (specInput && !specInput.value && notes) specInput.value = notes;
                         if (stokInput) stokInput.value = stok;
                     });
-                    // Trigger change on load to autofill if already selected
+
                     if (select.value) {
                         const event = new Event('change');
                         select.dispatchEvent(event);
@@ -478,7 +476,7 @@
                 if (removeBtn) {
                     removeBtn.addEventListener('click', function () {
                         row.remove();
-                        // ensure at least one row exists
+
                         if (wrapper.querySelectorAll('.item-row').length === 0) { addNewRow(); }
                     });
                 }
@@ -493,7 +491,7 @@
                     }
                     if (el.tagName === 'SELECT') {
                         el.selectedIndex = 0;
-                        // ensure required attribute remains on cloned selects
+
                         if (!el.hasAttribute('required')) el.setAttribute('required', 'required');
                     } else {
                         el.value = '';
@@ -509,12 +507,11 @@
             addBtn.addEventListener('click', addNewRow);
             wrapper.querySelectorAll('.item-row').forEach(wireRow);
 
-            // Image preview & removal for new uploads (create form)
             const newImagesInput = document.getElementById('newImagesInput');
             const newPreview = document.getElementById('new-images-preview');
             if (newImagesInput) {
                 newImagesInput.addEventListener('change', function () {
-                    // clear preview
+
                     newPreview.innerHTML = '';
                     Array.from(this.files).forEach((file, idx) => {
                         const reader = new FileReader();
@@ -530,7 +527,7 @@
                         removeBtn.innerHTML = '&times;';
 
                         removeBtn.addEventListener('click', function () {
-                            // remove file from input (create a new DataTransfer)
+
                             const dt = new DataTransfer();
                             Array.from(newImagesInput.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
                             newImagesInput.files = dt.files;
@@ -599,12 +596,12 @@
                 const row = document.createElement('div');
                 row.className = 'image-input-row flex items-start space-x-3';
                 row.innerHTML = `
-                                                    <input class="image-input" name="images[]" type="file" accept="image/*" />
-                                                    <div class="flex-1">
-                                                        <div class="images-preview grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
-                                                    </div>
-                                                    <button type="button" class="remove-image-input px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
-                                                `;
+                                                                                                                                                                                                        <input class="image-input" name="images[]" type="file" accept="image/*" />
+                                                                                                                                                                                                        <div class="flex-1">
+                                                                                                                                                                                                            <div class="images-preview grid grid-cols-3 gap-3" data-preview-id="${index}"></div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <button type="button" class="remove-image-input px-2 py-1 bg-slate-100 text-red-600 rounded">&times;</button>
+                                                                                                                                                                                                    `;
                 wireImageInputRow(row);
                 return row;
             }
@@ -625,9 +622,9 @@
     <!-- Flatpickr: disable already-booked ranges -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        /* Custom styling for disabled dates in flatpickr */
-        .flatpickr-day.flatpickr-disabled,
-        .flatpickr-day.flatpickr-disabled:hover {
+        /* Custom styling for booked ranges in flatpickr (important: do NOT use the same style for minDate-disabled days) */
+        .flatpickr-day.flatpickr-booked-range,
+        .flatpickr-day.flatpickr-booked-range:hover {
             background: repeating-linear-gradient(45deg,
                     #fee2e2,
                     #fee2e2 10px,
@@ -641,7 +638,20 @@
             font-weight: bold;
         }
 
-        .flatpickr-day.flatpickr-disabled::before {
+        /* Styling for general disabled days (minDate, maxDate) to differentiate them visually from booked ranges */
+        .flatpickr-day.flatpickr-disabled,
+        .flatpickr-day.flatpickr-disabled:hover {
+            background: #f1f5f9 !important;
+            /* light gray */
+            color: #9ca3af !important;
+            /* gray text */
+            cursor: not-allowed !important;
+            opacity: 0.6 !important;
+            text-decoration: none !important;
+            font-weight: normal;
+        }
+
+        .flatpickr-day.flatpickr-booked-range::before {
             content: '🔒';
             position: absolute;
             top: 2px;
@@ -656,6 +666,26 @@
             border-color: #3b82f6 !important;
         }
 
+        /* Visual feedback if user attempts to click a booked date */
+        .flatpickr-day.flatpickr-booked-attempt {
+            animation: bookedPulse 300ms ease-out;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+        }
+
+        @keyframes bookedPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.98);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
         .flatpickr-day.selected {
             background-color: #dc2626 !important;
             border-color: #dc2626 !important;
@@ -664,7 +694,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Show popup if there's a validation error specifically on 'start'
             const startError = {!! json_encode($errors->first('start')) !!};
             if (startError) {
                 Swal.fire({
@@ -681,30 +710,253 @@
             }
 
             const booked = @json($bookedRanges ?? []);
-            console.log('=== FLATPICKR DEBUG (CUSTOMER) ===');
-            console.log('Total booked ranges:', booked.length);
-            console.log('Booked ranges:', JSON.stringify(booked, null, 2));
-            const disabled = booked.map(function (r) { return { from: r.from, to: r.to }; });
-            console.log('Disabled ranges for flatpickr:', JSON.stringify(disabled, null, 2));
+
+            const rawBooked = booked.map(function (r) {
+                return { from: r.from, to: r.to };
+            }).filter(function (x) { return x && x.from && x.to; });
+
+            rawBooked.sort(function (a, b) { return a.from.localeCompare(b.from); });
+
+            const bookedDateRanges = rawBooked.map(function (r) {
+                try {
+                    var pFrom = String(r.from).split('-');
+                    var pTo = String(r.to).split('-');
+                    var fromD = new Date(parseInt(pFrom[0], 10), parseInt(pFrom[1], 10) - 1, parseInt(pFrom[2], 10));
+                    var toD = new Date(parseInt(pTo[0], 10), parseInt(pTo[1], 10) - 1, parseInt(pTo[2], 10));
+                    toD.setHours(23, 59, 59, 999);
+                    return { from: fromD, to: toD };
+                } catch (e) { return null; }
+            }).filter(function (x) { return !!x; });
+
+            const disabledDateRanges = bookedDateRanges.map(function (br) {
+
+                return { from: new Date(br.from.getFullYear(), br.from.getMonth(), br.from.getDate()), to: new Date(br.to.getFullYear(), br.to.getMonth(), br.to.getDate()) };
+            });
+            const disabled = rawBooked.slice(0);
             const earliest = {!! json_encode($earliestAllowedStart ?? null) !!};
 
             document.querySelectorAll('.datepicker').forEach(function (el) {
                 const val = (el.value || '').trim();
+
+                var disableFn = function (date) {
+                    try {
+
+                        var dd = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                        for (var j = 0; j < bookedDateRanges.length; j++) {
+                            var br = bookedDateRanges[j];
+                            if (!br) continue;
+                            if (dd.getTime() >= br.from.getTime() && dd.getTime() <= br.to.getTime()) return true;
+                        }
+                    } catch (e) { return false; }
+                    return false;
+                };
                 const opts = {
                     dateFormat: 'd-m-Y',
-                    disable: disabled,
-                    allowInput: true,
-                    locale: {
-                        firstDayOfWeek: 1
+
+                    disable: ((disabledDateRanges && disabledDateRanges.length) ? disabledDateRanges.concat([disableFn]) : [disableFn]),
+                    // Disable manual typing to prevent invalid date formats; keep blur handler logic if users still type
+                    allowInput: false,
+                    locale: { firstDayOfWeek: 1 },
+
+                    onDayCreate: function (dObj, dStr, fp, dayElem) {
+                        try {
+
+                            var dateObj = new Date(dayElem.dateObj.getFullYear(), dayElem.dateObj.getMonth(), dayElem.dateObj.getDate());
+                            var isBooked = false;
+                            for (var k = 0; k < bookedDateRanges.length; k++) {
+                                var bk = bookedDateRanges[k];
+                                if (!bk || !bk.from || !bk.to) continue;
+                                if (dateObj.getTime() >= bk.from.getTime() && dateObj.getTime() <= bk.to.getTime()) {
+                                    dayElem.classList.add('flatpickr-booked-range');
+
+                                    // Do NOT manually add flatpickr-disabled. flatpickr itself will mark days disabled via the 'disable' option and min/max constraints.
+
+                                    var fm = bk.from.getDate().toString().padStart(2, '0') + '-' + (bk.from.getMonth() + 1).toString().padStart(2, '0') + '-' + bk.from.getFullYear();
+                                    var tm = bk.to.getDate().toString().padStart(2, '0') + '-' + (bk.to.getMonth() + 1).toString().padStart(2, '0') + '-' + bk.to.getFullYear();
+                                    dayElem.setAttribute('title', 'Booked: ' + fm + ' → ' + tm);
+                                    dayElem.setAttribute('aria-disabled', 'true');
+                                    dayElem.setAttribute('aria-label', 'Booked: ' + fm + ' to ' + tm + ' (unavailable)');
+                                    dayElem.setAttribute('tabindex', '-1');
+                                    dayElem.dataset.bookedFrom = fm;
+                                    dayElem.dataset.bookedTo = tm;
+                                    isBooked = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isBooked) {
+                                dayElem.classList.remove('flatpickr-booked-range');
+                                dayElem.removeAttribute('aria-disabled');
+                                dayElem.removeAttribute('aria-label');
+                                try {
+                                    if (el && el.name === 'start') {
+                                        dayElem.classList.remove('flatpickr-disabled');
+                                        dayElem.removeAttribute('tabindex');
+                                    }
+                                } catch (e) { }
+                            }
+                        } catch (e) { }
                     }
+                    ,
+
+                    onReady: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                    onOpen: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                    onMonthChange: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
+                    onYearChange: function (dObj, dStr, fp) { try { fp.redraw(); } catch (e) { } try { updateMonthNavigation(fp, getMinDateForFp(el)); } catch (e) { } },
                 };
-                if (earliest && el.name === 'start') {
-                    opts.minDate = earliest;
-                }
+
                 if (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^\d{2}-\d{2}-\d{4}$/.test(val)) {
                     opts.defaultDate = val;
                 }
-                flatpickr(el, opts);
+                const fpInstance = flatpickr(el, opts);
+                // debug log removed to reduce console noise
+                try { updateMonthNavigation(fpInstance, getMinDateForFp(el)); } catch (e) { }
+
+                if (el.name === 'start') {
+                    window._fpStart = fpInstance;
+                    // react to manual typing/blur on the start input to update end constraints
+                    el.addEventListener('blur', function () {
+                        try {
+                            if (!window._fpEnd) return;
+                            var endPicker = window._fpEnd;
+                            var parsed = parseDateInput(el.value);
+                            if (!parsed) { endPicker.set('minDate', null); endPicker.set('maxDate', null); return; }
+                            endPicker.set('minDate', parsed);
+                            try { endPicker.jumpToDate(parsed); } catch (e) { }
+                            var nextStart = findNextBookedStartAfter(parsed);
+                            if (nextStart) { var newMax = new Date(nextStart.getTime() - 86400000); endPicker.set('maxDate', newMax); try { endPicker.redraw(); } catch (e) { } } else { endPicker.set('maxDate', null); }
+                            try { updateMonthNavigation(endPicker, getMinDateForFp(document.querySelector('input[name="end"]'))); } catch (e) { }
+                        } catch (e) { console.warn('Error updating end-picker constraints on start blur', e); }
+                    });
+                }
+                if (el.name === 'end') window._fpEnd = fpInstance;
+
+                function fmtYmd(d) {
+                    var y = d.getFullYear();
+                    var m = (d.getMonth() + 1).toString().padStart(2, '0');
+                    var dd = d.getDate().toString().padStart(2, '0');
+                    return y + '-' + m + '-' + dd;
+                }
+
+                function parseDateInput(str) {
+                    if (!str) return null;
+                    str = String(str).trim();
+                    if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
+                        const [dd, mm, yyyy] = str.split('-');
+                        return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10));
+                    }
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+                        const [yyyy, mm, dd] = str.split('-');
+                        return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10));
+                    }
+                    try { return new Date(str); } catch (e) { return null; }
+                }
+
+                function getMinDateForFp(el) {
+                    if (!el) return null;
+
+                    if (el.name === 'start') return null;
+
+                    if (el.name === 'end') {
+                        const startVal = (document.querySelector('input[name="start"]') || {}).value;
+                        if (startVal) return parseDateInput(startVal);
+
+                        return null;
+                    }
+                    return null;
+                }
+
+                function updateMonthNavigation(fp, minDate) {
+                    if (!fp || !fp.calendarContainer) return;
+                    const prevBtn = fp.calendarContainer.querySelector('.flatpickr-prev-month');
+                    if (!prevBtn) return;
+                    if (!minDate) {
+                        prevBtn.style.pointerEvents = '';
+                        prevBtn.style.opacity = '';
+                        return;
+                    }
+                    const displayedFirst = new Date(fp.currentYear, fp.currentMonth, 1);
+                    const minFirst = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+                    if (displayedFirst.getTime() <= minFirst.getTime()) {
+                        prevBtn.style.pointerEvents = 'none';
+                        prevBtn.style.opacity = '0.45';
+                    } else {
+                        prevBtn.style.pointerEvents = '';
+                        prevBtn.style.opacity = '';
+                    }
+                }
+
+                function findNextBookedStartAfter(d) {
+                    try {
+                        var t = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                        for (var ii = 0; ii < bookedDateRanges.length; ii++) {
+                            var br = bookedDateRanges[ii];
+                            if (br && br.from && br.from.getTime() > t) return br.from;
+                        }
+                    } catch (e) { console.warn('findNextBookedStartAfter error', e); }
+                    return null;
+                }
+
+                if (fpInstance && fpInstance.calendarContainer) {
+                    fpInstance.calendarContainer.addEventListener('click', function (ev) {
+                        var day = ev.target.closest('.flatpickr-day.flatpickr-booked-range');
+                        if (day) {
+                            ev.preventDefault();
+                            ev.stopImmediatePropagation();
+
+                            day.classList.add('flatpickr-booked-attempt');
+                            setTimeout(function () { day.classList.remove('flatpickr-booked-attempt'); }, 300);
+                        }
+                    }, true);
+                }
+
+                if (fpInstance && fpInstance.calendarContainer) {
+                    fpInstance.calendarContainer.addEventListener('keydown', function (ev) {
+                        var focused = document.activeElement;
+                        if (focused && focused.classList && focused.classList.contains('flatpickr-day') && focused.classList.contains('flatpickr-booked-range')) {
+                            if (ev.key === 'Enter' || ev.key === ' ') {
+                                ev.preventDefault();
+                                ev.stopImmediatePropagation();
+                            }
+                        }
+                    }, true);
+                }
+
+                if (el.name === 'start') {
+                    fpInstance.config.onChange.push(function (selectedDates, dateStr, instance) {
+                        try {
+                            if (!window._fpEnd) return;
+                            var endPicker = window._fpEnd;
+                            if (!selectedDates || !selectedDates[0]) {
+                                endPicker.set('minDate', null);
+                                endPicker.set('maxDate', null);
+                                return;
+                            }
+                            var selectedStart = selectedDates[0];
+
+                            endPicker.set('minDate', selectedStart);
+                            // Focus End calendar to the valid month after minDate is set to avoid showing an all-disabled month
+                            try { endPicker.jumpToDate(selectedStart); } catch (e) { }
+                            try { updateMonthNavigation(endPicker, getMinDateForFp(document.querySelector('input[name="end"]'))); } catch (e) { }
+
+                            var nextStart = findNextBookedStartAfter(selectedStart);
+                            if (nextStart) {
+                                var newMax = new Date(nextStart.getTime() - 86400000);
+                                endPicker.set('maxDate', newMax);
+                                try { endPicker.redraw(); } catch (e) { }
+
+                                if (endPicker.selectedDates && endPicker.selectedDates[0]) {
+                                    if (endPicker.selectedDates[0].getTime() > newMax.getTime()) {
+                                        endPicker.clear();
+                                    }
+                                }
+                            } else {
+                                endPicker.set('maxDate', null);
+                            }
+                            try { updateMonthNavigation(endPicker, getMinDateForFp(document.querySelector('input[name="end"]'))); } catch (e) { }
+                        } catch (e) { console.warn('Error updating end-picker constraints', e); }
+                    });
+                }
             });
         });
     </script>

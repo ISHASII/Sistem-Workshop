@@ -10,6 +10,8 @@ function initDatepickers(selector) {
         'input.datepicker, input[name="start"], input[name="end"], input[name="tanggal"]';
     document.querySelectorAll(selector).forEach(function (el) {
         try {
+            // Don't overwrite if another script already initialized this element
+            if (el._flatpickr) return;
             flatpickr(el, {
                 dateFormat: "Y-m-d",
                 allowInput: true,
