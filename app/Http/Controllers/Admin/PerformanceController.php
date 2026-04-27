@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Performance;
 use App\Models\Manpower;
 use App\Models\JobOrder;
+use App\Models\ChecklistQualityItem;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class PerformanceController extends Controller
@@ -61,7 +62,12 @@ class PerformanceController extends Controller
     {
         $manpowers = Manpower::orderBy('nrp')->get();
         $joborders = JobOrder::orderByDesc('id')->get();
-        return view('admin.performance.create', compact('manpowers','joborders'));
+        $checklistItems = ChecklistQualityItem::where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.performance.create', compact('manpowers','joborders','checklistItems'));
     }
 
     /**
@@ -72,17 +78,8 @@ class PerformanceController extends Controller
         $data = $request->validate([
             'nrp' => 'required|exists:manpowers,nrp',
             'job_order_id' => 'nullable|exists:job_orders,id',
-            // checkboxes optional boolean
-            'material_sesuai_jo' => 'sometimes|boolean',
-            'dimensi_sesuai_jo' => 'sometimes|boolean',
-            'item_sesuai_design' => 'sometimes|boolean',
-            'pengelasan_tidak_retak' => 'sometimes|boolean',
-            'item_bebas_spatter' => 'sometimes|boolean',
-            'baut_terpasang_baik_lengkap' => 'sometimes|boolean',
-            'tidak_ada_bagian_tajam' => 'sometimes|boolean',
-            'finishing_standar' => 'sometimes|boolean',
-            'tidak_ada_kotoran' => 'sometimes|boolean',
-            'berfungsi_dengan_baik' => 'sometimes|boolean',
+            'checklist_quality_item_ids' => 'sometimes|array',
+            'checklist_quality_item_ids.*' => 'integer|exists:checklist_quality_items,id',
         ]);
 
         $manpower = Manpower::where('nrp', $data['nrp'])->first();
@@ -90,21 +87,15 @@ class PerformanceController extends Controller
             'manpower_id' => $manpower->id,
             'job_order_id' => $data['job_order_id'] ?? null,
         ];
-        $flags = [
-            'material_sesuai_jo','dimensi_sesuai_jo','item_sesuai_design','pengelasan_tidak_retak','item_bebas_spatter',
-            'baut_terpasang_baik_lengkap','tidak_ada_bagian_tajam','finishing_standar','tidak_ada_kotoran','berfungsi_dengan_baik'
-        ];
-        $score = 0; $perFlag = 100 / count($flags);
-        foreach ($flags as $f) {
-            $val = (bool)($request->boolean($f));
-            $payload[$f] = $val;
-            if ($val) { $score += $perFlag; }
-        }
-        $score = (int) round($score);
+        $selectedIds = $data['checklist_quality_item_ids'] ?? [];
+        $totalItems = ChecklistQualityItem::where('is_active', true)->count();
+        $selectedCount = count($selectedIds);
+        $score = $totalItems > 0 ? (int) round(($selectedCount / $totalItems) * 100) : 0;
         $payload['score'] = $score;
         $payload['rating'] = $this->ratingFromScore($score);
 
-        Performance::create($payload);
+        $performance = Performance::create($payload);
+        $performance->checklistQualityItems()->sync($selectedIds);
         return redirect()->route('admin.performance.index')->with('success', 'Performance berhasil ditambahkan');
     }
 
@@ -113,8 +104,11 @@ class PerformanceController extends Controller
      */
     public function show(Performance $performance)
     {
-        $performance->load(['manpower','jobOrder']);
-        return view('admin.performance.show', compact('performance'));
+        $performance->load(['manpower','jobOrder','checklistQualityItems']);
+        $checklistItems = ChecklistQualityItem::orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+        return view('admin.performance.show', compact('performance','checklistItems'));
     }
 
     /**
@@ -124,7 +118,13 @@ class PerformanceController extends Controller
     {
         $manpowers = Manpower::orderBy('nrp')->get();
         $joborders = JobOrder::orderByDesc('id')->get();
-        return view('admin.performance.edit', compact('performance','manpowers','joborders'));
+        $checklistItems = ChecklistQualityItem::where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+        $performance->load('checklistQualityItems');
+
+        return view('admin.performance.edit', compact('performance','manpowers','joborders','checklistItems'));
     }
 
     /**
@@ -135,16 +135,8 @@ class PerformanceController extends Controller
         $data = $request->validate([
             'nrp' => 'required|exists:manpowers,nrp',
             'job_order_id' => 'nullable|exists:job_orders,id',
-            'material_sesuai_jo' => 'sometimes|boolean',
-            'dimensi_sesuai_jo' => 'sometimes|boolean',
-            'item_sesuai_design' => 'sometimes|boolean',
-            'pengelasan_tidak_retak' => 'sometimes|boolean',
-            'item_bebas_spatter' => 'sometimes|boolean',
-            'baut_terpasang_baik_lengkap' => 'sometimes|boolean',
-            'tidak_ada_bagian_tajam' => 'sometimes|boolean',
-            'finishing_standar' => 'sometimes|boolean',
-            'tidak_ada_kotoran' => 'sometimes|boolean',
-            'berfungsi_dengan_baik' => 'sometimes|boolean',
+            'checklist_quality_item_ids' => 'sometimes|array',
+            'checklist_quality_item_ids.*' => 'integer|exists:checklist_quality_items,id',
         ]);
 
         $manpower = Manpower::where('nrp', $data['nrp'])->first();
@@ -152,21 +144,15 @@ class PerformanceController extends Controller
             'manpower_id' => $manpower->id,
             'job_order_id' => $data['job_order_id'] ?? null,
         ];
-        $flags = [
-            'material_sesuai_jo','dimensi_sesuai_jo','item_sesuai_design','pengelasan_tidak_retak','item_bebas_spatter',
-            'baut_terpasang_baik_lengkap','tidak_ada_bagian_tajam','finishing_standar','tidak_ada_kotoran','berfungsi_dengan_baik'
-        ];
-        $score = 0; $perFlag = 100 / count($flags);
-        foreach ($flags as $f) {
-            $val = (bool)($request->boolean($f));
-            $payload[$f] = $val;
-            if ($val) { $score += $perFlag; }
-        }
-        $score = (int) round($score);
+        $selectedIds = $data['checklist_quality_item_ids'] ?? [];
+        $totalItems = ChecklistQualityItem::where('is_active', true)->count();
+        $selectedCount = count($selectedIds);
+        $score = $totalItems > 0 ? (int) round(($selectedCount / $totalItems) * 100) : 0;
         $payload['score'] = $score;
         $payload['rating'] = $this->ratingFromScore($score);
 
         $performance->update($payload);
+        $performance->checklistQualityItems()->sync($selectedIds);
         return redirect()->route('admin.performance.index')->with('success', 'Performance berhasil diperbarui');
     }
 
@@ -218,8 +204,11 @@ class PerformanceController extends Controller
      */
     public function exportPdf(Performance $performance)
     {
-        $performance->load(['manpower','jobOrder']);
-        $pdf = PDF::loadView('admin.performance.pdf.item', compact('performance'));
+        $performance->load(['manpower','jobOrder','checklistQualityItems']);
+        $checklistItems = ChecklistQualityItem::orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+        $pdf = PDF::loadView('admin.performance.pdf.item', compact('performance','checklistItems'));
         $filename = 'performance_' . ($performance->manpower?->nrp ?? $performance->id) . '_' . $performance->created_at->format('Ymd') . '.pdf';
         return $pdf->download($filename);
     }

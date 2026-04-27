@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\JobOrderSeeder::class,
             \Database\Seeders\MaterialSeeder::class,
             \Database\Seeders\MaterialStockInSeeder::class,
+            \Database\Seeders\ChecklistQualityItemSeeder::class,
             \Database\Seeders\PerformanceSeeder::class,
         ]);
 

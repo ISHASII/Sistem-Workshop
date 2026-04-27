@@ -14,7 +14,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-slate-800">Man Power Management</h1>
+                        <h1 class="text-3xl font-bold text-slate-800">Manpower Management</h1>
                         <p class="text-slate-600 mt-1">Kelola data tenaga kerja dan karyawan</p>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
-                    Tambah Man Power
+                    Tambah Manpower
                 </a>
             </div>
         </div>
@@ -36,7 +36,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Search -->
                     <div class="md:col-span-1">
-                        <label class="block text-xs font-semibold text-slate-700 mb-2">Cari Man Power</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Cari Manpower</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-600">Total Man Power</p>
+                                <p class="text-sm font-medium text-slate-600">Total Manpower</p>
                                 <p class="text-xs text-slate-500">Semua karyawan</p>
                             </div>
                         </div>

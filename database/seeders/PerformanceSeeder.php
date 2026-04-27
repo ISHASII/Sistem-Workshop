@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Performance;
 use App\Models\Manpower;
 use App\Models\JobOrder;
+use App\Models\ChecklistQualityItem;
 use Carbon\Carbon;
 
 class PerformanceSeeder extends Seeder
@@ -15,10 +16,16 @@ class PerformanceSeeder extends Seeder
      */
     public function run(): void
     {
+        $checklistItems = ChecklistQualityItem::orderBy('sort_order')->orderBy('name')->get();
+        if ($checklistItems->isEmpty()) {
+            $this->command->warn('ChecklistQualityItem kosong. Jalankan ChecklistQualityItemSeeder dulu.');
+            return;
+        }
+
         // Data Performance dari tabel yang diberikan
         // Format: NRP, Nama, Job Order ID/Project, Checklist (10 kolom o), Percentage
         // Catatan: Data menggunakan Job Order yang ada di database (17 job orders)
-        
+
         $performanceData = [
             // M. Rizki Darmawan - Job Order pertama (50%)
             [
@@ -28,7 +35,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [1, 0, 1, 1, 1, 1, 0, 0, 0, 0], // 5 dari 10 = 50%
                 'percentage' => 50
             ],
-            
+
             // Didit Junianto - Job Order #2 (20%)
             [
                 'nrp' => '104484',
@@ -37,7 +44,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [0, 0, 1, 1, 0, 0, 0, 0, 0, 0], // 2 dari 10 = 20%
                 'percentage' => 20
             ],
-            
+
             // Yongki Adi Saputra - Job Order #3 (50%)
             [
                 'nrp' => '126545',
@@ -46,7 +53,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [0, 0, 1, 0, 1, 1, 1, 1, 0, 0], // 5 dari 10 = 50%
                 'percentage' => 50
             ],
-            
+
             // Dennis Alfiansyah - Job Order #4 (30%)
             [
                 'nrp' => '126521',
@@ -55,7 +62,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [0, 0, 0, 0, 0, 1, 1, 1, 0, 0], // 3 dari 10 = 30%
                 'percentage' => 30
             ],
-            
+
             // Rifki Andi Fahrezi - Job Order #5 (70%)
             [
                 'nrp' => '126546',
@@ -64,7 +71,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [0, 1, 1, 0, 1, 1, 1, 1, 1, 0], // 7 dari 10 = 70%
                 'percentage' => 70
             ],
-            
+
             // M. Rizki Darmawan - Job Order #5 (30%)
             [
                 'nrp' => '114380',
@@ -73,7 +80,7 @@ class PerformanceSeeder extends Seeder
                 'checklist' => [0, 0, 0, 0, 0, 0, 1, 1, 1, 0], // 3 dari 10 = 30%
                 'percentage' => 30
             ],
-            
+
             // Didit Junianto - Job Order #5 (50%)
             [
                 'nrp' => '104484',
@@ -87,7 +94,7 @@ class PerformanceSeeder extends Seeder
         foreach ($performanceData as $data) {
             // Cari manpower berdasarkan NRP
             $manpower = Manpower::where('nrp', $data['nrp'])->first();
-            
+
             if (!$manpower) {
                 $this->command->warn("Manpower dengan NRP {$data['nrp']} tidak ditemukan, skip.");
                 continue;
@@ -95,21 +102,23 @@ class PerformanceSeeder extends Seeder
 
             // Cari job order
             $jobOrder = JobOrder::find($data['job_order_id']);
-            
+
             if (!$jobOrder) {
                 $this->command->warn("Job Order ID {$data['job_order_id']} tidak ditemukan, skip.");
                 continue;
             }
 
-            // Hitung score dari checklist (10 checklist items)
+            // Hitung score dari checklist
             $checklistValues = $data['checklist'];
-            $score = ($data['percentage'] / 100) * 100; // Convert percentage to score
-            
+            $totalItems = $checklistItems->count();
+            $selectedCount = array_sum($checklistValues);
+            $score = $totalItems > 0 ? (int) round(($selectedCount / $totalItems) * 100) : 0;
+
             // Tentukan rating berdasarkan score
             $rating = $this->determineRating($score);
 
             // Create performance record
-            Performance::create([
+            $performance = Performance::create([
                 'manpower_id' => $manpower->id,
                 'job_order_id' => $jobOrder->id,
                 'tanggal' => $data['tanggal'],
@@ -128,6 +137,14 @@ class PerformanceSeeder extends Seeder
                 'rating' => $rating,
             ]);
 
+            $selectedIds = [];
+            foreach ($checklistItems->values() as $idx => $item) {
+                if (!empty($checklistValues[$idx])) {
+                    $selectedIds[] = $item->id;
+                }
+            }
+            $performance->checklistQualityItems()->sync($selectedIds);
+
             $this->command->info("✓ Performance untuk {$manpower->nama} (NRP: {$manpower->nrp}) - Job Order #{$jobOrder->id} berhasil dibuat");
         }
 
@@ -141,10 +158,8 @@ class PerformanceSeeder extends Seeder
     private function determineRating($score)
     {
         if ($score >= 90) return 'Excellent';
-        if ($score >= 80) return 'Very Good';
-        if ($score >= 70) return 'Good';
-        if ($score >= 60) return 'Satisfactory';
-        if ($score >= 50) return 'Fair';
+        if ($score >= 80) return 'Good';
+        if ($score >= 70) return 'Average';
         return 'Poor';
     }
 }

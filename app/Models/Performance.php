@@ -38,4 +38,9 @@ class Performance extends Model
     {
         return $this->belongsTo(JobOrder::class);
     }
+
+    public function checklistQualityItems()
+    {
+        return $this->belongsToMany(ChecklistQualityItem::class, 'performance_checklist_quality_item');
+    }
 }

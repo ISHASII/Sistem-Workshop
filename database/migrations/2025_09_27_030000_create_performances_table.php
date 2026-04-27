@@ -34,6 +34,7 @@ return new class extends Migration {
 
     public function down()
     {
+        Schema::dropIfExists('performance_checklist_quality_item');
         Schema::dropIfExists('performances');
     }
 };

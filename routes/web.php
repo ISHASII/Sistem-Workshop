@@ -118,6 +118,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/satuan/{satuan}', [\App\Http\Controllers\Admin\SatuanController::class, 'update'])->name('admin.satuan.update');
     Route::delete('/admin/satuan/{satuan}', [\App\Http\Controllers\Admin\SatuanController::class, 'destroy'])->name('admin.satuan.destroy');
 
+    Route::get('/admin/checklist-quality', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'index'])->name('admin.checklist-quality.index');
+    Route::get('/admin/checklist-quality/create', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'create'])->name('admin.checklist-quality.create');
+    Route::post('/admin/checklist-quality', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'store'])->name('admin.checklist-quality.store');
+    Route::get('/admin/checklist-quality/{checklistQualityItem}/edit', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'edit'])->name('admin.checklist-quality.edit');
+    Route::put('/admin/checklist-quality/{checklistQualityItem}', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'update'])->name('admin.checklist-quality.update');
+    Route::delete('/admin/checklist-quality/{checklistQualityItem}', [\App\Http\Controllers\Admin\ChecklistQualityItemController::class, 'destroy'])->name('admin.checklist-quality.destroy');
+
 
 
     // Man Power Management
