@@ -222,9 +222,17 @@
                                                     'rejected' => 'bg-rose-100 text-rose-700 border-rose-300',
                                                 ][$jo->approval_status ?? 'pending'];
                                             @endphp
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $approvalStatus }}">
-                                                {{ strtoupper($jo->approval_status ?? 'PENDING') }}
-                                            </span>
+                                            <div class="flex flex-col items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $approvalStatus }}">
+                                                    {{ strtoupper($jo->approval_status ?? 'PENDING') }}
+                                                </span>
+                                                @if(($jo->approval_status ?? 'pending') === 'rejected' && $jo->rejection_reason)
+                                                    <div class="text-[10px] leading-relaxed text-rose-700 bg-rose-50 px-2.5 py-1.5 rounded-md font-medium w-full min-w-[150px] max-w-[200px] text-left border border-rose-200 shadow-sm whitespace-normal break-words">
+                                                        <span class="block text-[9px] uppercase tracking-wider text-rose-500 font-bold mb-0.5">Alasan Reject:</span>
+                                                        {{ $jo->rejection_reason }}
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </td>
 
                                         <td class="px-3 py-3 text-center">

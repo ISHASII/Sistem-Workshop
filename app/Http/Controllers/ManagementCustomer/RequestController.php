@@ -75,7 +75,7 @@ class RequestController extends Controller
         $this->ensureSameDepartment($jobOrder);
 
         $data = $request->validate([
-            'rejection_reason' => 'nullable|string|max:500',
+            'rejection_reason' => 'required|string|max:500',
         ]);
 
         if ($jobOrder->approval_status !== 'pending') {
