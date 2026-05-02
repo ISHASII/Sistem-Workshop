@@ -142,6 +142,7 @@
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">End</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Progress</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Actual</th>
+                                    <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Approval</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Evaluasi</th>
                                     <th class="px-3 py-3 text-center text-xs font-bold text-slate-700 uppercase">Aksi</th>
                                 </tr>
@@ -214,6 +215,19 @@
 
                                         <!-- Evaluasi -->
                                         <td class="px-3 py-3 text-center">
+                                            @php
+                                                $approvalStatus = [
+                                                    'pending' => 'bg-amber-100 text-amber-700 border-amber-300',
+                                                    'approved' => 'bg-green-100 text-green-700 border-green-300',
+                                                    'rejected' => 'bg-rose-100 text-rose-700 border-rose-300',
+                                                ][$jo->approval_status ?? 'pending'];
+                                            @endphp
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $approvalStatus }}">
+                                                {{ strtoupper($jo->approval_status ?? 'PENDING') }}
+                                            </span>
+                                        </td>
+
+                                        <td class="px-3 py-3 text-center">
                                             @if($jo->evaluasi)
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $jo->evaluasi == 'Tepat Waktu' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-red-100 text-red-700 border-red-300' }}">
                                                     {{ $jo->evaluasi }}
@@ -226,14 +240,14 @@
                                         <td class="px-3 py-3 text-center">
                                             <div class="flex justify-center items-center gap-1">
                                                 @include('admin.partials.action-buttons', [
-                                                        'editRoute' => route('customer.joborder.edit', $jo->id),
-                                                        'destroyRoute' => route('customer.joborder.destroy', $jo->id),
-                                                        'pdfRoute' => route('customer.joborder.exportPdf', $jo->id) . '?stream=1',
-                                                        'labelAlign' => 'center',
-                                                        'deleteTitle' => 'Hapus job order?',
-                                                        'deleteText' => 'Yakin ingin menghapus job order ini?',
-                                                        'deleteConfirm' => 'Hapus'
-                                                    ])
+                                                    'editRoute' => ($jo->approval_status ?? 'pending') === 'rejected' ? route('customer.joborder.edit', $jo->id) : null,
+                                                    'destroyRoute' => ($jo->approval_status ?? 'pending') === 'rejected' ? route('customer.joborder.destroy', $jo->id) : null,
+                                                    'pdfRoute' => route('customer.joborder.exportPdf', $jo->id) . '?stream=1',
+                                                    'labelAlign' => 'center',
+                                                    'deleteTitle' => 'Hapus job order?',
+                                                    'deleteText' => 'Yakin ingin menghapus job order ini?',
+                                                    'deleteConfirm' => 'Hapus'
+                                                ])
                                             </div>
                                         </td>
                                     </tr>

@@ -19,7 +19,7 @@ class JobOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = JobOrder::with(['items.material']);
+        $query = JobOrder::with(['items.material'])->approvedApproval();
 
         // Search
         if ($request->filled('search')) {
@@ -72,6 +72,10 @@ class JobOrderController extends Controller
      */
     public function show(JobOrder $joborder)
     {
+        if (($joborder->approval_status ?? 'approved') !== 'approved') {
+            abort(404);
+        }
+
         $joborder->load(['items.material.satuan', 'creator']);
         return view('admin.joborders.show', compact('joborder'));
     }
@@ -231,7 +235,12 @@ class JobOrderController extends Controller
         }
 
         DB::transaction(function () use ($data, $request) {
-            $jo = JobOrder::create(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray());
+            $jo = JobOrder::create(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray() + [
+                'approval_status' => 'approved',
+                'approval_requested_at' => now(),
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
 
             // Handle uploaded images
             $savedImages = [];

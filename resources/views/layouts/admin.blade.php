@@ -63,7 +63,7 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                         <!-- Master Data Dropdown -->
                         <div class="relative group">
                             <button
-                                class="nav-dropdown-button flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.kategori.*') || request()->routeIs('admin.satuan.*') || request()->routeIs('admin.checklist-quality.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                                class="nav-dropdown-button flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.kategori.*') || request()->routeIs('admin.departement.*') || request()->routeIs('admin.jabatan.*') || request()->routeIs('admin.satuan.*') || request()->routeIs('admin.checklist-quality.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
                                 <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -93,6 +93,36 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                                                 </svg>
                                             </div>
                                             <div class="font-medium">Kategori</div>
+                                        </a>
+                                    @endif
+
+                                    @if(Route::has('admin.departement.index'))
+                                        <a href="{{ route('admin.departement.index') }}"
+                                            class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.departement.*') ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:text-amber-600 hover:bg-amber-50' }}">
+                                            <div
+                                                class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.departement.*') ? 'bg-amber-200' : 'bg-amber-100' }}">
+                                                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div class="font-medium">Departement</div>
+                                        </a>
+                                    @endif
+
+                                    @if(Route::has('admin.jabatan.index'))
+                                        <a href="{{ route('admin.jabatan.index') }}"
+                                            class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.jabatan.*') ? 'bg-orange-50 text-orange-700' : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50' }}">
+                                            <div
+                                                class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.jabatan.*') ? 'bg-orange-200' : 'bg-orange-100' }}">
+                                                <svg class="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div class="font-medium">Jabatan</div>
                                         </a>
                                     @endif
 
@@ -415,6 +445,32 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                                 </svg>
                             </div>
                             Kategori
+                        </a>
+                    @endif
+
+                    @if(Route::has('admin.departement.index'))
+                        <a href="{{ route('admin.departement.index') }}"
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
+                            <div class="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            Departement
+                        </a>
+                    @endif
+
+                    @if(Route::has('admin.jabatan.index'))
+                        <a href="{{ route('admin.jabatan.index') }}"
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
+                            <div class="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            Jabatan
                         </a>
                     @endif
 

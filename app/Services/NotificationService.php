@@ -8,13 +8,22 @@ use App\Models\JobOrder;
 
 class NotificationService
 {
+    protected function managementCustomerRecipients(User $customer)
+    {
+        return User::where('department_id', $customer->department_id)
+            ->whereHas('jabatan', function ($query) {
+                $query->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) = ?", ['managementcustomer']);
+            })
+            ->get();
+    }
+
     /**
      * Send notification to all admin users
      */
     public function notifyAdmins(string $title, string $message, string $type, JobOrder $jobOrder = null, User $actionBy = null): void
     {
         $admins = User::where('role', 'admin')->get();
-        
+
         // Log for debugging
         \Log::info("Sending notification to {$admins->count()} admin users", [
             'title' => $title,
@@ -38,7 +47,7 @@ class NotificationService
                     'action_by_npk' => $actionBy ? $actionBy->npk : null,
                 ]
             ]);
-            
+
             \Log::info("Notification created", [
                 'notification_id' => $notification->id,
                 'admin_id' => $admin->id,
@@ -52,13 +61,106 @@ class NotificationService
      */
     public function notifyJobOrderCreated(JobOrder $jobOrder, User $customer): void
     {
-        $this->notifyAdmins(
-            'Job Order Baru',
-            "Job Order baru dengan project '{$jobOrder->project}' telah dibuat oleh {$customer->name} ({$customer->npk})",
-            'job_order_created',
-            $jobOrder,
-            $customer
-        );
+        $this->notifyJobOrderApprovalRequested($jobOrder, $customer);
+    }
+
+    public function notifyJobOrderApprovalRequested(JobOrder $jobOrder, User $customer): void
+    {
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                'title' => 'Approval Request JO Baru',
+                'message' => "Permintaan approval JO '{$jobOrder->project}' dari {$customer->name} menunggu persetujuan Anda.",
+                'type' => 'job_order_approval_requested',
+                'user_id' => $recipient->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $customer->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'job_order_area' => $jobOrder->area,
+                    'request_by_name' => $customer->name,
+                    'requested_at' => $jobOrder->approval_requested_at?->toDateTimeString() ?? now()->toDateTimeString(),
+                    'status' => 'pending',
+                ]
+            ]);
+        }
+    }
+
+    /**
+     * Notify management customer when a previously rejected job order is resubmitted after edit
+     */
+    public function notifyJobOrderResubmitted(JobOrder $jobOrder, User $customer): void
+    {
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                // Make title/message more prominent to indicate resubmission
+                'title' => 'RESUBMISI: Permintaan Approval JO',
+                'message' => "PERHATIAN — JO ini adalah resubmisi setelah ditolak. Permintaan approval ulang JO '{$jobOrder->project}' dari {$customer->name} menunggu persetujuan Anda.",
+                'type' => 'job_order_resubmitted',
+                'user_id' => $recipient->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $customer->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'job_order_area' => $jobOrder->area,
+                    'request_by_name' => $customer->name,
+                    'requested_at' => $jobOrder->approval_requested_at?->toDateTimeString() ?? now()->toDateTimeString(),
+                    'status' => 'resubmitted',
+                ]
+            ]);
+        }
+    }
+
+    public function notifyJobOrderApproved(JobOrder $jobOrder, User $approvedBy): void
+    {
+        $customer = $jobOrder->creator;
+        if (!$customer) {
+            return;
+        }
+
+        Notification::create([
+            'title' => 'Job Order Disetujui',
+            'message' => "Job Order '{$jobOrder->project}' telah disetujui oleh management customer.",
+            'type' => 'job_order_approved',
+            'user_id' => $customer->id,
+            'job_order_id' => $jobOrder->id,
+            'action_by' => $approvedBy->id,
+            'data' => [
+                'job_order_project' => $jobOrder->project,
+                'job_order_seksi' => $jobOrder->seksi,
+                'request_by_name' => $customer->name,
+                'approved_by_name' => $approvedBy->name,
+                'approved_at' => now()->toDateTimeString(),
+                'status' => 'yes',
+            ]
+        ]);
+    }
+
+    public function notifyJobOrderRejected(JobOrder $jobOrder, User $rejectedBy, ?string $reason = null): void
+    {
+        $customer = $jobOrder->creator;
+        if (!$customer) {
+            return;
+        }
+
+        Notification::create([
+            'title' => 'Job Order Ditolak',
+            'message' => "Job Order '{$jobOrder->project}' ditolak oleh management customer." . ($reason ? ' Alasan: ' . $reason : ''),
+            'type' => 'job_order_rejected',
+            'user_id' => $customer->id,
+            'job_order_id' => $jobOrder->id,
+            'action_by' => $rejectedBy->id,
+            'data' => [
+                'job_order_project' => $jobOrder->project,
+                'job_order_seksi' => $jobOrder->seksi,
+                'request_by_name' => $customer->name,
+                'rejected_by_name' => $rejectedBy->name,
+                'rejected_at' => now()->toDateTimeString(),
+                'rejection_reason' => $reason,
+                'status' => 'no',
+            ]
+        ]);
     }
 
     /**
@@ -102,11 +204,17 @@ class NotificationService
     /**
      * Get notifications for a user with pagination
      */
-    public function getNotifications(User $user, int $limit = 10)
+    public function getNotifications(User $user, int $limit = 10, ?string $filter = null)
     {
-        return Notification::where('user_id', $user->id)
-            ->with(['jobOrder', 'actionBy'])
-            ->orderBy('created_at', 'desc')
+        $query = Notification::where('user_id', $user->id)
+            ->with(['jobOrder', 'actionBy']);
+
+        // Support filter = 'resubmisi' to show only resubmitted JO notifications
+        if ($filter && in_array(strtolower($filter), ['resubmisi', 'resubmitted', 'resubmission'])) {
+            $query->where('type', 'job_order_resubmitted');
+        }
+
+        return $query->orderBy('created_at', 'desc')
             ->paginate($limit);
     }
 

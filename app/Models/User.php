@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'department_id',
+        'jabatan_id',
     ];
 
     /**
@@ -70,5 +72,27 @@ class User extends Authenticatable
     public function createdJobOrders()
     {
         return $this->hasMany(JobOrder::class, 'created_by');
+    }
+
+    public function departement()
+    {
+        return $this->belongsTo(Departement::class, 'department_id');
+    }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class, 'jabatan_id');
+    }
+
+    public function isManagementCustomer(): bool
+    {
+        $jabatanName = strtolower(trim((string) optional($this->jabatan)->name));
+        $normalized = str_replace([' ', '_', '-'], '', $jabatanName);
+
+        return in_array($normalized, [
+            'managementcustomer',
+            'manajemencustomer',
+            'manajementcustomer',
+        ], true);
     }
 }

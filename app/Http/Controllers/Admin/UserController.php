@@ -28,17 +28,20 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create');
+        $departements = \App\Models\Departement::orderBy('name')->get();
+
+        return view('admin.users.create', compact('departements'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'username' => 'required|string|max:50|unique:users,username',
-            'name' => 'nullable|string|max:191',
+            'name' => 'required|string|max:191',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,customer',
+            'role' => 'required|string|in:admin,customer,management-customer',
+            'department_id' => 'required_if:role,customer,management-customer|exists:departements,id',
         ]);
 
         $user = User::create([
@@ -47,6 +50,7 @@ class UserController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
+            'department_id' => $data['department_id'] ?? null,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dibuat.');
@@ -54,23 +58,27 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $departements = \App\Models\Departement::orderBy('name')->get();
+
+        return view('admin.users.edit', compact('user', 'departements'));
     }
 
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
             'username' => 'required|string|max:50|unique:users,username,' . $user->id,
-            'name' => 'nullable|string|max:191',
+            'name' => 'required|string|max:191',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,customer',
+            'role' => 'required|string|in:admin,customer,management-customer',
+            'department_id' => 'required_if:role,customer,management-customer|exists:departements,id',
         ]);
 
         $user->username = $data['username'];
         $user->name = $data['name'] ?? $data['username'];
         $user->email = $data['email'];
         $user->role = $data['role'];
+        $user->department_id = $data['department_id'] ?? null;
 
         if (!empty($data['password'])) {
             $user->password = Hash::make($data['password']);

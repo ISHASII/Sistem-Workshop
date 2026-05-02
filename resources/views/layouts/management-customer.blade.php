@@ -5,37 +5,33 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin') - {{ config('app.name') }}</title>
-    @if (app()->environment('local'))
-        {{-- Use Vite dev server in local environment --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        {{-- Use built assets in production/other envs --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
+    <title>@yield('title', 'Management Customer') - {{ config('app.name') }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen" @if(session('success'))
+data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-flash-error="{{ session('error') }}"
+    @endif>
     <nav
         class="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-lg shadow-slate-900/5 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-2 sm:px-4">
-            <div class="flex items-center justify-between h-16">
-                <!-- Left side - Logo and Navigation -->
-                <div class="flex items-center space-x-8">
-                    <!-- Logo -->
-                    <a href="{{ route('customer.dashboard') }}" class="flex items-center">
+        <div class="w-full pr-4 sm:pr-6 lg:pr-8"
+            style="padding-left:0 !important; margin-left:0 !important; margin-right:0 !important;">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8"
+                    style="margin-left:0 !important; padding-left:35px !important;">
+                    <a href="{{ route('management-customer.dashboard') }}" class="flex items-center"
+                        style="display:flex !important; align-items:center !important; gap:6px !important; margin-right:24px !important; margin-left:0 !important; padding-left:0 !important;">
                         <img src="{{ asset('image/logo-ahm.png') }}" alt="{{ config('app.name') }} logo"
-                            class="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain mr-4">
-                        <div class="hidden md:flex flex-col leading-tight">
-                            <span class="text-lg font-semibold text-slate-800">Sistem Workshop</span>
-                        </div>
+                            class="w-16 h-16 object-contain" style="width:64px !important; height:64px !important;">
+                        <span class="text-base font-semibold text-slate-800"
+                            style="font-size:16px !important; font-weight:600 !important; line-height:1.2 !important; white-space:nowrap !important;">Sistem
+                            Workshop</span>
                     </a>
 
-                    <!-- Desktop Navigation (only Dashboard + Job Order) -->
                     <div class="hidden lg:flex items-center space-x-1">
-                        <a href="{{ route('customer.dashboard') }}"
-                            class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('customer.dashboard') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200"
+                        <a href="{{ route('management-customer.dashboard') }}"
+                            class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.dashboard') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -43,24 +39,22 @@
                             Dashboard
                         </a>
 
-                        <a href="{{ route('customer.joborder.index') }}"
-                            class="nav-link group flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('customer.joborder.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
-                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200"
+                        <a href="{{ route('management-customer.requests.index') }}"
+                            class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.requests.*') ? 'bg-red-100 text-red-700 font-bold' : 'text-slate-600 hover:text-red-600 hover:bg-red-50' }}">
+                            <svg class="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform duration-200"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                </path>
+                                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
-                            Job Order
+                            Request
                         </a>
                     </div>
                 </div>
 
-                <!-- Right side - Profile dropdown and mobile menu -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:block relative">
-                        <a href="{{ route('customer.notifications.index') }}"
-                            class="relative flex items-center justify-center w-10 h-10 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.notifications.*') ? 'bg-red-50 text-red-700' : '' }}">
+                        <a href="{{ route('management-customer.notifications.index') }}"
+                            class="relative flex items-center justify-center w-10 h-10 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group {{ request()->routeIs('management-customer.notifications.*') ? 'bg-red-50 text-red-700' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                 class="w-5 h-5 group-hover:scale-110 transition-transform duration-200">
                                 <path
@@ -77,16 +71,16 @@
                         </a>
                     </div>
 
-                    <!-- Profile dropdown (desktop) -->
                     <div class="hidden md:block relative group">
                         <button
                             class="nav-dropdown-button flex items-center px-4 py-2 text-sm font-medium text-slate-600 hover:text-red-600 rounded-xl hover:bg-red-50 transition-all duration-200">
                             <div
                                 class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
                                 <span
-                                    class="text-white text-sm font-semibold">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                    class="text-white text-sm font-semibold">{{ substr(auth()->user()->name ?? auth()->user()->username, 0, 1) }}</span>
                             </div>
-                            <span class="ml-2 text-sm font-medium">{{ auth()->user()->name }}</span>
+                            <span
+                                class="ml-2 text-sm font-medium">{{ auth()->user()->name ?? auth()->user()->username }}</span>
                             <svg class="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200 text-slate-500"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7">
@@ -96,7 +90,7 @@
                         <div
                             class="nav-dropdown absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                             <div class="p-2">
-                                <a href="{{ route('customer.profile.edit') }}"
+                                <a href="{{ route('management-customer.profile.edit') }}"
                                     class="flex items-center px-4 py-3 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group">
                                     <div class="w-6 h-6 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                                         <svg class="w-3 h-3 text-slate-700" fill="none" stroke="currentColor"
@@ -133,7 +127,6 @@
                         </div>
                     </div>
 
-                    <!-- Mobile menu button -->
                     <div class="lg:hidden">
                         <button id="mobile-menu-button"
                             class="inline-flex items-center justify-center p-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 focus:outline-none transition-all duration-200"
@@ -149,27 +142,23 @@
             </div>
         </div>
 
-        <!-- Mobile menu -->
         <div id="mobile-menu" class="lg:hidden hidden border-t border-slate-200/50 bg-white/95 backdrop-blur-xl">
             <div class="px-4 pt-4 pb-6 space-y-2">
-                <!-- User info mobile -->
                 <div class="flex items-center space-x-3 bg-slate-50 rounded-xl px-4 py-3 mb-4">
                     <div
                         class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
-                        <span class="text-white font-semibold">
-                            {{ substr(auth()->user()->name ?? auth()->user()->username, 0, 1) }}
-                        </span>
+                        <span
+                            class="text-white font-semibold">{{ substr(auth()->user()->name ?? auth()->user()->username, 0, 1) }}</span>
                     </div>
                     <div>
                         <div class="font-medium text-slate-800">{{ auth()->user()->name ?? auth()->user()->username }}
                         </div>
-                        <div class="text-sm text-slate-500">Customer</div>
+                        <div class="text-sm text-slate-500">Management Customer</div>
                     </div>
                 </div>
 
-                <!-- Navigation links mobile (only Dashboard + Job Order) -->
-                <a href="{{ route('customer.dashboard') }}"
-                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
+                <a href="{{ route('management-customer.dashboard') }}"
+                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.dashboard') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
@@ -178,18 +167,18 @@
                     Dashboard
                 </a>
 
-                <a href="{{ route('customer.joborder.index') }}"
-                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
+                <a href="{{ route('management-customer.requests.index') }}"
+                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.requests.*') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
                         </path>
                     </svg>
-                    Job Order
+                    Request
                 </a>
 
-                <a href="{{ route('customer.notifications.index') }}"
-                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('customer.notifications.*') ? 'bg-red-50 text-red-700' : '' }}">
+                <a href="{{ route('management-customer.notifications.index') }}"
+                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.notifications.*') ? 'bg-red-50 text-red-700' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
@@ -200,7 +189,15 @@
                     Notifications
                 </a>
 
-                <!-- Logout mobile -->
+                <a href="{{ route('management-customer.profile.edit') }}"
+                    class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 {{ request()->routeIs('management-customer.profile.*') ? 'bg-red-50 text-red-700' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.58 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Profile
+                </a>
+
                 <form method="POST" action="{{ route('logout') }}" class="mt-6 pt-4 border-t border-slate-200/50">
                     @csrf
                     <button type="submit"
@@ -227,18 +224,15 @@
                     });
                 }
 
-                // Close mobile menu when clicking outside
                 document.addEventListener('click', function (event) {
+                    if (!btn || !menu) return;
                     if (!btn.contains(event.target) && !menu.contains(event.target)) {
                         menu.classList.add('hidden');
                     }
                 });
 
-                // Handle dropdown functionality
                 const dropdownButtons = document.querySelectorAll('.nav-dropdown-button');
                 dropdownButtons.forEach(button => {
-                    const dropdown = button.nextElementSibling;
-
                     button.addEventListener('click', function (e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -261,7 +255,6 @@
             transform: translateY(0);
         }
 
-        /* Hide native browser password reveal/clear controls so only our custom toggle is visible */
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear {
             display: none;

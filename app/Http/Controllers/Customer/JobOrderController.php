@@ -21,11 +21,22 @@ class JobOrderController extends Controller
     {
         $this->notificationService = $notificationService;
     }
+
+    protected function departmentSection(?\App\Models\User $user = null): ?string
+    {
+        $user = $user ?: auth()->user();
+
+        return optional($user?->departement)->name;
+    }
     /**
      * Display a listing of job orders for customer.
      */
     public function index(Request $request)
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
         $query = JobOrder::with(['items.material'])
             ->where('created_by', auth()->id()); // Only show job orders created by current user
 
@@ -77,6 +88,10 @@ class JobOrderController extends Controller
 
     public function create()
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
         $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');
         // Fetch booked ranges to disable on the datepicker
         $bookedRanges = JobOrder::select('start', 'end')->get()->map(function($r){
@@ -117,13 +132,19 @@ class JobOrderController extends Controller
         }
         $earliestAllowedStart = $latestEnd ? $latestEnd->addDay()->format('d-m-Y') : null;
 
-        return view('customer.joborders.create', compact('materials', 'bookedRanges', 'earliestAllowedStart'));
+        $defaultSeksi = $this->departmentSection();
+
+        return view('customer.joborders.create', compact('materials', 'bookedRanges', 'earliestAllowedStart', 'defaultSeksi'));
     }
 
     public function store(Request $request)
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
         $data = $request->validate([
-            'seksi' => 'required|string|max:255',
+            'seksi' => 'nullable|string|max:255',
             'status' => 'required|in:Low,Medium,High,Urgent',
             'project' => 'required|string|max:255',
             'start' => 'required|string|max:255',
@@ -131,7 +152,7 @@ class JobOrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.material_id' => 'required|exists:materials,id',
             'items.*.spesifikasi' => 'nullable|string',
-            'items.*.jumlah' => 'nullable|integer',
+            'items.*.jumlah' => 'required|integer|min:1',
             'items.*.satuan' => 'nullable|string|max:100',
             'area' => 'nullable|string|max:255',
             'latar_belakang' => 'nullable|string',
@@ -217,14 +238,38 @@ class JobOrderController extends Controller
             return back()->withInput()->withErrors(['start' => $msg]);
         }
 
+        $departmentSection = $this->departmentSection();
+        if (empty($departmentSection)) {
+            return back()->withInput()->withErrors(['seksi' => 'Departement akun Anda belum diisi. Hubungi admin untuk melengkapinya.']);
+        }
+
+        $data['seksi'] = $departmentSection;
+
         // Backend stok validation
         foreach ($data['items'] as $idx => $item) {
-            if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+            $requestedQty = (int) ($item['jumlah'] ?? 0);
+            if (!empty($item['material_id'])) {
                 $mat = Material::find($item['material_id']);
-                if ($mat && $item['jumlah'] > $mat->getCurrentStok()) {
-                    return back()
-                        ->withInput()
-                        ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris ".($idx+1)." melebihi stok tersedia!"]);
+                if ($mat) {
+                    $currentStock = (int) $mat->getCurrentStok();
+
+                    if ($currentStock <= 0) {
+                        return back()
+                            ->withInput()
+                            ->withErrors(["items.$idx.material_id" => "Material pada baris " . ($idx + 1) . " stoknya tidak tersedia. Pilih material lain."]);
+                    }
+
+                    if ($requestedQty <= 0) {
+                        return back()
+                            ->withInput()
+                            ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris " . ($idx + 1) . " harus lebih dari 0."]);
+                    }
+
+                    if ($requestedQty > $currentStock) {
+                        return back()
+                            ->withInput()
+                            ->withErrors(["items.$idx.jumlah" => "Jumlah material pada baris " . ($idx + 1) . " melebihi stok tersedia (stok: {$currentStock})."]);
+                    }
                 }
             }
         }
@@ -232,40 +277,47 @@ class JobOrderController extends Controller
         $jo = null;
         DB::transaction(function () use ($data, $request, &$jo) {
             $jobOrderData = collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray();
-            $jobOrderData['created_by'] = auth()->id(); // Set the creator
+            $jobOrderData['created_by'] = auth()->id();
+            $jobOrderData['approval_status'] = 'pending';
+            $jobOrderData['approval_requested_at'] = now();
             $jo = JobOrder::create($jobOrderData);
 
-            // Handle uploaded images
             $savedImages = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $f) {
                     if ($f && $f->isValid()) {
                         $filename = 'joborders/' . date('Y/m') . '/' . Str::random(8) . '_' . $f->getClientOriginalName();
                         Storage::disk('public')->putFileAs(dirname($filename), $f, basename($filename));
-                        $savedImages[] = 'storage/' . $filename; // accessible path via asset()
+                        $savedImages[] = 'storage/' . $filename;
                     }
                 }
             }
+
             if (!empty($savedImages)) {
                 $jo->images = $savedImages;
                 $jo->save();
             }
+
             foreach ($data['items'] as $item) {
-                // Autofill unit/spec from material if not provided
                 if (!empty($item['material_id'])) {
                     $mat = Material::with('satuan')->find($item['material_id']);
                     if ($mat) {
-                        if (empty($item['satuan']) && $mat->satuan) $item['satuan'] = $mat->satuan->name;
-                        if (empty($item['spesifikasi']) && !empty($mat->notes)) $item['spesifikasi'] = $mat->notes;
+                        if (empty($item['satuan']) && $mat->satuan) {
+                            $item['satuan'] = $mat->satuan->name;
+                        }
+                        if (empty($item['spesifikasi']) && !empty($mat->notes)) {
+                            $item['spesifikasi'] = $mat->notes;
+                        }
                     }
                 }
-                $createdItem = $jo->items()->create([
+
+                $jo->items()->create([
                     'material_id' => $item['material_id'] ?? null,
                     'spesifikasi' => $item['spesifikasi'] ?? null,
                     'jumlah' => $item['jumlah'] ?? null,
                     'satuan' => $item['satuan'] ?? null,
                 ]);
-                // Kurangi stok material dengan membuat MaterialMovement type 'out'
+
                 if (!empty($item['material_id']) && !empty($item['jumlah'])) {
                     \App\Models\MaterialMovement::create([
                         'material_id' => $item['material_id'],
@@ -278,19 +330,24 @@ class JobOrderController extends Controller
             }
         });
 
-        // Send notification to admins
-        $this->notificationService->notifyJobOrderCreated($jo, auth()->user());
+        $this->notificationService->notifyJobOrderApprovalRequested($jo, auth()->user());
 
-        return redirect()->route('customer.joborder.index')->with('success', 'Job order created.');
+        return redirect()->route('customer.joborder.index')->with('success', 'Job order berhasil dibuat dan menunggu approval management customer.');
     }
 
     public function edit(JobOrder $joborder)
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
+        if (($joborder->approval_status ?? 'pending') !== 'rejected') {
+            return back()->with('error', 'Job order hanya bisa diedit setelah ditolak oleh Management Customer.');
+        }
+
         $joborder->load('items');
         $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get();
-        // Exclude current joborder so its own dates remain selectable while editing
         $bookedRanges = JobOrder::where('id', '!=', $joborder->id)->select('start', 'end')->get()->map(function($r){
-            // Convert to Y-m-d format for flatpickr
             try {
                 $start = \Carbon\Carbon::createFromFormat('d-m-Y', $r->start);
                 $end = \Carbon\Carbon::createFromFormat('d-m-Y', $r->end);
@@ -304,11 +361,22 @@ class JobOrderController extends Controller
             }
             return ['from' => $start->format('Y-m-d'), 'to' => $end->format('Y-m-d')];
         })->filter()->values()->toArray();
-        return view('customer.joborders.edit', compact('joborder','materials', 'bookedRanges'));
+
+        $defaultSeksi = $this->departmentSection();
+
+        return view('customer.joborders.edit', compact('joborder', 'materials', 'bookedRanges', 'defaultSeksi'));
     }
 
     public function update(Request $request, JobOrder $joborder)
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
+        if (($joborder->approval_status ?? 'pending') !== 'rejected') {
+            return back()->with('error', 'Job order hanya bisa diperbarui setelah ditolak oleh Management Customer.');
+        }
+
         $data = $request->validate([
             'seksi' => 'nullable|string|max:255',
             'status' => 'required|in:Low,Medium,High,Urgent',
@@ -412,6 +480,13 @@ class JobOrderController extends Controller
             }
         }
 
+        $departmentSection = $this->departmentSection();
+        if (empty($departmentSection)) {
+            return back()->withInput()->withErrors(['seksi' => 'Departement akun Anda belum diisi. Hubungi admin untuk melengkapinya.']);
+        }
+
+        $data['seksi'] = $departmentSection;
+
         // Backend stok validation (edit) hanya jika jumlah berubah
         foreach ($data['items'] as $idx => $item) {
             if (!empty($item['material_id']) && !empty($item['jumlah'])) {
@@ -433,7 +508,15 @@ class JobOrderController extends Controller
         }
 
         DB::transaction(function () use ($data, $joborder) {
-            $joborder->update(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray());
+            $joborder->update(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray() + [
+                'approval_status' => 'pending',
+                'approval_requested_at' => now(),
+                'approved_by' => null,
+                'approved_at' => null,
+                'rejected_by' => null,
+                'rejected_at' => null,
+                'rejection_reason' => null,
+            ]);
 
             // Sync items: collect ids to retain
             $incomingIds = collect($data['items'])->pluck('id')->filter()->all();
@@ -538,16 +621,22 @@ class JobOrderController extends Controller
             }
         });
 
-        // Send notification to admins
-        $this->notificationService->notifyJobOrderUpdated($joborder, auth()->user());
+        // Re-send approval request to management customer after updates
+        // Use a distinct notification for resubmissions so management can distinguish from new JOs
+        $this->notificationService->notifyJobOrderResubmitted($joborder, auth()->user());
 
         return redirect()->route('customer.joborder.index')->with('success', 'Job order updated.');
     }
 
     public function destroy(JobOrder $joborder)
     {
-        // Send notification to admins before deleting
-        $this->notificationService->notifyJobOrderDeleted($joborder, auth()->user());
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
+        }
+
+        if (($joborder->approval_status ?? 'pending') !== 'rejected') {
+            return back()->with('error', 'Job order hanya bisa dihapus setelah ditolak oleh Management Customer.');
+        }
 
         $joborder->delete();
         return back()->with('success', 'Job order deleted.');

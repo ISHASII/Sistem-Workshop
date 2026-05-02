@@ -31,6 +31,88 @@
                 <form method="POST" action="{{ route('customer.register.store') }}" class="space-y-5">
                     @csrf
 
+                    <!-- Departement -->
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Departement</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400 group-focus-within:text-red-500 transition-colors"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select name="department_id"
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all appearance-none bg-white"
+                                required>
+                                <option value="">Pilih departement</option>
+                                @forelse($departements as $departement)
+                                    <option value="{{ $departement->id }}" {{ old('department_id') == $departement->id ? 'selected' : '' }}>
+                                        {{ $departement->name }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>Tidak ada departement. Silakan admin tambahkan dulu.</option>
+                                @endforelse
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                        @error('department_id') <p class="text-sm text-red-600 mt-1 flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {{ $message }}
+                        </p> @enderror
+                    </div>
+
+                    <!-- Jabatan -->
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jabatan</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400 group-focus-within:text-red-500 transition-colors"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select name="jabatan_id"
+                                class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all appearance-none bg-white"
+                                required>
+                                <option value="">Pilih jabatan</option>
+                                @forelse($jabatans as $jabatan)
+                                    <option value="{{ $jabatan->id }}" {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
+                                        {{ $jabatan->name }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>Tidak ada jabatan. Silakan admin tambahkan dulu.</option>
+                                @endforelse
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                        @error('jabatan_id') <p class="text-sm text-red-600 mt-1 flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {{ $message }}
+                        </p> @enderror
+                    </div>
+
                     <!-- Username -->
                     <div class="group">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>

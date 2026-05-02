@@ -12,6 +12,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        if (auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.dashboard');
+        }
+
         // Data proyek urgent (per proyek, bukan agregat) - filtered by current customer
         $urgent_projects = \App\Models\JobOrder::where('status', 'Urgent')
             ->where('created_by', auth()->id())

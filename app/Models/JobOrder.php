@@ -11,11 +11,15 @@ class JobOrder extends Model
 
     protected $fillable = [
         'seksi','status','project','start','end','progress','actual','evaluasi',
-        'area','latar_belakang','tujuan','target','images','created_by'
+        'area','latar_belakang','tujuan','target','images','created_by',
+        'approval_status','approval_requested_at','approved_by','approved_at','rejected_by','rejected_at','rejection_reason'
     ];
 
     protected $casts = [
         'actual' => 'date',
+        'approval_requested_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'images' => 'array',
     ];
 
@@ -30,5 +34,30 @@ class JobOrder extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function scopePendingApproval($query)
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeApprovedApproval($query)
+    {
+        return $query->where('approval_status', 'approved');
+    }
+
+    public function scopeRejectedApproval($query)
+    {
+        return $query->where('approval_status', 'rejected');
     }
 }

@@ -13,8 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Run individual seeders so `php artisan db:seed` also runs the UserSeeder.
+        // Run master data first so dependent seeders can reference the records.
         $this->call([
+            DepartementSeeder::class,
+            JabatanSeeder::class,
             UserSeeder::class,
             \Database\Seeders\ManpowerSeeder::class,
             \Database\Seeders\KategoriSeeder::class,
@@ -28,10 +30,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Keep a small factory-created user for quick manual tests (optional).
-        User::factory()->create([
+        User::updateOrCreate([
+            'username' => 'testuser',
+        ], [
             'username' => 'testuser',
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'customer',
         ]);
     }
 }

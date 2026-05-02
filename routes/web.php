@@ -22,13 +22,30 @@ Route::middleware(['auth'])->group(function () {
     // Role-specific dashboards (new namespaced controllers)
     Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/customer/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('customer.dashboard');
+    Route::get('/management-customer/dashboard', [\App\Http\Controllers\ManagementCustomer\DashboardController::class, 'index'])->name('management-customer.dashboard');
+    Route::get('/management-customer/requests', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'index'])->name('management-customer.requests.index');
+    Route::post('/management-customer/requests/{jobOrder}/approve', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'approve'])->name('management-customer.requests.approve');
+    Route::post('/management-customer/requests/{jobOrder}/reject', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'reject'])->name('management-customer.requests.reject');
+    Route::get('/customer/notifications', [\App\Http\Controllers\Customer\NotificationController::class, 'index'])->name('customer.notifications.index');
+    Route::get('/customer/notifications/{notification}', [\App\Http\Controllers\Customer\NotificationController::class, 'show'])->name('customer.notifications.show');
+    Route::post('/customer/notifications/{notification}/mark-as-read', [\App\Http\Controllers\Customer\NotificationController::class, 'markAsRead'])->name('customer.notifications.markAsRead');
+    Route::post('/customer/notifications/mark-all-read', [\App\Http\Controllers\Customer\NotificationController::class, 'markAllAsRead'])->name('customer.notifications.markAllAsRead');
+    Route::get('/customer/notifications/unread-count', [\App\Http\Controllers\Customer\NotificationController::class, 'getUnreadCount'])->name('customer.notifications.unreadCount');
+    Route::get('/management-customer/notifications', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'index'])->name('management-customer.notifications.index');
+    Route::get('/management-customer/notifications/{notification}', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'show'])->name('management-customer.notifications.show');
+    Route::post('/management-customer/notifications/{notification}/mark-as-read', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'markAsRead'])->name('management-customer.notifications.markAsRead');
+    Route::post('/management-customer/notifications/mark-all-read', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'markAllAsRead'])->name('management-customer.notifications.markAllAsRead');
+    Route::get('/management-customer/notifications/unread-count', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'getUnreadCount'])->name('management-customer.notifications.unreadCount');
 
     // Job Order (accessible by both roles)
     // Keep generic route for compatibility but redirect to role-specific named routes
     Route::get('/joborders', function () {
-        $role = auth()->user()->role ?? null;
-        if ($role === 'admin') {
+        $user = auth()->user();
+        if (($user->role ?? null) === 'admin') {
             return redirect()->route('admin.joborder.index');
+        }
+        if (($user->role ?? null) === 'customer' && $user->isManagementCustomer()) {
+            return redirect()->route('management-customer.requests.index');
         }
         return redirect()->route('customer.joborder.index');
     })->name('joborder.index');
@@ -111,6 +128,20 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/kategori/{kategori}', [\App\Http\Controllers\Admin\KategoriController::class, 'update'])->name('admin.kategori.update');
     Route::delete('/admin/kategori/{kategori}', [\App\Http\Controllers\Admin\KategoriController::class, 'destroy'])->name('admin.kategori.destroy');
 
+    Route::get('/admin/departement', [\App\Http\Controllers\Admin\DepartementController::class, 'index'])->name('admin.departement.index');
+    Route::get('/admin/departement/create', [\App\Http\Controllers\Admin\DepartementController::class, 'create'])->name('admin.departement.create');
+    Route::post('/admin/departement', [\App\Http\Controllers\Admin\DepartementController::class, 'store'])->name('admin.departement.store');
+    Route::get('/admin/departement/{departement}/edit', [\App\Http\Controllers\Admin\DepartementController::class, 'edit'])->name('admin.departement.edit');
+    Route::put('/admin/departement/{departement}', [\App\Http\Controllers\Admin\DepartementController::class, 'update'])->name('admin.departement.update');
+    Route::delete('/admin/departement/{departement}', [\App\Http\Controllers\Admin\DepartementController::class, 'destroy'])->name('admin.departement.destroy');
+
+    Route::get('/admin/jabatan', [\App\Http\Controllers\Admin\JabatanController::class, 'index'])->name('admin.jabatan.index');
+    Route::get('/admin/jabatan/create', [\App\Http\Controllers\Admin\JabatanController::class, 'create'])->name('admin.jabatan.create');
+    Route::post('/admin/jabatan', [\App\Http\Controllers\Admin\JabatanController::class, 'store'])->name('admin.jabatan.store');
+    Route::get('/admin/jabatan/{jabatan}/edit', [\App\Http\Controllers\Admin\JabatanController::class, 'edit'])->name('admin.jabatan.edit');
+    Route::put('/admin/jabatan/{jabatan}', [\App\Http\Controllers\Admin\JabatanController::class, 'update'])->name('admin.jabatan.update');
+    Route::delete('/admin/jabatan/{jabatan}', [\App\Http\Controllers\Admin\JabatanController::class, 'destroy'])->name('admin.jabatan.destroy');
+
     Route::get('/admin/satuan', [\App\Http\Controllers\Admin\SatuanController::class, 'index'])->name('admin.satuan.index');
     Route::get('/admin/satuan/create', [\App\Http\Controllers\Admin\SatuanController::class, 'create'])->name('admin.satuan.create');
     Route::post('/admin/satuan', [\App\Http\Controllers\Admin\SatuanController::class, 'store'])->name('admin.satuan.store');
@@ -185,4 +216,8 @@ Route::middleware(['auth'])->group(function () {
     // Customer profile routes
     Route::get('/customer/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'edit'])->name('customer.profile.edit');
     Route::put('/customer/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'update'])->name('customer.profile.update');
+
+    // Management customer profile routes
+    Route::get('/management-customer/profile', [\App\Http\Controllers\ManagementCustomer\ProfileController::class, 'edit'])->name('management-customer.profile.edit');
+    Route::put('/management-customer/profile', [\App\Http\Controllers\ManagementCustomer\ProfileController::class, 'update'])->name('management-customer.profile.update');
 });

@@ -12,6 +12,8 @@ class DashboardController extends Controller
         $role = auth()->user()->role;
         if ($role === 'admin') {
             return redirect()->route('admin.dashboard');
+        } elseif ($role === 'customer' && auth()->user()->isManagementCustomer()) {
+            return redirect()->route('management-customer.dashboard');
         } elseif ($role === 'customer') {
             return redirect()->route('customer.dashboard');
         }
