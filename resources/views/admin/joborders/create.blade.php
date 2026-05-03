@@ -88,15 +88,20 @@
                                     </span>
                                 </label>
                                 <div class="relative">
-                                    <input name="seksi" type="text" required
-                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200"
-                                        placeholder="Enter department/section" value="{{ old('seksi') }}">
+                                    <select name="seksi" required
+                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 appearance-none">
+                                        <option value="">Pilih Departement</option>
+                                        @foreach($departements as $dept)
+                                            <option value="{{ $dept->name }}" {{ old('seksi') == $dept->name ? 'selected' : '' }}>
+                                                {{ $dept->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                            </path>
+                                                d="m19 9l-7 7l-7-7"></path>
                                         </svg>
                                     </div>
                                 </div>

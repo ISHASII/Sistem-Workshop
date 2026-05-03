@@ -116,58 +116,92 @@
                 <th style="width:33%; padding:4px 6px; border:1px solid #333; background:#f0f0f0;">Diketahui</th>
                 <th style="width:33%; padding:4px 6px; border:1px solid #333; background:#f0f0f0;">Disetujui</th>
             </tr>
-            <tr>
-                <!-- Box Dipesan -->
-                <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
-                    <div style="font-size:16px; font-weight:bold; color:#999; letter-spacing:2px;">RESERVED</div>
-                </td>
-                <!-- Box Diketahui -->
-                <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
-                    @if($joborder->approval_status === 'approved')
+            @if($joborder->creator && $joborder->creator->role === 'admin')
+                <tr>
+                    <!-- Box Dipesan -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
+                        <div style="font-size:16px; font-weight:bold; color:#999; letter-spacing:2px;">RESERVED</div>
+                    </td>
+                    <!-- Box Diketahui -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
                         <div style="font-size:16px; font-weight:bold; color:#2e7d32; letter-spacing:1px;">APPROVED</div>
-                    @elseif($joborder->approval_status === 'rejected')
-                        <div style="font-size:16px; font-weight:bold; color:#d32f2f; letter-spacing:1px;">REJECTED</div>
-                    @else
-                        <div style="font-size:14px; font-weight:bold; color:#999;">PENDING</div>
-                    @endif
-                </td>
-                <!-- Box Disetujui -->
-                <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
-                    @if($joborder->epp_approval_status === 'approved')
+                    </td>
+                    <!-- Box Disetujui -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
                         <div style="font-size:16px; font-weight:bold; color:#2e7d32; letter-spacing:1px;">APPROVED</div>
-                    @else
-                        <div style="font-size:14px; font-weight:bold; color:#999;">PENDING</div>
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <!-- Detail Dipesan -->
-                <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
-                    <div style="margin-bottom:2px;"><strong>{{ $joborder->creator->name ?? '-' }}</strong></div>
-                    <div style="color:#666;">{{ $joborder->created_at->format('d/m/Y') }}</div>
-                </td>
-                <!-- Detail Diketahui -->
-                <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
-                    @if($joborder->approval_status === 'approved')
-                        <div style="margin-bottom:2px;"><strong>{{ $joborder->approvedBy->name ?? '-' }}</strong></div>
-                        <div style="color:#666;">{{ $joborder->approved_at ? $joborder->approved_at->format('d/m/Y') : '-' }}</div>
-                    @elseif($joborder->approval_status === 'rejected')
-                        <div style="margin-bottom:2px;"><strong>{{ $joborder->rejectedBy->name ?? '-' }}</strong></div>
-                        <div style="color:#666;">{{ $joborder->rejected_at ? $joborder->rejected_at->format('d/m/Y') : '-' }}</div>
-                    @else
-                        <div style="color:#999;">-</div>
-                    @endif
-                </td>
-                <!-- Detail Disetujui -->
-                <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
-                    @if($joborder->epp_approval_status === 'approved')
-                        <div style="margin-bottom:2px;"><strong>{{ $joborder->eppApprovedBy->name ?? '-' }}</strong></div>
-                        <div style="color:#666;">{{ $joborder->epp_approved_at ? $joborder->epp_approved_at->format('d/m/Y') : '-' }}</div>
-                    @else
-                        <div style="color:#999;">-</div>
-                    @endif
-                </td>
-            </tr>
+                    </td>
+                </tr>
+                <tr>
+                    <!-- Detail Dipesan -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        <div style="margin-bottom:2px;"><strong>Management EPP</strong></div>
+                        <div style="color:#666;">{{ $joborder->created_at->format('d/m/Y') }}</div>
+                    </td>
+                    <!-- Detail Diketahui -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        <div style="margin-bottom:2px;"><strong>Management EPP</strong></div>
+                        <div style="color:#666;">{{ $joborder->created_at->format('d/m/Y') }}</div>
+                    </td>
+                    <!-- Detail Disetujui -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        <div style="margin-bottom:2px;"><strong>Management EPP</strong></div>
+                        <div style="color:#666;">{{ $joborder->created_at->format('d/m/Y') }}</div>
+                    </td>
+                </tr>
+            @else
+                <tr>
+                    <!-- Box Dipesan -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
+                        <div style="font-size:16px; font-weight:bold; color:#999; letter-spacing:2px;">RESERVED</div>
+                    </td>
+                    <!-- Box Diketahui -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
+                        @if($joborder->approval_status === 'approved')
+                            <div style="font-size:16px; font-weight:bold; color:#2e7d32; letter-spacing:1px;">APPROVED</div>
+                        @elseif($joborder->approval_status === 'rejected')
+                            <div style="font-size:16px; font-weight:bold; color:#d32f2f; letter-spacing:1px;">REJECTED</div>
+                        @else
+                            <div style="font-size:14px; font-weight:bold; color:#999;">PENDING</div>
+                        @endif
+                    </td>
+                    <!-- Box Disetujui -->
+                    <td style="padding:15px 4px; border:1px solid #333; height:70px; vertical-align:middle;">
+                        @if($joborder->epp_approval_status === 'approved')
+                            <div style="font-size:16px; font-weight:bold; color:#2e7d32; letter-spacing:1px;">APPROVED</div>
+                        @else
+                            <div style="font-size:14px; font-weight:bold; color:#999;">PENDING</div>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <!-- Detail Dipesan -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        <div style="margin-bottom:2px;"><strong>{{ $joborder->creator->name ?? '-' }}</strong></div>
+                        <div style="color:#666;">{{ $joborder->created_at->format('d/m/Y') }}</div>
+                    </td>
+                    <!-- Detail Diketahui -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        @if($joborder->approval_status === 'approved')
+                            <div style="margin-bottom:2px;"><strong>{{ $joborder->approvedBy->name ?? '-' }}</strong></div>
+                            <div style="color:#666;">{{ $joborder->approved_at ? $joborder->approved_at->format('d/m/Y') : '-' }}</div>
+                        @elseif($joborder->approval_status === 'rejected')
+                            <div style="margin-bottom:2px;"><strong>{{ $joborder->rejectedBy->name ?? '-' }}</strong></div>
+                            <div style="color:#666;">{{ $joborder->rejected_at ? $joborder->rejected_at->format('d/m/Y') : '-' }}</div>
+                        @else
+                            <div style="color:#999;">-</div>
+                        @endif
+                    </td>
+                    <!-- Detail Disetujui -->
+                    <td style="padding:4px 6px; border:1px solid #333; font-size:9px;">
+                        @if($joborder->epp_approval_status === 'approved')
+                            <div style="margin-bottom:2px;"><strong>{{ $joborder->eppApprovedBy->name ?? '-' }}</strong></div>
+                            <div style="color:#666;">{{ $joborder->epp_approved_at ? $joborder->epp_approved_at->format('d/m/Y') : '-' }}</div>
+                        @else
+                            <div style="color:#999;">-</div>
+                        @endif
+                    </td>
+                </tr>
+            @endif
         </table>
     </div>
 </body>

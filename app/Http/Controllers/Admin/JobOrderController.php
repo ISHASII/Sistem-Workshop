@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\JobOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Material;
+use App\Models\Departement;
 use App\Models\JobOrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -83,6 +84,7 @@ class JobOrderController extends Controller
     public function create()
     {
         $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');
+        $departements = Departement::orderBy('name', 'asc')->get();
         // Fetch booked ranges to disable on the datepicker
         $bookedRanges = JobOrder::select('start', 'end')->get()->map(function($r){
             // Convert to Y-m-d format for flatpickr
@@ -122,7 +124,7 @@ class JobOrderController extends Controller
         }
         $earliestAllowedStart = $latestEnd ? $latestEnd->addDay()->format('d-m-Y') : null;
 
-        return view('admin.joborders.create', compact('materials', 'bookedRanges', 'earliestAllowedStart'));
+        return view('admin.joborders.create', compact('materials', 'bookedRanges', 'earliestAllowedStart', 'departements'));
     }
 
     public function store(Request $request)
@@ -240,6 +242,10 @@ class JobOrderController extends Controller
                 'approval_requested_at' => now(),
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
+                'epp_approval_status' => 'approved',
+                'epp_approved_by' => auth()->id(),
+                'epp_approved_at' => now(),
+                'created_by' => auth()->id(),
             ]);
 
             // Handle uploaded images
@@ -307,7 +313,8 @@ class JobOrderController extends Controller
             }
             return ['from' => $start->format('Y-m-d'), 'to' => $end->format('Y-m-d')];
         })->filter()->values()->toArray();
-        return view('admin.joborders.edit', compact('joborder','materials', 'bookedRanges'));
+        $departements = Departement::orderBy('name', 'asc')->get();
+        return view('admin.joborders.edit', compact('joborder','materials', 'bookedRanges', 'departements'));
     }
 
     public function update(Request $request, JobOrder $joborder)
