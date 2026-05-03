@@ -35,6 +35,24 @@
                 </div>
             </div>
 
+            <!-- Department Filter -->
+            <div class="flex items-center justify-between flex-wrap gap-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6 mb-2 transform hover:scale-[1.005] transition-all duration-300">
+                <h2 class="text-xl font-bold text-slate-900">Analitik Dashboard</h2>
+                <form id="admin-filterDepartement" class="flex items-center gap-2" method="GET" action="">
+                    <!-- Preserve existing filters like bulan and tahun if needed -->
+                    @if(request()->filled('bulan')) <input type="hidden" name="bulan" value="{{ request('bulan') }}"> @endif
+                    @if(request()->filled('tahun')) <input type="hidden" name="tahun" value="{{ request('tahun') }}"> @endif
+                    
+                    <label for="departement_id" class="text-sm font-medium text-slate-700">Filter Departement (Job Order):</label>
+                    <select name="departement_id" id="departement_id" class="border border-slate-300 rounded-xl px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 transition-all bg-white shadow-sm" onchange="this.form.submit()">
+                        <option value="">Semua Departement</option>
+                        @foreach($departements as $dept)
+                            <option value="{{ $dept->id }}" {{ ($departement_id ?? '') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
             <!-- Performance Man Power Chart Card -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                 <div
@@ -126,6 +144,7 @@
                         </div>
                         <form id="filterJobOrderMonth" class="flex flex-wrap items-center gap-2 max-w-full sm:max-w-xs"
                             method="GET" action="">
+                            @if(request()->filled('departement_id')) <input type="hidden" name="departement_id" value="{{ request('departement_id') }}"> @endif
                             <select name="bulan"
                                 class="w-28 sm:w-auto border border-gray-300/50 bg-white/80 rounded-xl px-2 py-1 text-xs focus:ring-2 focus:ring-green-500 transition-all truncate">
                                 @foreach(range(1, 12) as $m)

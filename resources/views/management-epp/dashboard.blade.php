@@ -1,19 +1,14 @@
-@extends('layouts.management-customer')
+@extends('layouts.management-epp')
 
-@section('title', 'Dashboard Management Customer')
+@section('title', 'Dashboard Management EPP')
 
 @section('content')
     <div class="space-y-6">
         <div class="rounded-[2rem] overflow-hidden bg-white shadow-xl border border-orange-100">
             <div class="p-8 sm:p-10 bg-gradient-to-br from-orange-600 via-red-600 to-rose-600 text-white">
-                <p class="text-sm uppercase tracking-[0.3em] text-orange-100">Management Customer</p>
+                <p class="text-sm uppercase tracking-[0.3em] text-orange-100">Management EPP</p>
                 <h1 class="mt-3 text-3xl sm:text-4xl font-black">Welcome, {{ $user->name ?? $user->username }}</h1>
-                <p class="mt-3 max-w-2xl text-orange-50">Ini adalah halaman khusus Management Customer. Gunakan navbar untuk membuka dashboard atau request approval dari customer di departement Anda.</p>
-
-                <div class="mt-6 flex flex-wrap gap-3 text-sm">
-                    <span class="px-3 py-1.5 rounded-full bg-white/15 border border-white/15">Departement: {{ $user->departement->name ?? '-' }}</span>
-                    <span class="px-3 py-1.5 rounded-full bg-white/15 border border-white/15">Jabatan: {{ $user->jabatan->name ?? '-' }}</span>
-                </div>
+                <p class="mt-3 max-w-2xl text-orange-50">Ini adalah halaman khusus Management EPP. Gunakan navbar untuk membuka dashboard atau me-review approval dari seluruh departement.</p>
             </div>
         </div>
 
@@ -23,19 +18,15 @@
                 <div class="mt-5 grid grid-cols-2 gap-4">
                     <div class="rounded-2xl bg-orange-50 border border-orange-100 p-4">
                         <div class="text-sm font-semibold text-orange-700">Total</div>
-                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $totalCount }}</div>
+                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $pendingEppCount + $approvedEppCount }}</div>
                     </div>
                     <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
-                        <div class="text-sm font-semibold text-amber-700">Pending</div>
-                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $pendingCount }}</div>
+                        <div class="text-sm font-semibold text-amber-700">Pending EPP</div>
+                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $pendingEppCount }}</div>
                     </div>
                     <div class="rounded-2xl bg-green-50 border border-green-100 p-4">
-                        <div class="text-sm font-semibold text-green-700">Approved</div>
-                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $approvedCount }}</div>
-                    </div>
-                    <div class="rounded-2xl bg-rose-50 border border-rose-100 p-4">
-                        <div class="text-sm font-semibold text-rose-700">Rejected</div>
-                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $rejectedCount }}</div>
+                        <div class="text-sm font-semibold text-green-700">Approved EPP</div>
+                        <div class="mt-2 text-3xl font-black text-slate-900">{{ $approvedEppCount }}</div>
                     </div>
                 </div>
             </div>
@@ -43,15 +34,32 @@
             <div class="rounded-[2rem] bg-slate-950 text-white shadow-xl p-6 sm:p-8">
                 <p class="text-sm uppercase tracking-[0.25em] text-orange-100">Quick Access</p>
                 <h3 class="mt-2 text-2xl font-black">Buka Request Approval</h3>
-                <p class="mt-3 text-slate-300">Lihat request pending dari customer di departement Anda dan lakukan approve atau reject.</p>
-                <a href="{{ route('management-customer.requests.index') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-900 font-semibold hover:bg-orange-50 transition-colors">
+                <p class="mt-3 text-slate-300">Lihat request pending dari seluruh departement dan lakukan approve.</p>
+                <a href="{{ route('management-epp.requests.index') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-900 font-semibold hover:bg-orange-50 transition-colors">
                     Ke Halaman Request
                 </a>
             </div>
         </div>
 
-        <!-- NEW CHARTS SECTION -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-6">
+        <!-- NEW CHARTS SECTION WITH DEPARTMENT FILTER -->
+        <div class="mt-8 flex items-center justify-between flex-wrap gap-4">
+            <h2 class="text-xl font-bold text-slate-900">Analitik Job Order</h2>
+            <form id="epp-filterDepartement" class="flex items-center gap-2" method="GET" action="">
+                <!-- Preserve existing filters like bulan and tahun if needed -->
+                @if(request()->filled('bulan')) <input type="hidden" name="bulan" value="{{ request('bulan') }}"> @endif
+                @if(request()->filled('tahun')) <input type="hidden" name="tahun" value="{{ request('tahun') }}"> @endif
+                
+                <label for="departement_id" class="text-sm font-medium text-slate-700">Filter Departement:</label>
+                <select name="departement_id" id="departement_id" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-orange-500 transition-all bg-white" onchange="this.form.submit()">
+                    <option value="">Semua Departement</option>
+                    @foreach($departements as $dept)
+                        <option value="{{ $dept->id }}" {{ ($departement_id ?? '') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-4">
             <!-- Progress Job Order -->
             <div class="bg-white/80 rounded-lg shadow border border-slate-200 p-3">
                 <div class="flex items-center justify-between mb-3">
@@ -79,7 +87,8 @@
                         </div>
                         <h3 class="font-bold text-base">Job Order Perbulan</h3>
                     </div>
-                    <form id="customer-filterJobOrderMonth" class="flex flex-wrap items-center gap-2 max-w-full sm:max-w-xs" method="GET" action="">
+                    <form id="epp-filterJobOrderMonth" class="flex flex-wrap items-center gap-2 max-w-full sm:max-w-xs" method="GET" action="">
+                        @if(request()->filled('departement_id')) <input type="hidden" name="departement_id" value="{{ request('departement_id') }}"> @endif
                         <select name="bulan" class="w-24 sm:w-auto border border-gray-300/50 bg-white/80 rounded-lg px-2 py-0.5 text-xs focus:ring-2 focus:ring-green-500 transition-all truncate">
                             @foreach(range(1,12) as $m)
                                 <option value="{{ $m }}" @if($m == request('bulan', now()->month)) selected @endif>{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
@@ -114,7 +123,6 @@
                                         $joProject = data_get($jo, 'project');
                                         $joEvaluasi = data_get($jo, 'evaluasi');
 
-                                        // Format dates
                                         $startFormatted = $joStart ? \Carbon\Carbon::parse($joStart)->format('d M Y') : '-';
                                         $endFormatted = $joEnd ? \Carbon\Carbon::parse($joEnd)->format('d M Y') : '-';
                                         $dateRange = ($startFormatted !== '-' && $endFormatted !== '-')

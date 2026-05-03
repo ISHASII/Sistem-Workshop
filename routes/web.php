@@ -23,9 +23,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/customer/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('customer.dashboard');
     Route::get('/management-customer/dashboard', [\App\Http\Controllers\ManagementCustomer\DashboardController::class, 'index'])->name('management-customer.dashboard');
+    Route::get('/management-epp/dashboard', [\App\Http\Controllers\ManagementEpp\DashboardController::class, 'index'])->name('management-epp.dashboard');
     Route::get('/management-customer/requests', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'index'])->name('management-customer.requests.index');
+    Route::get('/management-customer/requests/{jobOrder}', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'show'])->name('management-customer.requests.show');
+    Route::get('/management-customer/requests/{jobOrder}/export-pdf', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'exportPdf'])->name('management-customer.requests.exportPdf');
     Route::post('/management-customer/requests/{jobOrder}/approve', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'approve'])->name('management-customer.requests.approve');
     Route::post('/management-customer/requests/{jobOrder}/reject', [\App\Http\Controllers\ManagementCustomer\RequestController::class, 'reject'])->name('management-customer.requests.reject');
+
+    Route::get('/management-epp/requests', [\App\Http\Controllers\ManagementEpp\RequestController::class, 'index'])->name('management-epp.requests.index');
+    Route::get('/management-epp/requests/{jobOrder}', [\App\Http\Controllers\ManagementEpp\RequestController::class, 'show'])->name('management-epp.requests.show');
+    Route::get('/management-epp/requests/{jobOrder}/export-pdf', [\App\Http\Controllers\ManagementEpp\RequestController::class, 'exportPdf'])->name('management-epp.requests.exportPdf');
+    Route::post('/management-epp/requests/{jobOrder}/approve', [\App\Http\Controllers\ManagementEpp\RequestController::class, 'approve'])->name('management-epp.requests.approve');
     Route::get('/customer/notifications', [\App\Http\Controllers\Customer\NotificationController::class, 'index'])->name('customer.notifications.index');
     Route::get('/customer/notifications/{notification}', [\App\Http\Controllers\Customer\NotificationController::class, 'show'])->name('customer.notifications.show');
     Route::post('/customer/notifications/{notification}/mark-as-read', [\App\Http\Controllers\Customer\NotificationController::class, 'markAsRead'])->name('customer.notifications.markAsRead');
@@ -37,6 +45,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/management-customer/notifications/mark-all-read', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'markAllAsRead'])->name('management-customer.notifications.markAllAsRead');
     Route::get('/management-customer/notifications/unread-count', [\App\Http\Controllers\ManagementCustomer\NotificationController::class, 'getUnreadCount'])->name('management-customer.notifications.unreadCount');
 
+    Route::get('/management-epp/notifications', [\App\Http\Controllers\ManagementEpp\NotificationController::class, 'index'])->name('management-epp.notifications.index');
+    Route::get('/management-epp/notifications/{notification}', [\App\Http\Controllers\ManagementEpp\NotificationController::class, 'show'])->name('management-epp.notifications.show');
+    Route::post('/management-epp/notifications/{notification}/mark-as-read', [\App\Http\Controllers\ManagementEpp\NotificationController::class, 'markAsRead'])->name('management-epp.notifications.markAsRead');
+    Route::post('/management-epp/notifications/mark-all-read', [\App\Http\Controllers\ManagementEpp\NotificationController::class, 'markAllAsRead'])->name('management-epp.notifications.markAllAsRead');
+    Route::get('/management-epp/notifications/unread-count', [\App\Http\Controllers\ManagementEpp\NotificationController::class, 'getUnreadCount'])->name('management-epp.notifications.unreadCount');
+
     // Job Order (accessible by both roles)
     // Keep generic route for compatibility but redirect to role-specific named routes
     Route::get('/joborders', function () {
@@ -46,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
         }
         if (($user->role ?? null) === 'customer' && $user->isManagementCustomer()) {
             return redirect()->route('management-customer.requests.index');
+        }
+        if (($user->role ?? null) === 'management-epp' || $user->isManagementEpp()) {
+            return redirect()->route('management-epp.requests.index');
         }
         return redirect()->route('customer.joborder.index');
     })->name('joborder.index');
@@ -220,4 +237,8 @@ Route::middleware(['auth'])->group(function () {
     // Management customer profile routes
     Route::get('/management-customer/profile', [\App\Http\Controllers\ManagementCustomer\ProfileController::class, 'edit'])->name('management-customer.profile.edit');
     Route::put('/management-customer/profile', [\App\Http\Controllers\ManagementCustomer\ProfileController::class, 'update'])->name('management-customer.profile.update');
+
+    // Management EPP profile routes
+    Route::get('/management-epp/profile', [\App\Http\Controllers\ManagementEpp\ProfileController::class, 'edit'])->name('management-epp.profile.edit');
+    Route::put('/management-epp/profile', [\App\Http\Controllers\ManagementEpp\ProfileController::class, 'update'])->name('management-epp.profile.update');
 });

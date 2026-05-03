@@ -96,6 +96,33 @@ class RequestController extends Controller
         return back()->with('success', 'Job order berhasil di-reject.');
     }
 
+    public function show(JobOrder $jobOrder)
+    {
+        $this->ensureSameDepartment($jobOrder);
+        $jobOrder->load(['items.material.satuan', 'creator']);
+        return view('management-customer.requests.show', compact('jobOrder'));
+    }
+
+    public function exportPdf(JobOrder $jobOrder)
+    {
+        $this->ensureSameDepartment($jobOrder);
+        $joborder = $jobOrder; // Variable name compatibility with the PDF view
+        $joborder->load(['items.material', 'creator', 'approvedBy', 'rejectedBy', 'eppApprovedBy']);
+        
+        try {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.joborders.pdf', compact('joborder'));
+        } catch (\Throwable $e) {
+            \Log::error('Export PDF error for JobOrder '.$joborder->id.': '.$e->getMessage());
+            return back()->with('error', 'Gagal membuat PDF: ' . $e->getMessage());
+        }
+
+        if (request()->query('stream')) {
+            return $pdf->stream('joborder-'.$joborder->id.'.pdf');
+        }
+
+        return $pdf->download('joborder-'.$joborder->id.'.pdf');
+    }
+
     protected function ensureSameDepartment(JobOrder $jobOrder): void
     {
         $user = auth()->user();

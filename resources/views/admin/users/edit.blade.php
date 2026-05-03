@@ -213,6 +213,7 @@
                                 <option value="management-customer" {{ old('role', $user->role) === 'management-customer' ? 'selected' : '' }}>Management Customer - Akses manajemen pelanggan</option>
                                 <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin -
                                     Akses penuh ke sistem</option>
+                                <option value="management-epp" {{ old('role', $user->role) === 'management-epp' ? 'selected' : '' }}>Management EPP - Akses persetujuan tingkat akhir</option>
                             </select>
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +284,7 @@
                             function toggleDept() {
                                 if (!roleSelect) return;
                                 const val = roleSelect.value;
-                                if (val === 'admin') {
+                                if (val === 'admin' || val === 'management-epp') {
                                     deptGroup.style.display = 'none';
                                     if (deptSelect) deptSelect.removeAttribute('required');
                                 } else {

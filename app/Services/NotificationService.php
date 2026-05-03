@@ -17,6 +17,19 @@ class NotificationService
             ->get();
     }
 
+    protected function managementEppRecipients()
+    {
+        return User::where('role', 'management-epp')
+            ->orWhereHas('jabatan', function ($query) {
+                $query->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) IN (?, ?, ?)", [
+                    'managementepp',
+                    'manajemenepp',
+                    'manajementepp'
+                ]);
+            })
+            ->get();
+    }
+
     /**
      * Send notification to all admin users
      */
@@ -114,27 +127,98 @@ class NotificationService
 
     public function notifyJobOrderApproved(JobOrder $jobOrder, User $approvedBy): void
     {
-        $customer = $jobOrder->creator;
-        if (!$customer) {
-            return;
+        // Notif to EPP
+        foreach ($this->managementEppRecipients() as $recipient) {
+            Notification::create([
+                'title' => 'Approval Request JO (EPP)',
+                'message' => "Job Order '{$jobOrder->project}' telah disetujui Management Customer dan menunggu persetujuan EPP Anda.",
+                'type' => 'job_order_epp_approval_requested',
+                'user_id' => $recipient->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $approvedBy->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'approved_by_name' => $approvedBy->name,
+                    'approved_at' => now()->toDateTimeString(),
+                    'status' => 'pending_epp',
+                ]
+            ]);
         }
 
-        Notification::create([
-            'title' => 'Job Order Disetujui',
-            'message' => "Job Order '{$jobOrder->project}' telah disetujui oleh management customer.",
-            'type' => 'job_order_approved',
-            'user_id' => $customer->id,
-            'job_order_id' => $jobOrder->id,
-            'action_by' => $approvedBy->id,
-            'data' => [
-                'job_order_project' => $jobOrder->project,
-                'job_order_seksi' => $jobOrder->seksi,
-                'request_by_name' => $customer->name,
-                'approved_by_name' => $approvedBy->name,
-                'approved_at' => now()->toDateTimeString(),
-                'status' => 'yes',
-            ]
-        ]);
+        // Notif to Customer
+        $customer = $jobOrder->creator;
+        if ($customer) {
+            Notification::create([
+                'title' => 'Job Order Disetujui Management Customer',
+                'message' => "Job Order '{$jobOrder->project}' telah disetujui Management Customer dan sedang diteruskan ke Management EPP.",
+                'type' => 'job_order_approved_stage_1',
+                'user_id' => $customer->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $approvedBy->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'approved_by_name' => $approvedBy->name,
+                    'approved_at' => now()->toDateTimeString(),
+                    'status' => 'pending_epp',
+                ]
+            ]);
+        }
+    }
+
+    public function notifyEppJobOrderApproved(JobOrder $jobOrder, User $approvedBy): void
+    {
+        $customer = $jobOrder->creator;
+
+        // Notify Admins
+        $this->notifyAdmins(
+            'Job Order Baru Disetujui',
+            "Job Order '{$jobOrder->project}' telah disetujui penuh (termasuk EPP) dan siap dikerjakan.",
+            'job_order_fully_approved',
+            $jobOrder,
+            $approvedBy
+        );
+
+        // Notify Customer
+        if ($customer) {
+            Notification::create([
+                'title' => 'Job Order Disetujui Sepenuhnya',
+                'message' => "Job Order '{$jobOrder->project}' telah disetujui oleh Management EPP dan diteruskan ke Admin Workshop.",
+                'type' => 'job_order_approved',
+                'user_id' => $customer->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $approvedBy->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'request_by_name' => $customer->name,
+                    'approved_by_name' => $approvedBy->name,
+                    'approved_at' => now()->toDateTimeString(),
+                    'status' => 'yes',
+                ]
+            ]);
+
+            // Notify Management Customer
+            foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+                Notification::create([
+                    'title' => 'Job Order Disetujui Management EPP',
+                    'message' => "Job Order '{$jobOrder->project}' dari departemen Anda telah disetujui oleh Management EPP dan diteruskan ke Admin Workshop.",
+                    'type' => 'job_order_fully_approved',
+                    'user_id' => $recipient->id,
+                    'job_order_id' => $jobOrder->id,
+                    'action_by' => $approvedBy->id,
+                    'data' => [
+                        'job_order_project' => $jobOrder->project,
+                        'job_order_seksi' => $jobOrder->seksi,
+                        'request_by_name' => $customer->name,
+                        'approved_by_name' => $approvedBy->name,
+                        'approved_at' => now()->toDateTimeString(),
+                        'status' => 'yes',
+                    ]
+                ]);
+            }
+        }
     }
 
     public function notifyJobOrderRejected(JobOrder $jobOrder, User $rejectedBy, ?string $reason = null): void
@@ -168,13 +252,21 @@ class NotificationService
      */
     public function notifyJobOrderUpdated(JobOrder $jobOrder, User $customer): void
     {
-        $this->notifyAdmins(
-            'Job Order Diperbarui',
-            "Job Order dengan project '{$jobOrder->project}' telah diperbarui oleh {$customer->name} ({$customer->npk})",
-            'job_order_updated',
-            $jobOrder,
-            $customer
-        );
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                'title' => 'Job Order Diperbarui',
+                'message' => "Job Order '{$jobOrder->project}' telah diperbarui oleh {$customer->name}.",
+                'type' => 'job_order_updated',
+                'user_id' => $recipient->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $customer->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'action_by_name' => $customer->name,
+                ]
+            ]);
+        }
     }
 
     /**
@@ -182,13 +274,21 @@ class NotificationService
      */
     public function notifyJobOrderDeleted(JobOrder $jobOrder, User $customer): void
     {
-        $this->notifyAdmins(
-            'Job Order Dihapus',
-            "Job Order dengan project '{$jobOrder->project}' telah dihapus oleh {$customer->name} ({$customer->npk})",
-            'job_order_deleted',
-            $jobOrder,
-            $customer
-        );
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                'title' => 'Job Order Dihapus',
+                'message' => "Job Order '{$jobOrder->project}' telah dihapus oleh {$customer->name}.",
+                'type' => 'job_order_deleted',
+                'user_id' => $recipient->id,
+                'job_order_id' => null, // Set to null to prevent cascade deletion when JobOrder is deleted
+                'action_by' => $customer->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'job_order_seksi' => $jobOrder->seksi,
+                    'action_by_name' => $customer->name,
+                ]
+            ]);
+        }
     }
 
     /**

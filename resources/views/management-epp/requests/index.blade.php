@@ -1,4 +1,4 @@
-@extends('layouts.management-customer')
+@extends('layouts.management-epp')
 
 @section('title', 'Request Approval')
 
@@ -13,23 +13,29 @@
                 </div>
                 <div class="flex gap-2 text-sm font-semibold flex-wrap justify-end">
                     <span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700">Pending: {{ $pendingCount }}</span>
-                    <span class="px-3 py-1.5 rounded-full bg-green-100 text-green-700">Yes: {{ $approvedCount }}</span>
-                    <span class="px-3 py-1.5 rounded-full bg-rose-100 text-rose-700">No: {{ $rejectedCount }}</span>
+                    <span class="px-3 py-1.5 rounded-full bg-green-100 text-green-700">Approved: {{ $approvedCount }}</span>
                 </div>
             </div>
 
             <div class="p-6 border-b border-slate-200">
-                <form method="GET" class="grid gap-3 md:grid-cols-[1fr_220px_auto]">
+                <form method="GET" class="grid gap-3 md:grid-cols-[1fr_200px_200px_auto]">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari project / seksi"
                         class="w-full rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500" />
+                    
+                    <select name="department_id" class="w-full rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500">
+                        <option value="">Semua Departemen</option>
+                        @foreach($departements as $dept)
+                            <option value="{{ $dept->id }}" @selected(request('department_id') == $dept->id)>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+
                     <select name="status"
                         class="w-full rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500">
                         <option value="">Semua Status</option>
                         <option value="pending" @selected(request('status') === 'pending')>Pending</option>
-                        <option value="approved" @selected(request('status') === 'approved')>Yes</option>
-                        <option value="rejected" @selected(request('status') === 'rejected')>No</option>
+                        <option value="approved" @selected(request('status') === 'approved')>Approved</option>
                     </select>
-                    <button class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold">Filter</button>
+                    <button class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors">Filter</button>
                 </form>
             </div>
 
@@ -55,8 +61,7 @@
                                 $statusClasses = [
                                     'pending' => 'bg-amber-100 text-amber-700',
                                     'approved' => 'bg-green-100 text-green-700',
-                                    'rejected' => 'bg-rose-100 text-rose-700',
-                                ][$request->approval_status ?? 'pending'];
+                                ][$request->epp_approval_status ?? 'pending'];
                             @endphp
                             <tr>
                                 <td class="px-5 py-4">
@@ -71,20 +76,20 @@
                                     {{ optional($request->approval_requested_at ?? $request->created_at)->format('d M Y, H:i') }}
                                 </td>
                                 <td class="px-5 py-4"><span
-                                        class="px-3 py-1.5 rounded-full text-xs font-bold {{ $statusClasses }}">{{ strtoupper($request->approval_status ?? 'pending') }}</span>
+                                        class="px-3 py-1.5 rounded-full text-xs font-bold {{ $statusClasses }}">{{ strtoupper($request->epp_approval_status ?? 'pending') }}</span>
                                 </td>
                                 <td class="px-5 py-4 text-center">
                                     <div class="inline-flex flex-wrap items-center justify-center gap-2">
                                         @include('admin.partials.action-buttons', [
-                                            'showRoute' => route('management-customer.requests.show', $request),
-                                            'pdfRoute' => route('management-customer.requests.exportPdf', $request) . '?stream=1',
+                                            'showRoute' => route('management-epp.requests.show', $request),
+                                            'pdfRoute' => route('management-epp.requests.exportPdf', $request) . '?stream=1',
                                             'labelAlign' => 'center',
                                         ])
-                                        @if(($request->approval_status ?? 'pending') === 'pending')
+                                        @if(($request->epp_approval_status ?? 'pending') === 'pending')
                                             <div class="flex flex-col items-center text-center" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
                                                 <button type="button"
                                                     class="js-approve text-green-600 hover:text-green-800 hover:bg-green-100 rounded-md transition-all duration-200" style="padding:8px;"
-                                                    data-url="{{ route('management-customer.requests.approve', $request) }}"
+                                                    data-url="{{ route('management-epp.requests.approve', $request) }}"
                                                     data-project="{{ $request->project }}"
                                                     title="Approve">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,27 +98,13 @@
                                                 </button>
                                                 <span class="text-xs text-slate-600" style="margin-top:4px;">Approve</span>
                                             </div>
-                                            
-                                            <div class="flex flex-col items-center text-center" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
-                                                <button type="button"
-                                                    class="js-reject text-rose-600 hover:text-rose-800 hover:bg-rose-100 rounded-md transition-all duration-200" style="padding:8px;"
-                                                    data-url="{{ route('management-customer.requests.reject', $request) }}"
-                                                    data-project="{{ $request->project }}"
-                                                    title="Reject">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                    </svg>
-                                                </button>
-                                                <span class="text-xs text-slate-600" style="margin-top:4px;">Reject</span>
-                                            </div>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-5 py-10 text-center text-slate-500">Belum ada request untuk
-                                    departement ini.</td>
+                                <td colspan="5" class="px-5 py-10 text-center text-slate-500">Belum ada request.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -197,61 +188,7 @@
             });
         });
 
-        document.querySelectorAll('.js-reject').forEach((button) => {
-            button.addEventListener('click', () => {
-                const project = button.dataset.project || 'request ini';
-                const url = button.dataset.url;
-
-                Swal.fire({
-                    title: 'Reject request?',
-                    text: `Masukkan alasan reject untuk JO "${project}".`,
-                    input: 'textarea',
-                    inputPlaceholder: 'Tulis alasan reject di sini...',
-                    inputAttributes: {
-                        'aria-label': 'Alasan reject'
-                    },
-                    showCancelButton: true,
-                    buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'inline-flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-xl font-semibold hover:bg-rose-700 focus:outline-none',
-                        cancelButton: 'inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 focus:outline-none'
-                    },
-                    confirmButtonText: 'Yes, reject',
-                    cancelButtonText: 'Cancel',
-                    didOpen: () => {
-                        const confirmButton = Swal.getConfirmButton();
-                        const cancelButton = Swal.getCancelButton();
-
-                        if (confirmButton) {
-                            confirmButton.style.backgroundColor = '#e11d48';
-                            confirmButton.style.color = '#ffffff';
-                            confirmButton.style.borderRadius = '0.75rem';
-                            confirmButton.style.fontWeight = '600';
-                            confirmButton.style.boxShadow = '0 1px 2px 0 rgb(0 0 0 / 0.05)';
-                        }
-
-                        if (cancelButton) {
-                            cancelButton.style.backgroundColor = '#f3f4f6';
-                            cancelButton.style.color = '#374151';
-                            cancelButton.style.borderRadius = '0.75rem';
-                            cancelButton.style.fontWeight = '600';
-                        }
-                    },
-                    preConfirm: (value) => {
-                        const reason = (value || '').trim();
-                        if (!reason) {
-                            Swal.showValidationMessage('Alasan reject wajib diisi.');
-                            return false;
-                        }
-                        return reason;
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        submitAction(url, result.value);
-                    }
-                });
-            });
-        });
+        // js-reject removed
 
         @if(session('success'))
             Swal.fire({

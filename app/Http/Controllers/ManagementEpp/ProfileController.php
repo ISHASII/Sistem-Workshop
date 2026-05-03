@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ManagementCustomer;
+namespace App\Http\Controllers\ManagementEpp;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,17 +11,17 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        if (!$user->isManagementCustomer()) {
+        if (!$user->isManagementEpp()) {
             abort(403);
         }
 
-        return view('management-customer.profile.edit', compact('user'));
+        return view('management-epp.profile.edit', compact('user'));
     }
 
     public function update(Request $request)
     {
         $user = auth()->user();
-        if (!$user->isManagementCustomer()) {
+        if (!$user->isManagementEpp()) {
             abort(403);
         }
 
@@ -45,6 +45,6 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('management-customer.profile.edit')->with('success', 'Profil diperbarui.');
+        return redirect()->route('management-epp.profile.edit')->with('success', 'Profil diperbarui.');
     }
 }

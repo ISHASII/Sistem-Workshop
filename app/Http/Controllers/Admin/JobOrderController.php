@@ -588,7 +588,7 @@ class JobOrderController extends Controller
      */
     public function exportPdf(JobOrder $joborder)
     {
-        $joborder->load('items.material');
+        $joborder->load(['items.material', 'creator', 'approvedBy', 'rejectedBy', 'eppApprovedBy']);
         $pdf = null;
         try {
             $pdf = Pdf::loadView('admin.joborders.pdf', compact('joborder'));

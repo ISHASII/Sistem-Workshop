@@ -12,7 +12,8 @@ class JobOrder extends Model
     protected $fillable = [
         'seksi','status','project','start','end','progress','actual','evaluasi',
         'area','latar_belakang','tujuan','target','images','created_by',
-        'approval_status','approval_requested_at','approved_by','approved_at','rejected_by','rejected_at','rejection_reason'
+        'approval_status','approval_requested_at','approved_by','approved_at','rejected_by','rejected_at','rejection_reason',
+        'epp_approval_status', 'epp_approved_by', 'epp_approved_at'
     ];
 
     protected $casts = [
@@ -20,6 +21,7 @@ class JobOrder extends Model
         'approval_requested_at' => 'datetime',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'epp_approved_at' => 'datetime',
         'images' => 'array',
     ];
 
@@ -46,6 +48,11 @@ class JobOrder extends Model
         return $this->belongsTo(User::class, 'rejected_by');
     }
 
+    public function eppApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'epp_approved_by');
+    }
+
     public function scopePendingApproval($query)
     {
         return $query->where('approval_status', 'pending');
@@ -53,7 +60,7 @@ class JobOrder extends Model
 
     public function scopeApprovedApproval($query)
     {
-        return $query->where('approval_status', 'approved');
+        return $query->where('approval_status', 'approved')->where('epp_approval_status', 'approved');
     }
 
     public function scopeRejectedApproval($query)

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ManagementCustomer;
+namespace App\Http\Controllers\ManagementEpp;
 
 use App\Http\Controllers\Controller;
 use App\Models\JobOrder;
@@ -11,33 +11,42 @@ class DashboardController extends Controller
     {
         $user = auth()->user()->loadMissing(['departement', 'jabatan']);
 
-        $baseQuery = JobOrder::whereHas('creator', function ($query) use ($user) {
-            $query->where('department_id', $user->department_id);
-        });
+        // EPP sees all job orders (or optionally filtered by departement)
+        $baseQuery = JobOrder::query();
 
-        $pendingCount = (clone $baseQuery)->pendingApproval()->count();
-        $approvedCount = (clone $baseQuery)->where('approval_status', 'approved')->count();
-        $rejectedCount = (clone $baseQuery)->rejectedApproval()->count();
-        $totalCount = (clone $baseQuery)->count();
+        // If department filter is selected
+        $departement_id = request('departement_id');
+        if ($departement_id) {
+            $baseQuery->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
 
-        $recentRequests = (clone $baseQuery)
-            ->with('creator')
+        // Keep the counts and recent requests based on EPP approval logic
+        $approvalQuery = (clone $baseQuery)->where('approval_status', 'approved');
+        
+        $pendingEppCount = (clone $approvalQuery)->where('epp_approval_status', 'pending')->count();
+        $approvedEppCount = (clone $approvalQuery)->where('epp_approval_status', 'approved')->count();
+
+        $recentRequests = (clone $approvalQuery)
+            ->where('epp_approval_status', 'pending')
+            ->with(['creator.departement', 'creator.jabatan'])
             ->latest('approval_requested_at')
             ->take(5)
             ->get();
 
-        // Data proyek urgent (per proyek) - filtered by department
+        // Data proyek urgent (per proyek)
         $urgent_projects = (clone $baseQuery)->where('status', 'Urgent')
             ->orderBy('actual')
             ->get(['project', 'seksi', 'actual', 'end']);
 
-        // Data job order urgent per seksi - filtered by department
+        // Data job order urgent per seksi
         $urgent_jobs = (clone $baseQuery)->where('status', 'Urgent')
             ->selectRaw('seksi, count(*) as total')
             ->groupBy('seksi')
             ->get();
 
-        // Data job order untuk Progress Chart - filtered by department
+        // Data job order untuk Progress Chart
         $joborders = (clone $baseQuery)->orderByDesc('progress')->get(['project', 'progress']);
 
         // Job orders filtered by selected month and year for table
@@ -57,17 +66,20 @@ class DashboardController extends Controller
             return ((int)$date->format('Y') === (int)$tahun) && ((int)$date->format('m') === (int)$bulan);
         })->values();
 
-        return view('management-customer.dashboard', compact(
+        // Fetch all departments for the filter dropdown
+        $departements = \App\Models\Departement::orderBy('name')->get();
+
+        return view('management-epp.dashboard', compact(
             'user',
-            'pendingCount',
-            'approvedCount',
-            'rejectedCount',
-            'totalCount',
+            'pendingEppCount',
+            'approvedEppCount',
             'recentRequests',
             'urgent_projects',
             'urgent_jobs',
             'joborders',
-            'joborders_monthly'
+            'joborders_monthly',
+            'departements',
+            'departement_id'
         ));
     }
 }

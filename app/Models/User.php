@@ -95,4 +95,21 @@ class User extends Authenticatable
             'manajementcustomer',
         ], true);
     }
+
+    public function isManagementEpp(): bool
+    {
+        $jabatanName = strtolower(trim((string) optional($this->jabatan)->name));
+        $normalized = str_replace([' ', '_', '-'], '', $jabatanName);
+
+        // Also check if role is management-epp
+        if ($this->role === 'management-epp') {
+            return true;
+        }
+
+        return in_array($normalized, [
+            'managementepp',
+            'manajemenepp',
+            'manajementepp',
+        ], true);
+    }
 }

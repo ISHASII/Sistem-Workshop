@@ -40,8 +40,8 @@ class UserController extends Controller
             'name' => 'required|string|max:191',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,customer,management-customer',
-            'department_id' => 'required_if:role,customer,management-customer|exists:departements,id',
+            'role' => 'required|string|in:admin,customer,management-customer,management-epp',
+            'department_id' => 'nullable|required_if:role,customer,management-customer|exists:departements,id',
         ]);
 
         $user = User::create([
@@ -70,8 +70,8 @@ class UserController extends Controller
             'name' => 'required|string|max:191',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,customer,management-customer',
-            'department_id' => 'required_if:role,customer,management-customer|exists:departements,id',
+            'role' => 'required|string|in:admin,customer,management-customer,management-epp',
+            'department_id' => 'nullable|required_if:role,customer,management-customer|exists:departements,id',
         ]);
 
         $user->username = $data['username'];

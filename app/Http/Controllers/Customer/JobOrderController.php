@@ -638,6 +638,7 @@ class JobOrderController extends Controller
             return back()->with('error', 'Job order hanya bisa dihapus setelah ditolak oleh Management Customer.');
         }
 
+        $this->notificationService->notifyJobOrderDeleted($joborder, auth()->user());
         $joborder->delete();
         return back()->with('success', 'Job order deleted.');
     }
@@ -659,7 +660,7 @@ class JobOrderController extends Controller
      */
     public function exportPdf(JobOrder $joborder)
     {
-        $joborder->load('items.material');
+        $joborder->load(['items.material', 'creator', 'approvedBy', 'rejectedBy', 'eppApprovedBy']);
         $pdf = null;
         try {
             $pdf = Pdf::loadView('customer.joborders.pdf', compact('joborder'));

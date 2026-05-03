@@ -12,12 +12,21 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $departement_id = request('departement_id');
+        
+        $baseJoQuery = \App\Models\JobOrder::query();
+        if ($departement_id) {
+            $baseJoQuery->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
+
         // Data proyek urgent (per proyek, bukan agregat)
-        $urgent_projects = \App\Models\JobOrder::where('status', 'Urgent')
+        $urgent_projects = (clone $baseJoQuery)->where('status', 'Urgent')
             ->orderBy('actual')
             ->get(['project', 'seksi', 'actual', 'end']);
         // Data job order urgent per seksi
-        $urgent_jobs = \App\Models\JobOrder::where('status', 'Urgent')
+        $urgent_jobs = (clone $baseJoQuery)->where('status', 'Urgent')
             ->selectRaw('seksi, count(*) as total')
             ->groupBy('seksi')
             ->get();
@@ -37,7 +46,7 @@ class DashboardController extends Controller
             ->values();
         // Ambil data job order: nama proyek dan progress
         // Query sama persis dengan index job order, tanpa pagination
-        $query = \App\Models\JobOrder::with(['items.material']);
+        $query = (clone $baseJoQuery)->with(['items.material']);
 
         // Search
         if (request()->filled('search')) {
@@ -86,7 +95,7 @@ class DashboardController extends Controller
     $bulan = request('bulan', now()->month);
     $tahun = request('tahun', now()->year);
     // Solusi paksa: ambil semua, filter manual di PHP berdasarkan bulan/tahun dari field start (string)
-    $all_joborders = \App\Models\JobOrder::orderBy('start', 'desc')->get(['project', 'start', 'end', 'evaluasi']);
+    $all_joborders = (clone $baseJoQuery)->orderBy('start', 'desc')->get(['project', 'start', 'end', 'evaluasi']);
     $joborders_monthly = $all_joborders->filter(function($jo) use ($bulan, $tahun) {
         if (!$jo->start) return false;
         $date = null;
@@ -147,6 +156,8 @@ class DashboardController extends Controller
         ->with('manpower')
         ->get();
 
+    $departements = \App\Models\Departement::orderBy('name')->get();
+
     return view('admin.dashboard', compact(
         'joborders',
         'joborders_monthly',
@@ -155,7 +166,9 @@ class DashboardController extends Controller
         'critical_materials',
         'urgent_jobs',
         'urgent_projects',
-        'averagePerformances'
+        'averagePerformances',
+        'departements',
+        'departement_id'
     ));
     }
 }

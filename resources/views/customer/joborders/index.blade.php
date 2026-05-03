@@ -216,15 +216,26 @@
                                         <!-- Evaluasi -->
                                         <td class="px-3 py-3 text-center">
                                             @php
-                                                $approvalStatus = [
-                                                    'pending' => 'bg-amber-100 text-amber-700 border-amber-300',
-                                                    'approved' => 'bg-green-100 text-green-700 border-green-300',
-                                                    'rejected' => 'bg-rose-100 text-rose-700 border-rose-300',
-                                                ][$jo->approval_status ?? 'pending'];
+                                                $baseStatus = $jo->approval_status ?? 'pending';
+                                                if ($baseStatus === 'approved') {
+                                                    if (($jo->epp_approval_status ?? 'pending') === 'pending') {
+                                                        $displayStatus = 'PENDING EPP';
+                                                        $statusClass = 'bg-amber-100 text-amber-700 border-amber-300';
+                                                    } else {
+                                                        $displayStatus = 'APPROVED';
+                                                        $statusClass = 'bg-green-100 text-green-700 border-green-300';
+                                                    }
+                                                } else {
+                                                    $displayStatus = strtoupper($baseStatus);
+                                                    $statusClass = [
+                                                        'pending' => 'bg-amber-100 text-amber-700 border-amber-300',
+                                                        'rejected' => 'bg-rose-100 text-rose-700 border-rose-300',
+                                                    ][$baseStatus] ?? 'bg-amber-100 text-amber-700 border-amber-300';
+                                                }
                                             @endphp
                                             <div class="flex flex-col items-center gap-2">
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $approvalStatus }}">
-                                                    {{ strtoupper($jo->approval_status ?? 'PENDING') }}
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $statusClass }}">
+                                                    {{ $displayStatus }}
                                                 </span>
                                                 @if(($jo->approval_status ?? 'pending') === 'rejected' && $jo->rejection_reason)
                                                     <div class="text-[10px] leading-relaxed text-rose-700 bg-rose-50 px-2.5 py-1.5 rounded-md font-medium w-full min-w-[150px] max-w-[200px] text-left border border-rose-200 shadow-sm whitespace-normal break-words">
