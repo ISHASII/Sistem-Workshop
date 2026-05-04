@@ -11,23 +11,27 @@ class NotificationService
     protected function managementCustomerRecipients(User $customer)
     {
         return User::where('department_id', $customer->department_id)
-            ->whereHas('jabatan', function ($query) {
-                $query->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) = ?", ['managementcustomer']);
+            ->where(function ($query) {
+                $query->where('role', 'management-customer')
+                    ->orWhereHas('jabatan', function ($q) {
+                        $q->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) = ?", ['managementcustomer']);
+                    });
             })
             ->get();
     }
 
     protected function managementEppRecipients()
     {
-        return User::where('role', 'management-epp')
-            ->orWhereHas('jabatan', function ($query) {
-                $query->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) IN (?, ?, ?)", [
-                    'managementepp',
-                    'manajemenepp',
-                    'manajementepp'
-                ]);
-            })
-            ->get();
+        return User::where(function ($query) {
+            $query->where('role', 'management-epp')
+                ->orWhereHas('jabatan', function ($q) {
+                    $q->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) IN (?, ?, ?)", [
+                        'managementepp',
+                        'manajemenepp',
+                        'manajementepp'
+                    ]);
+                });
+        })->get();
     }
 
     /**

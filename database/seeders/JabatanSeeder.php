@@ -12,6 +12,7 @@ class JabatanSeeder extends Seeder
         $names = [
             'Customer',
             'Management Customer',
+            'Management EPP',
         ];
 
         foreach ($names as $name) {

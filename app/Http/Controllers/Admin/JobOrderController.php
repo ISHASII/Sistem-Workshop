@@ -83,7 +83,12 @@ class JobOrderController extends Controller
 
     public function create()
     {
-        $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get()->unique('nama');
+        $materials = Material::with(['satuan', 'kategori', 'movements'])
+            ->orderBy('nama')
+            ->get()
+            ->filter(fn($m) => $m->getCurrentStok() > 0)
+            ->unique('nama')
+            ->values();
         $departements = Departement::orderBy('name', 'asc')->get();
         // Fetch booked ranges to disable on the datepicker
         $bookedRanges = JobOrder::select('start', 'end')->get()->map(function($r){
@@ -285,6 +290,7 @@ class JobOrderController extends Controller
                         'type' => 'out',
                         'tanggal' => now(),
                         'jumlah' => $item['jumlah'],
+                        'movement_type' => 'jo',
                         'keterangan' => 'Job Order #' . $jo->id,
                     ]);
                 }
@@ -297,7 +303,14 @@ class JobOrderController extends Controller
     public function edit(JobOrder $joborder)
     {
         $joborder->load('items');
-        $materials = Material::with(['satuan', 'kategori'])->orderBy('nama')->get();
+        $materials = Material::with(['satuan', 'kategori', 'movements'])
+            ->orderBy('nama')
+            ->get()
+            ->filter(function($m) use ($joborder) {
+                // Show if stock > 0 OR if it's already used in this job order
+                return $m->getCurrentStok() > 0 || $joborder->items->contains('material_id', $m->id);
+            })
+            ->values();
         $bookedRanges = JobOrder::where('id', '!=', $joborder->id)->select('start', 'end')->get()->map(function($r){
             // Convert to Y-m-d format for flatpickr
             try {
@@ -447,6 +460,21 @@ class JobOrderController extends Controller
 
             // Sync items: collect ids to retain
             $incomingIds = collect($data['items'])->pluck('id')->filter()->all();
+            
+            // Return stock for items being removed
+            $itemsToRemove = $joborder->items()->whereNotIn('id', $incomingIds)->get();
+            foreach ($itemsToRemove as $it) {
+                if (!empty($it->material_id) && !empty($it->jumlah)) {
+                    \App\Models\MaterialMovement::create([
+                        'material_id' => $it->material_id,
+                        'type' => 'in',
+                        'tanggal' => now(),
+                        'jumlah' => $it->jumlah,
+                        'movement_type' => 'jo',
+                        'keterangan' => 'Job Order Edit (Admin) #' . $joborder->id . ' (hapus item)',
+                    ]);
+                }
+            }
             $joborder->items()->whereNotIn('id', $incomingIds)->delete();
 
             foreach ($data['items'] as $item) {
@@ -479,6 +507,7 @@ class JobOrderController extends Controller
                                 'type' => 'out',
                                 'tanggal' => now(),
                                 'jumlah' => $selisih,
+                                'movement_type' => 'jo',
                                 'keterangan' => 'Job Order Edit #' . $joborder->id . ' (tambah material)',
                             ]);
                         } else if ($selisih < 0) {
@@ -488,6 +517,7 @@ class JobOrderController extends Controller
                                 'type' => 'in',
                                 'tanggal' => now(),
                                 'jumlah' => abs($selisih),
+                                'movement_type' => 'jo',
                                 'keterangan' => 'Job Order Edit #' . $joborder->id . ' (kurangi material)',
                             ]);
                         }
@@ -506,6 +536,7 @@ class JobOrderController extends Controller
                             'type' => 'out',
                             'tanggal' => now(),
                             'jumlah' => $item['jumlah'],
+                            'movement_type' => 'jo',
                             'keterangan' => 'Job Order Edit #' . $joborder->id . ' (item baru)',
                         ]);
                     }
@@ -553,7 +584,25 @@ class JobOrderController extends Controller
 
     public function destroy(JobOrder $joborder)
     {
-        $joborder->delete();
+        DB::transaction(function () use ($joborder) {
+            // Return stock if NOT already rejected
+            if ($joborder->approval_status !== 'rejected') {
+                foreach ($joborder->items as $item) {
+                    if (!empty($item->material_id) && !empty($item->jumlah)) {
+                        \App\Models\MaterialMovement::create([
+                            'material_id' => $item->material_id,
+                            'type' => 'in',
+                            'tanggal' => now(),
+                            'jumlah' => $item->jumlah,
+                            'movement_type' => 'jo',
+                            'keterangan' => 'Job Order Deleted (Admin) #' . $joborder->id,
+                        ]);
+                    }
+                }
+            }
+            $joborder->delete();
+        });
+
         return back()->with('success', 'Job order deleted.');
     }
 

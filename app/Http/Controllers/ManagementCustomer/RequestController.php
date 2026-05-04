@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobOrder;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
 {
@@ -82,14 +83,30 @@ class RequestController extends Controller
             return back()->with('error', 'Request sudah diproses.');
         }
 
-        $jobOrder->update([
-            'approval_status' => 'rejected',
-            'rejected_by' => auth()->id(),
-            'rejected_at' => now(),
-            'approved_by' => null,
-            'approved_at' => null,
-            'rejection_reason' => $data['rejection_reason'] ?? null,
-        ]);
+        DB::transaction(function () use ($jobOrder, $data) {
+            $jobOrder->update([
+                'approval_status' => 'rejected',
+                'rejected_by' => auth()->id(),
+                'rejected_at' => now(),
+                'approved_by' => null,
+                'approved_at' => null,
+                'rejection_reason' => $data['rejection_reason'] ?? null,
+            ]);
+
+            // Return stock for all items
+            foreach ($jobOrder->items as $item) {
+                if (!empty($item->material_id) && !empty($item->jumlah)) {
+                    \App\Models\MaterialMovement::create([
+                        'material_id' => $item->material_id,
+                        'type' => 'in',
+                        'tanggal' => now(),
+                        'jumlah' => $item->jumlah,
+                        'movement_type' => 'jo',
+                        'keterangan' => 'Job Order Rejected #' . $jobOrder->id,
+                    ]);
+                }
+            }
+        });
 
         $this->notificationService->notifyJobOrderRejected($jobOrder->fresh('creator'), auth()->user(), $data['rejection_reason'] ?? null);
 

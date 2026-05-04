@@ -15,20 +15,67 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $teknisi = Departement::firstWhere('name', 'Teknisi');
-        $produksi = Departement::firstWhere('name', 'Produksi');
-        $customer = Jabatan::firstWhere('name', 'Customer');
-        $managementCustomer = Jabatan::firstWhere('name', 'Management Customer');
+        $password = Hash::make('1234567890');
 
-        $users = [
-            ['username' => 'customer1', 'name' => 'Customer One', 'email' => 'customer1@example.test', 'password' => Hash::make('password123'), 'role' => 'customer', 'department_id' => $teknisi?->id, 'jabatan_id' => $customer?->id],
-            ['username' => 'customer2', 'name' => 'Customer Two', 'email' => 'customer2@example.test', 'password' => Hash::make('password123'), 'role' => 'customer', 'department_id' => $teknisi?->id, 'jabatan_id' => $managementCustomer?->id],
-            ['username' => 'customer3', 'name' => 'Customer Three', 'email' => 'customer3@example.test', 'password' => Hash::make('password123'), 'role' => 'customer', 'department_id' => $produksi?->id, 'jabatan_id' => $customer?->id],
-            ['username' => 'admin', 'name' => 'Administrator', 'email' => 'admin@example.test', 'password' => Hash::make('adminpass'), 'role' => 'admin'],
-        ];
+        // Jabatans
+        $customerJabatan = Jabatan::firstWhere('name', 'Customer');
+        $mngtCustomerJabatan = Jabatan::firstWhere('name', 'Management Customer');
+        $mngtEppJabatan = Jabatan::firstWhere('name', 'Management EPP');
 
-        foreach ($users as $u) {
-            User::updateOrCreate(['username' => $u['username']], $u);
+        // 1. Admin Account
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Administrator',
+                'email' => 'admin@epp.test',
+                'password' => $password,
+                'role' => 'admin',
+            ]
+        );
+
+        // 2. Management EPP Account
+        User::updateOrCreate(
+            ['username' => 'mngt.epp'],
+            [
+                'name' => 'Management EPP',
+                'email' => 'mngt.epp@epp.test',
+                'password' => $password,
+                'role' => 'management-epp',
+                'jabatan_id' => $mngtEppJabatan?->id,
+            ]
+        );
+
+        // 3. Department-specific accounts
+        $departements = Departement::all();
+
+        foreach ($departements as $dept) {
+            $deptSlug = strtolower(str_replace(' ', '', $dept->name));
+
+            // Customer per department
+            User::updateOrCreate(
+                ['username' => 'cust.' . $deptSlug],
+                [
+                    'name' => 'Customer ' . $dept->name,
+                    'email' => 'cust.' . $deptSlug . '@epp.test',
+                    'password' => $password,
+                    'role' => 'customer',
+                    'department_id' => $dept->id,
+                    'jabatan_id' => $customerJabatan?->id,
+                ]
+            );
+
+            // Management Customer per department
+            User::updateOrCreate(
+                ['username' => 'mngt.' . $deptSlug],
+                [
+                    'name' => 'Management ' . $dept->name,
+                    'email' => 'mngt.' . $deptSlug . '@epp.test',
+                    'password' => $password,
+                    'role' => 'management-customer',
+                    'department_id' => $dept->id,
+                    'jabatan_id' => $mngtCustomerJabatan?->id,
+                ]
+            );
         }
     }
 }

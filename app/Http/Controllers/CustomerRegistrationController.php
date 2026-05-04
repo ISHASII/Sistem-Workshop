@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Departement;
 use App\Models\Jabatan;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class CustomerRegistrationController extends Controller
 {
@@ -16,7 +17,13 @@ class CustomerRegistrationController extends Controller
     public function show()
     {
         $departements = Departement::orderBy('name')->get();
-        $jabatans = Jabatan::orderBy('name')->get();
+        
+        // Filter out Management EPP from public registration
+        $jabatans = Jabatan::whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) NOT IN (?, ?, ?)", [
+            'managementepp',
+            'manajemenepp',
+            'manajementepp'
+        ])->orderBy('name')->get();
 
         return view('auth.register-customer', compact('departements', 'jabatans'));
     }
@@ -31,7 +38,17 @@ class CustomerRegistrationController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'department_id' => ['required', 'integer', 'exists:departements,id'],
-            'jabatan_id' => ['required', 'integer', 'exists:jabatans,id'],
+            'jabatan_id' => [
+                'required', 
+                'integer', 
+                Rule::exists('jabatans', 'id')->where(function ($query) {
+                    $query->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(name, ' ', ''), '_', ''), '-', '')) NOT IN (?, ?, ?)", [
+                        'managementepp',
+                        'manajemenepp',
+                        'manajementepp'
+                    ]);
+                })
+            ],
         ]);
 
         $user = User::create([

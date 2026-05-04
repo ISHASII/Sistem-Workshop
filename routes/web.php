@@ -58,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
         if (($user->role ?? null) === 'admin') {
             return redirect()->route('admin.joborder.index');
         }
-        if (($user->role ?? null) === 'customer' && $user->isManagementCustomer()) {
+        if (($user->role ?? null) === 'management-customer' || $user->isManagementCustomer()) {
             return redirect()->route('management-customer.requests.index');
         }
         if (($user->role ?? null) === 'management-epp' || $user->isManagementEpp()) {

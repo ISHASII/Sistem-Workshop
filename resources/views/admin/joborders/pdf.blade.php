@@ -85,25 +85,27 @@
         <strong>Evaluasi:</strong> {{ $joborder->evaluasi ?? '' }}
     </div>
 
-    <!-- Design images (up to 3) -->
+    <!-- Design images (all images) -->
     @if(!empty($joborder->images) && is_array($joborder->images))
-        <div style="margin-top:18px;">
+        <div style="margin-top:18px; page-break-inside: avoid;">
             <h4 style="margin:0 0 6px 0;">Desain</h4>
             <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    @php $images = array_values($joborder->images); $countImages = count($images); @endphp
-                        @for($idx = 0; $idx < 3; $idx++)
-                        <td style="width:33%; padding:4px; vertical-align:top;">
-                            @if(isset($images[$idx]))
+                @php $images = array_values($joborder->images); @endphp
+                @foreach(array_chunk($images, 3) as $row)
+                    <tr>
+                        @foreach($row as $idx => $imgPath)
+                            <td style="width:33%; padding:4px; vertical-align:top;">
                                 <div style="border:1px solid #333; padding:2px; text-align:center;">
-                                    <img src="{{ public_path($images[$idx]) }}" style="max-width:100%; max-height:180px; height:auto; display:block; margin:0 auto;" alt="Design {{ $idx+1 }}" />
+                                    <img src="{{ public_path($imgPath) }}" style="max-width:100%; max-height:180px; height:auto; display:block; margin:0 auto;" alt="Design" />
                                 </div>
-                            @else
-                                <div style="border:1px dashed #ccc; height:80px; display:flex; align-items:center; justify-content:center; color:#999;">&nbsp;</div>
-                            @endif
-                        </td>
-                    @endfor
-                </tr>
+                            </td>
+                        @endforeach
+                        {{-- Fill remaining cells in the row if less than 3 --}}
+                        @for($i = count($row); $i < 3; $i++)
+                            <td style="width:33%; padding:4px;"></td>
+                        @endfor
+                    </tr>
+                @endforeach
             </table>
         </div>
     @endif

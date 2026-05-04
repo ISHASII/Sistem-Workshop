@@ -86,6 +86,11 @@ class User extends Authenticatable
 
     public function isManagementCustomer(): bool
     {
+        // Check by role string first
+        if ($this->role === 'management-customer') {
+            return true;
+        }
+
         $jabatanName = strtolower(trim((string) optional($this->jabatan)->name));
         $normalized = str_replace([' ', '_', '-'], '', $jabatanName);
 

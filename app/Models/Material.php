@@ -52,13 +52,23 @@ class Material extends Model
      */
     public function getCurrentStok()
     {
-        $stokMasuk = $this->movements()
-            ->where('type', 'in')
-            ->sum('jumlah');
+        if ($this->relationLoaded('movements')) {
+            $stokMasuk = $this->movements
+                ->where('type', 'in')
+                ->sum('jumlah');
 
-        $stokKeluar = $this->movements()
-            ->where('type', 'out')
-            ->sum('jumlah');
+            $stokKeluar = $this->movements
+                ->where('type', 'out')
+                ->sum('jumlah');
+        } else {
+            $stokMasuk = $this->movements()
+                ->where('type', 'in')
+                ->sum('jumlah');
+
+            $stokKeluar = $this->movements()
+                ->where('type', 'out')
+                ->sum('jumlah');
+        }
 
         return $this->jumlah + $stokMasuk - $stokKeluar;
     }
