@@ -18,8 +18,6 @@ class UserSeeder extends Seeder
         $password = Hash::make('1234567890');
 
         // Jabatans
-        $customerJabatan = Jabatan::firstWhere('name', 'Customer');
-        $mngtCustomerJabatan = Jabatan::firstWhere('name', 'Management Customer');
         $mngtEppJabatan = Jabatan::firstWhere('name', 'Management EPP');
 
         // 1. Admin Account
@@ -35,47 +33,14 @@ class UserSeeder extends Seeder
 
         // 2. Management EPP Account
         User::updateOrCreate(
-            ['username' => 'mngt.epp'],
+            ['username' => 'mjepp'],
             [
                 'name' => 'Management EPP',
-                'email' => 'mngt.epp@epp.test',
+                'email' => 'mjepp@epp.test',
                 'password' => $password,
                 'role' => 'management-epp',
                 'jabatan_id' => $mngtEppJabatan?->id,
             ]
         );
-
-        // 3. Department-specific accounts
-        $departements = Departement::all();
-
-        foreach ($departements as $dept) {
-            $deptSlug = strtolower(str_replace(' ', '', $dept->name));
-
-            // Customer per department
-            User::updateOrCreate(
-                ['username' => 'cust.' . $deptSlug],
-                [
-                    'name' => 'Customer ' . $dept->name,
-                    'email' => 'cust.' . $deptSlug . '@epp.test',
-                    'password' => $password,
-                    'role' => 'customer',
-                    'department_id' => $dept->id,
-                    'jabatan_id' => $customerJabatan?->id,
-                ]
-            );
-
-            // Management Customer per department
-            User::updateOrCreate(
-                ['username' => 'mngt.' . $deptSlug],
-                [
-                    'name' => 'Management ' . $dept->name,
-                    'email' => 'mngt.' . $deptSlug . '@epp.test',
-                    'password' => $password,
-                    'role' => 'management-customer',
-                    'department_id' => $dept->id,
-                    'jabatan_id' => $mngtCustomerJabatan?->id,
-                ]
-            );
-        }
     }
 }
