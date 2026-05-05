@@ -17,13 +17,13 @@ class DashboardController extends Controller
         }
 
         // Data proyek urgent (per proyek, bukan agregat) - filtered by current customer
-        $urgent_projects = \App\Models\JobOrder::where('status', 'Urgent')
+        $urgent_projects = \App\Models\JobOrder::approvedApproval()->where('status', 'Urgent')
             ->where('created_by', auth()->id())
             ->orderBy('actual')
             ->get(['project', 'seksi', 'actual', 'end']);
 
         // Data job order urgent per seksi - filtered by current customer
-        $urgent_jobs = \App\Models\JobOrder::where('status', 'Urgent')
+        $urgent_jobs = \App\Models\JobOrder::approvedApproval()->where('status', 'Urgent')
             ->where('created_by', auth()->id())
             ->selectRaw('seksi, count(*) as total')
             ->groupBy('seksi')
@@ -45,7 +45,7 @@ class DashboardController extends Controller
             ->values();
 
         // Ambil data job order: nama proyek dan progress - filtered by current customer
-        $query = \App\Models\JobOrder::with(['items.material'])
+        $query = \App\Models\JobOrder::approvedApproval()->with(['items.material'])
             ->where('created_by', auth()->id());
 
         // Apply same filters as admin (search, status, seksi, evaluasi, progress)
@@ -72,7 +72,7 @@ class DashboardController extends Controller
         // Job orders filtered by selected month and year - filtered by current customer
         $bulan = request('bulan', now()->month);
         $tahun = request('tahun', now()->year);
-        $all_joborders = \App\Models\JobOrder::where('created_by', auth()->id())
+        $all_joborders = \App\Models\JobOrder::approvedApproval()->where('created_by', auth()->id())
             ->orderBy('start', 'desc')
             ->get(['project','start','end','evaluasi']);
         $joborders_monthly = $all_joborders->filter(function($jo) use ($bulan, $tahun) {

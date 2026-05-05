@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {
         $departement_id = request('departement_id');
         
-        $baseJoQuery = \App\Models\JobOrder::query();
+        $baseJoQuery = \App\Models\JobOrder::approvedApproval();
         if ($departement_id) {
             $baseJoQuery->whereHas('creator', function ($q) use ($departement_id) {
                 $q->where('department_id', $departement_id);

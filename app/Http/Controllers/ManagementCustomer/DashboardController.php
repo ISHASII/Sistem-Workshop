@@ -26,24 +26,24 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Data proyek urgent (per proyek) - filtered by department
-        $urgent_projects = (clone $baseQuery)->where('status', 'Urgent')
+        // Data proyek urgent (per proyek) - filtered by department and EPP approval
+        $urgent_projects = (clone $baseQuery)->approvedApproval()->where('status', 'Urgent')
             ->orderBy('actual')
             ->get(['project', 'seksi', 'actual', 'end']);
 
-        // Data job order urgent per seksi - filtered by department
-        $urgent_jobs = (clone $baseQuery)->where('status', 'Urgent')
+        // Data job order urgent per seksi - filtered by department and EPP approval
+        $urgent_jobs = (clone $baseQuery)->approvedApproval()->where('status', 'Urgent')
             ->selectRaw('seksi, count(*) as total')
             ->groupBy('seksi')
             ->get();
 
-        // Data job order untuk Progress Chart - filtered by department
-        $joborders = (clone $baseQuery)->orderByDesc('progress')->get(['project', 'progress']);
+        // Data job order untuk Progress Chart - filtered by department and EPP approval
+        $joborders = (clone $baseQuery)->approvedApproval()->orderByDesc('progress')->get(['project', 'progress']);
 
         // Job orders filtered by selected month and year for table
         $bulan = request('bulan', now()->month);
         $tahun = request('tahun', now()->year);
-        $all_joborders = (clone $baseQuery)->orderBy('start', 'desc')->get(['project','start','end','evaluasi']);
+        $all_joborders = (clone $baseQuery)->approvedApproval()->orderBy('start', 'desc')->get(['project','start','end','evaluasi']);
         
         $joborders_monthly = $all_joborders->filter(function($jo) use ($bulan, $tahun) {
             if (!$jo->start) return false;
