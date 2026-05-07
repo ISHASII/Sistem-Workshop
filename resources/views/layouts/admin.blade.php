@@ -81,22 +81,8 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                             <div
                                 class="nav-dropdown absolute left-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl shadow-slate-900/10 border border-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                 <div class="p-1.5">
-                                    @if(Route::has('admin.kategori.index'))
-                                        <a href="{{ route('admin.kategori.index') }}"
-                                            class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-50 text-violet-700' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50' }}">
-                                            <div
-                                                class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-200' : 'bg-violet-100' }}">
-                                                <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4 6h16M4 12h16M4 18h16" />
-                                                </svg>
-                                            </div>
-                                            <div class="font-medium">Kategori</div>
-                                        </a>
-                                    @endif
 
-                                    @if(Route::has('admin.departement.index'))
+@if(Route::has('admin.departement.index'))
                                         <a href="{{ route('admin.departement.index') }}"
                                             class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.departement.*') ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:text-amber-600 hover:bg-amber-50' }}">
                                             <div
@@ -123,6 +109,21 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                                                 </svg>
                                             </div>
                                             <div class="font-medium">Jabatan</div>
+                                        </a>
+                                    @endif
+
+                                    @if(Route::has('admin.kategori.index'))
+                                        <a href="{{ route('admin.kategori.index') }}"
+                                            class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-50 text-violet-700' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50' }}">
+                                            <div
+                                                class="w-7 h-7 rounded-lg flex items-center justify-center mr-2.5 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-200' : 'bg-violet-100' }}">
+                                                <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 6h16M4 12h16M4 18h16" />
+                                                </svg>
+                                            </div>
+                                            <div class="font-medium">Kategori</div>
                                         </a>
                                     @endif
 

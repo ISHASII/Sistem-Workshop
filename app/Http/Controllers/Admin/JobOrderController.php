@@ -12,9 +12,16 @@ use App\Models\JobOrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Services\NotificationService;
 
 class JobOrderController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     /**
      * Display a listing of job orders for admin.
      */
@@ -579,6 +586,11 @@ class JobOrderController extends Controller
             }
         });
 
+        // Notify customer if the job order was created by a customer
+        if ($joborder->creator && $joborder->creator->id !== auth()->id()) {
+            $this->notificationService->notifyAdminEditedJobOrder($joborder, auth()->user());
+        }
+
         return redirect()->route('admin.joborder.index')->with('success', 'Job order updated.');
     }
 
@@ -600,6 +612,12 @@ class JobOrderController extends Controller
                     }
                 }
             }
+            
+            // Notify customer if the job order was created by a customer
+            if ($joborder->creator && $joborder->creator->id !== auth()->id()) {
+                $this->notificationService->notifyAdminDeletedJobOrder($joborder, auth()->user());
+            }
+
             $joborder->delete();
         });
 

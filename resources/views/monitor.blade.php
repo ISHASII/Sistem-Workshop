@@ -11,20 +11,55 @@
 <body class="bg-gray-100 min-h-screen flex items-start justify-center font-sans">
     <main class="w-full min-h-screen py-3 px-2 sm:py-4 sm:px-3 md:py-6 md:px-4 lg:px-6 xl:px-8">
         <div class="max-w-[1920px] mx-auto space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
-            <!-- Live Clock (center top) -->
-            <div class="flex justify-center">
-                <div id="live-clock-card"
-                    class="bg-red-600 rounded-xl sm:rounded-2xl shadow-lg border border-red-200/50 px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 mb-1 sm:mb-2 w-full max-w-[280px] sm:max-w-sm md:max-w-md backdrop-blur-sm">
-                    <div class="flex items-center w-full text-white">
-                        <div class="w-1/4 text-[10px] sm:text-xs font-semibold opacity-90 hidden md:block">Waktu Server
+            <!-- Header & Filters -->
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 p-4 mb-6">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-red-600 p-3 rounded-xl shadow-lg shadow-red-200">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
                         </div>
-                        <div class="flex-1 md:w-1/2 text-center">
-                            <div id="live-time" class="text-sm sm:text-base md:text-lg font-bold tracking-wide"></div>
-                        </div>
-                        <div class="flex-1 md:w-1/4 text-right">
-                            <div id="live-date" class="text-[10px] sm:text-xs md:text-sm opacity-90"></div>
+                        <div>
+                            <h1 class="text-2xl font-black text-gray-900 tracking-tight">MONITORING SYSTEM</h1>
+                            <p class="text-xs font-bold text-red-600 tracking-widest uppercase">Workshop Production Live Data</p>
                         </div>
                     </div>
+
+                    <!-- Live Clock -->
+                    <div class="bg-gray-900 text-white px-6 py-2 rounded-2xl shadow-inner border border-gray-700 flex items-center gap-4">
+                        <div class="text-center">
+                            <div id="live-time" class="text-2xl font-mono font-black tracking-tighter text-red-500"></div>
+                            <div id="live-date" class="text-[10px] font-bold uppercase tracking-widest opacity-60"></div>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <form action="{{ route('monitor') }}" method="GET" class="flex items-center gap-2">
+                        <div class="relative">
+                            <select name="departement_id" onchange="this.form.submit()" 
+                                class="appearance-none bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-red-500 focus:border-red-500 block w-full pl-4 pr-10 py-2.5 font-bold transition-all hover:bg-white shadow-sm">
+                                <option value="">Semua Departemen</option>
+                                @foreach($departements as $dept)
+                                    <option value="{{ $dept->id }}" {{ request('departement_id') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                        @if(request()->anyFilled(['departement_id', 'bulan', 'tahun']))
+                            <a href="{{ route('monitor') }}" class="p-2.5 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors" title="Reset Filter">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </a>
+                        @endif
+                    </form>
                 </div>
             </div>
 
@@ -122,6 +157,9 @@
                         </div>
                         <form id="filterJobOrderMonth" class="flex items-center gap-1 sm:gap-2" method="GET"
                             action="{{ route('monitor') }}">
+                            @if(request('departement_id'))
+                                <input type="hidden" name="departement_id" value="{{ request('departement_id') }}">
+                            @endif
                             <select name="bulan"
                                 class="w-20 sm:w-24 md:w-28 border border-gray-300/50 bg-white/80 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs">
                                 @foreach(range(1, 12) as $m)

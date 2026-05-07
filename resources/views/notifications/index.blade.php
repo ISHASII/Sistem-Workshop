@@ -36,7 +36,9 @@
                 <nav class="flex items-center gap-3">
                     @php $currentFilter = request()->get('filter'); @endphp
                     <a href="{{ request()->url() }}" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold {{ $currentFilter ? 'text-slate-600 bg-slate-100' : 'bg-red-50 text-red-700' }}">Semua</a>
-                    <a href="{{ request()->fullUrlWithQuery(['filter' => 'resubmisi']) }}" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold {{ $currentFilter === 'resubmisi' ? 'bg-violet-100 text-violet-700' : 'text-slate-600 bg-slate-100' }}">Resubmisi</a>
+                    @if(auth()->user()->isManagementCustomer())
+                        <a href="{{ request()->fullUrlWithQuery(['filter' => 'resubmisi']) }}" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold {{ $currentFilter === 'resubmisi' ? 'bg-violet-100 text-violet-700' : 'text-slate-600 bg-slate-100' }}">Resubmisi</a>
+                    @endif
                 </nav>
             </div>
             @if($notifications->count() > 0)

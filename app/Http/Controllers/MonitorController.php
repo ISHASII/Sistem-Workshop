@@ -8,13 +8,25 @@ class MonitorController extends Controller
 {
     public function index(Request $request)
     {
-        // Copy data preparation from Admin\DashboardController to provide charts publicly
-        $urgent_projects = \App\Models\JobOrder::where('status', 'Urgent')
-            ->orderBy('actual')
+        $departement_id = $request->input('departement_id');
+        $departements = \App\Models\Departement::orderBy('name')->get();
+
+        $urgent_projects = \App\Models\JobOrder::approvedApproval()->where('status', 'Urgent');
+        if ($departement_id) {
+            $urgent_projects->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
+        $urgent_projects = $urgent_projects->orderBy('actual')
             ->get(['project', 'seksi', 'actual', 'end']);
 
-        $urgent_jobs = \App\Models\JobOrder::where('status', 'Urgent')
-            ->selectRaw('seksi, count(*) as total')
+        $urgent_jobs = \App\Models\JobOrder::approvedApproval()->where('status', 'Urgent');
+        if ($departement_id) {
+            $urgent_jobs->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
+        $urgent_jobs = $urgent_jobs->selectRaw('seksi, count(*) as total')
             ->groupBy('seksi')
             ->get();
 
@@ -32,7 +44,14 @@ class MonitorController extends Controller
             ->filter(function($m) { return $m['stock'] < $m['reorder']; })
             ->values();
 
-        $query = \App\Models\JobOrder::with(['items.material']);
+        $query = \App\Models\JobOrder::approvedApproval()->with(['items.material']);
+        
+        if ($departement_id) {
+            $query->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
+
         // Apply same request filters as admin dashboard if provided
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -56,7 +75,13 @@ class MonitorController extends Controller
 
         $bulan = $request->input('bulan', now()->month);
         $tahun = $request->input('tahun', now()->year);
-        $all_joborders = \App\Models\JobOrder::orderBy('start', 'desc')->get(['project','start','end','evaluasi']);
+        $all_joborders_query = \App\Models\JobOrder::approvedApproval();
+        if ($departement_id) {
+            $all_joborders_query->whereHas('creator', function ($q) use ($departement_id) {
+                $q->where('department_id', $departement_id);
+            });
+        }
+        $all_joborders = $all_joborders_query->orderBy('start', 'desc')->get(['project','start','end','evaluasi']);
         $joborders_monthly = $all_joborders->filter(function($jo) use ($bulan,$tahun) {
             if (!$jo->start) return false;
             $date = null;
@@ -97,7 +122,7 @@ class MonitorController extends Controller
 
         return view('monitor', compact(
             'joborders', 'joborders_monthly', 'materials_by_category', 'critical_materials',
-            'urgent_jobs', 'urgent_projects', 'averagePerformances'
+            'urgent_jobs', 'urgent_projects', 'averagePerformances', 'departements'
         ));
     }
 }

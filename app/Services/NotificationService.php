@@ -295,6 +295,78 @@ class NotificationService
         }
     }
 
+    public function notifyAdminEditedJobOrder(JobOrder $jobOrder, User $admin): void
+    {
+        $customer = $jobOrder->creator;
+        if (!$customer) return;
+
+        // Notify Customer
+        Notification::create([
+            'title' => 'Job Order Diedit Admin',
+            'message' => "Job Order '{$jobOrder->project}' Anda telah diedit oleh Admin Workshop.",
+            'type' => 'job_order_edited_by_admin',
+            'user_id' => $customer->id,
+            'job_order_id' => $jobOrder->id,
+            'action_by' => $admin->id,
+            'data' => [
+                'job_order_project' => $jobOrder->project,
+                'action_by_name' => $admin->name,
+            ]
+        ]);
+
+        // Notify Management Customer
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                'title' => 'Job Order Departemen Diedit Admin',
+                'message' => "Job Order '{$jobOrder->project}' dari departemen Anda telah diedit oleh Admin Workshop.",
+                'type' => 'job_order_edited_by_admin',
+                'user_id' => $recipient->id,
+                'job_order_id' => $jobOrder->id,
+                'action_by' => $admin->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'action_by_name' => $admin->name,
+                ]
+            ]);
+        }
+    }
+
+    public function notifyAdminDeletedJobOrder(JobOrder $jobOrder, User $admin): void
+    {
+        $customer = $jobOrder->creator;
+        if (!$customer) return;
+
+        // Notify Customer
+        Notification::create([
+            'title' => 'Job Order Dihapus Admin',
+            'message' => "Job Order '{$jobOrder->project}' Anda telah dihapus oleh Admin Workshop.",
+            'type' => 'job_order_deleted_by_admin',
+            'user_id' => $customer->id,
+            'job_order_id' => null,
+            'action_by' => $admin->id,
+            'data' => [
+                'job_order_project' => $jobOrder->project,
+                'action_by_name' => $admin->name,
+            ]
+        ]);
+
+        // Notify Management Customer
+        foreach ($this->managementCustomerRecipients($customer) as $recipient) {
+            Notification::create([
+                'title' => 'Job Order Departemen Dihapus Admin',
+                'message' => "Job Order '{$jobOrder->project}' dari departemen Anda telah dihapus oleh Admin Workshop.",
+                'type' => 'job_order_deleted_by_admin',
+                'user_id' => $recipient->id,
+                'job_order_id' => null,
+                'action_by' => $admin->id,
+                'data' => [
+                    'job_order_project' => $jobOrder->project,
+                    'action_by_name' => $admin->name,
+                ]
+            ]);
+        }
+    }
+
     /**
      * Get unread notification count for a user
      */
@@ -314,7 +386,8 @@ class NotificationService
             ->with(['jobOrder', 'actionBy']);
 
         // Support filter = 'resubmisi' to show only resubmitted JO notifications
-        if ($filter && in_array(strtolower($filter), ['resubmisi', 'resubmitted', 'resubmission'])) {
+        // Only allow this for Management Customer
+        if ($filter && in_array(strtolower($filter), ['resubmisi', 'resubmitted', 'resubmission']) && $user->isManagementCustomer()) {
             $query->where('type', 'job_order_resubmitted');
         }
 
