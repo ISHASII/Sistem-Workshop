@@ -19,9 +19,14 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 - [Robust background job processing](https://laravel.com/docs/queues).
 - [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Sistem Workshop
 
-## Learning Laravel
+Sistem Workshop adalah platform manajemen Job Order dan Inventaris Material.
+
+> [!TIP]
+> Untuk dokumentasi mendalam mengenai logic, arsitektur, dan alur kerja sistem, silakan baca [**BRAIN.md**](./BRAIN.md).
+
+## Getting Started
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
