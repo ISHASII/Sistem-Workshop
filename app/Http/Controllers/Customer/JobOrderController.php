@@ -520,7 +520,9 @@ class JobOrderController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data, $joborder) {
+        $oldStatus = $joborder->approval_status;
+
+        DB::transaction(function () use ($data, $joborder, $oldStatus) {
             $joborder->update(collect($data)->only(['seksi','status','project','start','end','area','latar_belakang','tujuan','target'])->toArray() + [
                 'approval_status' => 'pending',
                 'approval_requested_at' => now(),
@@ -533,18 +535,21 @@ class JobOrderController extends Controller
 
             // Sync items: collect ids to retain
             $incomingIds = collect($data['items'])->pluck('id')->filter()->all();
-            // Return stock for items being removed
+            
+            // Return stock for items being removed ONLY if they were actually "out" (status not rejected)
             $itemsToRemove = $joborder->items()->whereNotIn('id', $incomingIds)->get();
-            foreach ($itemsToRemove as $it) {
-                if (!empty($it->material_id) && !empty($it->jumlah)) {
-                    \App\Models\MaterialMovement::create([
-                        'material_id' => $it->material_id,
-                        'type' => 'in',
-                        'tanggal' => now(),
-                        'jumlah' => $it->jumlah,
-                        'movement_type' => 'jo',
-                        'keterangan' => 'Job Order Edit #' . $joborder->id . ' (hapus item)',
-                    ]);
+            if ($oldStatus !== 'rejected') {
+                foreach ($itemsToRemove as $it) {
+                    if (!empty($it->material_id) && !empty($it->jumlah)) {
+                        \App\Models\MaterialMovement::create([
+                            'material_id' => $it->material_id,
+                            'type' => 'in',
+                            'tanggal' => now(),
+                            'jumlah' => $it->jumlah,
+                            'movement_type' => 'jo',
+                            'keterangan' => 'Job Order Edit #' . $joborder->id . ' (hapus item)',
+                        ]);
+                    }
                 }
             }
             $joborder->items()->whereNotIn('id', $incomingIds)->delete();
@@ -569,29 +574,42 @@ class JobOrderController extends Controller
                         'jumlah' => $item['jumlah'] ?? null,
                         'satuan' => $item['satuan'] ?? null,
                     ]);
-                    // Hanya kurangi stok jika jumlah berubah
-                    if (!empty($item['material_id']) && !empty($item['jumlah']) && $oldJumlah !== null && (int)$item['jumlah'] !== (int)$oldJumlah) {
-                        $selisih = (int)$item['jumlah'] - (int)$oldJumlah;
-                        if ($selisih > 0) {
-                            // Jika jumlah bertambah, kurangi stok sesuai selisih
+
+                    // Handle stock movement
+                    if (!empty($item['material_id']) && !empty($item['jumlah'])) {
+                        if ($oldStatus === 'rejected') {
+                            // If it was rejected, stock is already back in warehouse.
+                            // So we just deduct the NEW total quantity.
                             \App\Models\MaterialMovement::create([
                                 'material_id' => $item['material_id'],
                                 'type' => 'out',
                                 'tanggal' => now(),
-                                'jumlah' => $selisih,
+                                'jumlah' => $item['jumlah'],
                                 'movement_type' => 'jo',
-                                'keterangan' => 'Job Order Edit #' . $joborder->id . ' (tambah material)',
+                                'keterangan' => 'Job Order Resubmitted #' . $joborder->id,
                             ]);
-                        } else if ($selisih < 0) {
-                            // Jika jumlah berkurang, tambahkan stok kembali (type in)
-                            \App\Models\MaterialMovement::create([
-                                'material_id' => $item['material_id'],
-                                'type' => 'in',
-                                'tanggal' => now(),
-                                'jumlah' => abs($selisih),
-                                'movement_type' => 'jo',
-                                'keterangan' => 'Job Order Edit #' . $joborder->id . ' (kurangi material)',
-                            ]);
+                        } else if ($oldJumlah !== null && (int)$item['jumlah'] !== (int)$oldJumlah) {
+                            // Incremental logic for non-rejected JOs
+                            $selisih = (int)$item['jumlah'] - (int)$oldJumlah;
+                            if ($selisih > 0) {
+                                \App\Models\MaterialMovement::create([
+                                    'material_id' => $item['material_id'],
+                                    'type' => 'out',
+                                    'tanggal' => now(),
+                                    'jumlah' => $selisih,
+                                    'movement_type' => 'jo',
+                                    'keterangan' => 'Job Order Edit #' . $joborder->id . ' (tambah material)',
+                                ]);
+                            } else if ($selisih < 0) {
+                                \App\Models\MaterialMovement::create([
+                                    'material_id' => $item['material_id'],
+                                    'type' => 'in',
+                                    'tanggal' => now(),
+                                    'jumlah' => abs($selisih),
+                                    'movement_type' => 'jo',
+                                    'keterangan' => 'Job Order Edit #' . $joborder->id . ' (kurangi material)',
+                                ]);
+                            }
                         }
                     }
                 } else {
@@ -664,14 +682,16 @@ class JobOrderController extends Controller
             return redirect()->route('management-customer.requests.index');
         }
 
-        if (($joborder->approval_status ?? 'pending') !== 'rejected') {
-            return back()->with('error', 'Job order hanya bisa dihapus setelah ditolak oleh Management Customer.');
+        // Allow deletion if pending or rejected. If approved, usually it shouldn't be deleted by customer.
+        if (!in_array($joborder->approval_status, ['pending', 'rejected'])) {
+            return back()->with('error', 'Job order yang sudah disetujui tidak bisa dihapus oleh customer.');
         }
 
         $this->notificationService->notifyJobOrderDeleted($joborder, auth()->user());
         
         DB::transaction(function () use ($joborder) {
             // Return stock if NOT already rejected (because rejection already returns stock)
+            // If it's pending or approved (though approved is blocked above), return the stock.
             if ($joborder->approval_status !== 'rejected') {
                 foreach ($joborder->items as $item) {
                     if (!empty($item->material_id) && !empty($item->jumlah)) {
@@ -681,7 +701,7 @@ class JobOrderController extends Controller
                             'tanggal' => now(),
                             'jumlah' => $item->jumlah,
                             'movement_type' => 'jo',
-                            'keterangan' => 'Job Order Deleted #' . $joborder->id,
+                            'keterangan' => 'Job Order Deleted (Customer) #' . $joborder->id,
                         ]);
                     }
                 }
@@ -689,7 +709,7 @@ class JobOrderController extends Controller
             $joborder->delete();
         });
 
-        return back()->with('success', 'Job order deleted.');
+        return back()->with('success', 'Job order berhasil dihapus dan stok material telah dikembalikan.');
     }
 
     public function updateProgress(Request $request, JobOrder $joborder)
