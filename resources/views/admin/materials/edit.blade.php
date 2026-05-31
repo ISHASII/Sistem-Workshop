@@ -102,7 +102,7 @@
                         Jumlah Stok Awal <span class="text-red-500">*</span>
                     </label>
               <input type="number" step="1" min="0" id="jumlah" name="jumlah"
-                  value="{{ old('jumlah', $material->getCurrentStok()) }}" readonly
+                  value="{{ old('jumlah', number_format($material->jumlah, 0)) }}" readonly
                   class="w-full px-3 py-2 border border-slate-300 bg-slate-100 text-slate-500 rounded-md cursor-not-allowed">
                     @error('jumlah')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

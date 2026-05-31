@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Material extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'nama',
@@ -15,12 +16,14 @@ class Material extends Model
         'jumlah',
         'safety_stock',
         'satuan_id',
-        'kategori_id'
+        'kategori_id',
+        'stok_current'
     ];
 
     protected $casts = [
         'jumlah' => 'decimal:2',
-        'safety_stock' => 'decimal:2'
+        'safety_stock' => 'decimal:2',
+        'stok_current' => 'decimal:2'
     ];
 
     /**
@@ -48,9 +51,21 @@ class Material extends Model
     }
 
     /**
-     * Get current stock including movements
+     * Get current stock including movements (checks stok_current cache first)
      */
     public function getCurrentStok()
+    {
+        if (isset($this->stok_current)) {
+            return (float) $this->stok_current;
+        }
+
+        return (float) $this->calculateDynamicStok();
+    }
+
+    /**
+     * Dynamically calculate stock from movements history
+     */
+    public function calculateDynamicStok()
     {
         if ($this->relationLoaded('movements')) {
             $stokMasuk = $this->movements
@@ -87,7 +102,7 @@ class Material extends Model
      */
     public function updateStokCurrent(): void
     {
-        $current = $this->getCurrentStok();
+        $current = $this->calculateDynamicStok();
 
         // If the table has a 'stok_current' or 'current_stok' column, persist it for faster reads.
         $columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());

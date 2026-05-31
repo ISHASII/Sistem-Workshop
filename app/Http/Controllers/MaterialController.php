@@ -6,6 +6,7 @@ use App\Models\Material;
 use App\Models\Kategori;
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class MaterialController extends Controller
@@ -44,14 +45,14 @@ class MaterialController extends Controller
         if ($request->filled('stock_status')) {
             switch ($request->stock_status) {
                 case 'empty':
-                    $query->where('jumlah', '<=', 0);
+                    $query->where('stok_current', '<=', 0);
                     break;
                 case 'low':
-                    $query->whereColumn('jumlah', '<', 'safety_stock')
-                          ->where('jumlah', '>', 0);
+                    $query->whereColumn('stok_current', '<', 'safety_stock')
+                          ->where('stok_current', '>', 0);
                     break;
                 case 'safe':
-                    $query->whereColumn('jumlah', '>=', 'safety_stock');
+                    $query->whereColumn('stok_current', '>=', 'safety_stock');
                     break;
             }
         }
@@ -66,10 +67,10 @@ class MaterialController extends Controller
                 $query->orderBy('nama', 'desc');
                 break;
             case 'jumlah_asc':
-                $query->orderBy('jumlah', 'asc');
+                $query->orderBy('stok_current', 'asc');
                 break;
             case 'jumlah_desc':
-                $query->orderBy('jumlah', 'desc');
+                $query->orderBy('stok_current', 'desc');
                 break;
             case 'terbaru':
             default:
@@ -82,9 +83,9 @@ class MaterialController extends Controller
         // Get statistics for all materials (not paginated)
         $allMaterials = Material::with(['kategori', 'satuan'])->get();
         $totalMaterials = $allMaterials->count();
-        $lowStockMaterials = $allMaterials->filter(fn($m) => $m->isStokKurang())->count();
+        $lowStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() < $m->safety_stock && $m->getCurrentStok() > 0)->count();
         $emptyStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() <= 0)->count();
-        $safeStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() > $m->safety_stock)->count();
+        $safeStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() >= $m->safety_stock)->count();
 
         // Get all kategoris and satuans for filter dropdowns
         $kategoris = Kategori::orderBy('name')->get();
@@ -120,14 +121,14 @@ class MaterialController extends Controller
         if ($request->filled('stock_status')) {
             switch ($request->stock_status) {
                 case 'empty':
-                    $query->where('jumlah', '<=', 0);
+                    $query->where('stok_current', '<=', 0);
                     break;
                 case 'low':
-                    $query->whereColumn('jumlah', '<', 'safety_stock')
-                          ->where('jumlah', '>', 0);
+                    $query->whereColumn('stok_current', '<', 'safety_stock')
+                          ->where('stok_current', '>', 0);
                     break;
                 case 'safe':
-                    $query->whereColumn('jumlah', '>=', 'safety_stock');
+                    $query->whereColumn('stok_current', '>=', 'safety_stock');
                     break;
             }
         }
@@ -142,10 +143,10 @@ class MaterialController extends Controller
                 $query->orderBy('nama', 'desc');
                 break;
             case 'jumlah_asc':
-                $query->orderBy('jumlah', 'asc');
+                $query->orderBy('stok_current', 'asc');
                 break;
             case 'jumlah_desc':
-                $query->orderBy('jumlah', 'desc');
+                $query->orderBy('stok_current', 'desc');
                 break;
             default:
                 $query->latest();
@@ -224,8 +225,10 @@ class MaterialController extends Controller
             abort(403);
         }
 
-        $material->load(['kategori', 'satuan', 'movements']);
-        return view('admin.materials.show', compact('material'));
+        $material->load(['kategori', 'satuan']);
+        $movements = $material->movements()->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        return view('admin.materials.show', compact('material', 'movements'));
     }
 
     /**

@@ -21,6 +21,9 @@ class Notification extends Model
     protected $casts = [
         'data' => 'array',
         'read_at' => 'datetime',
+        'user_id' => 'integer',
+        'job_order_id' => 'integer',
+        'action_by' => 'integer',
     ];
 
     /**

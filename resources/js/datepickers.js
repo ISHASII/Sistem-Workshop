@@ -2,7 +2,6 @@ import "./bootstrap";
 
 // Flatpickr for date pickers
 import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
 
 function initDatepickers(selector) {
     selector =

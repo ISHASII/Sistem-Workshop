@@ -33,10 +33,14 @@ class NotificationController extends Controller
 
     public function show(Notification $notification)
     {
-        // Ensure user owns this notification
-        abort_if($notification->user_id !== auth()->id(), 403);
+        // Ensure user owns this notification and load relations
+        $notification = Notification::with(['jobOrder.items.material', 'actionBy'])
+            ->where('user_id', auth()->id())
+            ->findOrFail($notification->id);
 
-        $notification->markAsRead();
+        if (!$notification->isRead()) {
+            $notification->markAsRead();
+        }
 
         return view('notifications.show', [
             'layoutView' => 'layouts.management-epp',
@@ -46,19 +50,28 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function markAsRead(Notification $notification)
+    public function markAsRead(Request $request, Notification $notification)
     {
         // Ensure user owns this notification
-        abort_if($notification->user_id !== auth()->id(), 403);
+        $notification = Notification::where('user_id', auth()->id())
+            ->findOrFail($notification->id);
 
         $this->notificationService->markAsRead($notification->id, auth()->user());
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
 
         return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
     }
 
-    public function markAllAsRead()
+    public function markAllAsRead(Request $request)
     {
         $count = $this->notificationService->markAllAsRead(auth()->user());
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'count' => $count]);
+        }
 
         return back()->with('success', "{$count} notifikasi ditandai sudah dibaca.");
     }

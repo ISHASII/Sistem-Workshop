@@ -9,6 +9,7 @@ export default {
         "./resources/**/*.vue",
         "./app/**/*.php",
         "./views/**/*.blade.php",
+        "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
     ],
     theme: {
         extend: {},

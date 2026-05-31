@@ -124,7 +124,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200">
-                        @forelse($material->movements()->orderBy('tanggal', 'desc')->get() as $movement)
+                        @forelse($movements as $movement)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-4 py-3 text-sm text-slate-900">{{ optional($movement->tanggal)->format('d-m-Y') ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">
@@ -146,6 +146,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $movements->links() }}
             </div>
         </div>
     </div>

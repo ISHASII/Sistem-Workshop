@@ -323,16 +323,7 @@ class JobOrderController extends Controller
                     'satuan' => $item['satuan'] ?? null,
                 ]);
 
-                if (!empty($item['material_id']) && !empty($item['jumlah'])) {
-                    \App\Models\MaterialMovement::create([
-                        'material_id' => $item['material_id'],
-                        'type' => 'out',
-                        'tanggal' => now(),
-                        'jumlah' => $item['jumlah'],
-                        'movement_type' => 'jo',
-                        'keterangan' => 'Job Order #' . $jo->id,
-                    ]);
-                }
+                // No stock movement on store under post-approval stock deduction model.
             }
         });
 
@@ -535,23 +526,7 @@ class JobOrderController extends Controller
 
             // Sync items: collect ids to retain
             $incomingIds = collect($data['items'])->pluck('id')->filter()->all();
-            
-            // Return stock for items being removed ONLY if they were actually "out" (status not rejected)
-            $itemsToRemove = $joborder->items()->whereNotIn('id', $incomingIds)->get();
-            if ($oldStatus !== 'rejected') {
-                foreach ($itemsToRemove as $it) {
-                    if (!empty($it->material_id) && !empty($it->jumlah)) {
-                        \App\Models\MaterialMovement::create([
-                            'material_id' => $it->material_id,
-                            'type' => 'in',
-                            'tanggal' => now(),
-                            'jumlah' => $it->jumlah,
-                            'movement_type' => 'jo',
-                            'keterangan' => 'Job Order Edit #' . $joborder->id . ' (hapus item)',
-                        ]);
-                    }
-                }
-            }
+            // No stock refund on item removal under post-approval stock deduction model.
             $joborder->items()->whereNotIn('id', $incomingIds)->delete();
 
             foreach ($data['items'] as $item) {
@@ -575,43 +550,7 @@ class JobOrderController extends Controller
                         'satuan' => $item['satuan'] ?? null,
                     ]);
 
-                    // Handle stock movement
-                    if (!empty($item['material_id']) && !empty($item['jumlah'])) {
-                        if ($oldStatus === 'rejected') {
-                            // If it was rejected, stock is already back in warehouse.
-                            // So we just deduct the NEW total quantity.
-                            \App\Models\MaterialMovement::create([
-                                'material_id' => $item['material_id'],
-                                'type' => 'out',
-                                'tanggal' => now(),
-                                'jumlah' => $item['jumlah'],
-                                'movement_type' => 'jo',
-                                'keterangan' => 'Job Order Resubmitted #' . $joborder->id,
-                            ]);
-                        } else if ($oldJumlah !== null && (int)$item['jumlah'] !== (int)$oldJumlah) {
-                            // Incremental logic for non-rejected JOs
-                            $selisih = (int)$item['jumlah'] - (int)$oldJumlah;
-                            if ($selisih > 0) {
-                                \App\Models\MaterialMovement::create([
-                                    'material_id' => $item['material_id'],
-                                    'type' => 'out',
-                                    'tanggal' => now(),
-                                    'jumlah' => $selisih,
-                                    'movement_type' => 'jo',
-                                    'keterangan' => 'Job Order Edit #' . $joborder->id . ' (tambah material)',
-                                ]);
-                            } else if ($selisih < 0) {
-                                \App\Models\MaterialMovement::create([
-                                    'material_id' => $item['material_id'],
-                                    'type' => 'in',
-                                    'tanggal' => now(),
-                                    'jumlah' => abs($selisih),
-                                    'movement_type' => 'jo',
-                                    'keterangan' => 'Job Order Edit #' . $joborder->id . ' (kurangi material)',
-                                ]);
-                            }
-                        }
-                    }
+                    // No stock movements under post-approval stock deduction model on update.
                 } else {
                     $createdItem = $joborder->items()->create([
                         'material_id' => $item['material_id'] ?? null,
@@ -619,17 +558,6 @@ class JobOrderController extends Controller
                         'jumlah' => $item['jumlah'] ?? null,
                         'satuan' => $item['satuan'] ?? null,
                     ]);
-                    // Item baru, kurangi stok
-                    if (!empty($item['material_id']) && !empty($item['jumlah'])) {
-                        \App\Models\MaterialMovement::create([
-                            'material_id' => $item['material_id'],
-                            'type' => 'out',
-                            'tanggal' => now(),
-                            'jumlah' => $item['jumlah'],
-                            'movement_type' => 'jo',
-                            'keterangan' => 'Job Order Edit #' . $joborder->id . ' (item baru)',
-                        ]);
-                    }
                 }
             }
             // Handle removal of existing images (if user removed some in edit form)
@@ -690,9 +618,8 @@ class JobOrderController extends Controller
         $this->notificationService->notifyJobOrderDeleted($joborder, auth()->user());
         
         DB::transaction(function () use ($joborder) {
-            // Return stock if NOT already rejected (because rejection already returns stock)
-            // If it's pending or approved (though approved is blocked above), return the stock.
-            if ($joborder->approval_status !== 'rejected') {
+            // Return stock if and only if EPP has approved the Job Order, as that is when the stock was deducted.
+            if ($joborder->epp_approval_status === 'approved') {
                 foreach ($joborder->items as $item) {
                     if (!empty($item->material_id) && !empty($item->jumlah)) {
                         \App\Models\MaterialMovement::create([

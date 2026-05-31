@@ -60,11 +60,27 @@ class RequestController extends Controller
             return back()->with('error', 'Request tidak valid atau sudah diproses.');
         }
 
-        $jobOrder->update([
-            'epp_approval_status' => 'approved',
-            'epp_approved_by' => auth()->id(),
-            'epp_approved_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($jobOrder) {
+            $jobOrder->update([
+                'epp_approval_status' => 'approved',
+                'epp_approved_by' => auth()->id(),
+                'epp_approved_at' => now(),
+            ]);
+
+            // Catat stok keluar secara resmi setelah disetujui EPP
+            foreach ($jobOrder->items as $item) {
+                if (!empty($item->material_id) && !empty($item->jumlah)) {
+                    \App\Models\MaterialMovement::create([
+                        'material_id' => $item->material_id,
+                        'type' => 'out',
+                        'tanggal' => now(),
+                        'jumlah' => $item->jumlah,
+                        'movement_type' => 'jo',
+                        'keterangan' => 'Job Order Approved #' . $jobOrder->id,
+                    ]);
+                }
+            }
+        });
 
         $this->notificationService->notifyEppJobOrderApproved($jobOrder->fresh('creator'), auth()->user());
 

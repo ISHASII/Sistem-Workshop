@@ -92,20 +92,7 @@ class RequestController extends Controller
                 'approved_at' => null,
                 'rejection_reason' => $data['rejection_reason'] ?? null,
             ]);
-
-            // Return stock for all items
-            foreach ($jobOrder->items as $item) {
-                if (!empty($item->material_id) && !empty($item->jumlah)) {
-                    \App\Models\MaterialMovement::create([
-                        'material_id' => $item->material_id,
-                        'type' => 'in',
-                        'tanggal' => now(),
-                        'jumlah' => $item->jumlah,
-                        'movement_type' => 'jo',
-                        'keterangan' => 'Job Order Rejected #' . $jobOrder->id,
-                    ]);
-                }
-            }
+            // No stock refund needed under post-approval stock deduction model because stock wasn't deducted at creation.
         });
 
         $this->notificationService->notifyJobOrderRejected($jobOrder->fresh('creator'), auth()->user(), $data['rejection_reason'] ?? null);

@@ -18,7 +18,7 @@ class MaterialMovementController extends Controller
             abort(403);
         }
 
-        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc');
+        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc')->orderBy('created_at', 'desc')->orderBy('id', 'desc');
 
         // Apply filters from the request
         if (request()->filled('search')) {
@@ -161,7 +161,7 @@ class MaterialMovementController extends Controller
             abort(403);
         }
 
-        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc');
+        $query = MaterialMovement::with('material')->orderBy('tanggal', 'desc')->orderBy('created_at', 'desc')->orderBy('id', 'desc');
 
         // optional filters can be implemented if needed (material id, type, date range)
         if ($request->filled('material_id')) {

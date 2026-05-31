@@ -597,8 +597,8 @@ class JobOrderController extends Controller
     public function destroy(JobOrder $joborder)
     {
         DB::transaction(function () use ($joborder) {
-            // Return stock if NOT already rejected
-            if ($joborder->approval_status !== 'rejected') {
+            // Return stock if and only if EPP has approved the Job Order, as that is when the stock was deducted.
+            if ($joborder->epp_approval_status === 'approved') {
                 foreach ($joborder->items as $item) {
                     if (!empty($item->material_id) && !empty($item->jumlah)) {
                         \App\Models\MaterialMovement::create([

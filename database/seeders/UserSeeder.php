@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Jabatan;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use App\Models\Departement;
-use App\Models\Jabatan;
 
 class UserSeeder extends Seeder
 {
