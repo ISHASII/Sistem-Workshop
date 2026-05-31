@@ -188,8 +188,8 @@
                         <select name="stock_status" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Semua Status</option>
                             <option value="empty" {{ request('stock_status') == 'empty' ? 'selected' : '' }}>Stok Habis (0)</option>
-                            <option value="low" {{ request('stock_status') == 'low' ? 'selected' : '' }}>Stok Kurang (< Safety)</option>
-                            <option value="safe" {{ request('stock_status') == 'safe' ? 'selected' : '' }}>Stok Aman (≥ Safety)</option>
+                            <option value="low" {{ request('stock_status') == 'low' ? 'selected' : '' }}>Stok Kurang (≤ Safety)</option>
+                            <option value="safe" {{ request('stock_status') == 'safe' ? 'selected' : '' }}>Stok Aman (> Safety)</option>
                         </select>
                     </div>
 

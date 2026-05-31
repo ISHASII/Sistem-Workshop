@@ -93,7 +93,7 @@ class Material extends Model
      */
     public function isStokKurang()
     {
-        return $this->getCurrentStok() < $this->safety_stock;
+        return $this->getCurrentStok() <= $this->safety_stock;
     }
 
     /**

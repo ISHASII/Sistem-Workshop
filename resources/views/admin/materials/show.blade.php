@@ -56,10 +56,12 @@
                     </div>
                     <div class="flex">
                         <span class="w-32 text-sm font-medium text-slate-600">Status:</span>
-                        @if($material->isStokKurang())
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Stok Kurang</span>
+                        @if($currentStock <= 0)
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">Stok Habis</span>
+                        @elseif($material->isStokKurang())
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Stok Kurang</span>
                         @else
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-rose-100 text-green-800">Stok Aman</span>
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Stok Aman</span>
                         @endif
                     </div>
                 </div>

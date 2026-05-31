@@ -48,11 +48,11 @@ class MaterialController extends Controller
                     $query->where('stok_current', '<=', 0);
                     break;
                 case 'low':
-                    $query->whereColumn('stok_current', '<', 'safety_stock')
+                    $query->whereColumn('stok_current', '<=', 'safety_stock')
                           ->where('stok_current', '>', 0);
                     break;
                 case 'safe':
-                    $query->whereColumn('stok_current', '>=', 'safety_stock');
+                    $query->whereColumn('stok_current', '>', 'safety_stock');
                     break;
             }
         }
@@ -83,9 +83,9 @@ class MaterialController extends Controller
         // Get statistics for all materials (not paginated)
         $allMaterials = Material::with(['kategori', 'satuan'])->get();
         $totalMaterials = $allMaterials->count();
-        $lowStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() < $m->safety_stock && $m->getCurrentStok() > 0)->count();
+        $lowStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() <= $m->safety_stock && $m->getCurrentStok() > 0)->count();
         $emptyStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() <= 0)->count();
-        $safeStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() >= $m->safety_stock)->count();
+        $safeStockMaterials = $allMaterials->filter(fn($m) => $m->getCurrentStok() > $m->safety_stock)->count();
 
         // Get all kategoris and satuans for filter dropdowns
         $kategoris = Kategori::orderBy('name')->get();
@@ -124,11 +124,11 @@ class MaterialController extends Controller
                     $query->where('stok_current', '<=', 0);
                     break;
                 case 'low':
-                    $query->whereColumn('stok_current', '<', 'safety_stock')
+                    $query->whereColumn('stok_current', '<=', 'safety_stock')
                           ->where('stok_current', '>', 0);
                     break;
                 case 'safe':
-                    $query->whereColumn('stok_current', '>=', 'safety_stock');
+                    $query->whereColumn('stok_current', '>', 'safety_stock');
                     break;
             }
         }
