@@ -73,7 +73,6 @@
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b-2 border-slate-200">
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">ID</th>
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Nama Departement</th>
                                     <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Aksi</th>
                                 </tr>
@@ -81,9 +80,6 @@
                             <tbody class="divide-y divide-slate-100">
                                 @foreach($departements as $departement)
                                     <tr class="hover:bg-slate-50 transition-colors duration-150">
-                                        <td class="px-4 py-4">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100 text-amber-700 font-semibold text-sm">{{ $departement->id }}</span>
-                                        </td>
                                         <td class="px-4 py-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
