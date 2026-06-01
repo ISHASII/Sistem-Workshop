@@ -129,11 +129,83 @@
                     </div>
                 @endif
 
-                <!-- Pagination -->
-                <div class="mt-6">
-                    {{ $satuans->links() }}
-                </div>
             </div>
+
+            <!-- Pagination -->
+            @if($satuans->hasPages())
+                <div class="px-4 md:px-6 py-3 md:py-4 border-t border-slate-200 bg-slate-50 rounded-b-xl">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="text-xs md:text-sm text-slate-600 text-center sm:text-left">
+                            Menampilkan {{ $satuans->firstItem() ?? 0 }} - {{ $satuans->lastItem() ?? 0 }} dari {{ $satuans->total() }} data
+                        </div>
+                        <div class="flex items-center gap-1 md:gap-2">
+                            @php
+                                $current = $satuans->currentPage();
+                                $last = $satuans->lastPage();
+                                $start = max(1, $current - 1);
+                                $end = min($last, $current + 1);
+                                $qs = http_build_query(request()->except('page'));
+                                $qsPrefix = $qs ? '&' . $qs : '';
+                            @endphp
+
+                            {{-- Previous --}}
+                            @if($satuans->onFirstPage())
+                                <span class="px-2 py-1.5 md:px-3 md:py-2 text-sm rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed">
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="?page={{ max(1, $current - 1) }}{{ $qsPrefix }}" class="px-2 py-1.5 md:px-3 md:py-2 text-sm rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors duration-200">
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                </a>
+                            @endif
+
+                            {{-- First page + ellipsis if needed --}}
+                            @if($start > 1)
+                                <a href="?page=1{{ $qsPrefix }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors duration-200">1</a>
+                                @if($start > 2)
+                                    <span class="px-1 md:px-2 text-slate-400 text-xs md:text-sm">...</span>
+                                @endif
+                            @endif
+
+                            {{-- Page window --}}
+                            @for($i = $start; $i <= $end; $i++)
+                                @if($i == $current)
+                                    <span class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm rounded-lg bg-red-600 text-white font-medium">{{ $i }}</span>
+                                @else
+                                    <a href="?page={{ $i }}{{ $qsPrefix }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors duration-200">{{ $i }}</a>
+                                @endif
+                            @endfor
+
+                            {{-- Last page + ellipsis if needed --}}
+                            @if($end < $last)
+                                @if($end < $last - 1)
+                                    <span class="px-1 md:px-2 text-slate-400 text-xs md:text-sm">...</span>
+                                @endif
+                                <a href="?page={{ $last }}{{ $qsPrefix }}" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors duration-200">{{ $last }}</a>
+                            @endif
+
+                            {{-- Next --}}
+                            @if($current >= $last)
+                                <span class="px-2 py-1.5 md:px-3 md:py-2 text-sm rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed">
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="?page={{ min($last, $current + 1) }}{{ $qsPrefix }}" class="px-2 py-1.5 md:px-3 md:py-2 text-sm rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors duration-200">
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
