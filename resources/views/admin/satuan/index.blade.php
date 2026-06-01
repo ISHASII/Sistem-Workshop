@@ -83,11 +83,6 @@
                                 <tr class="border-b-2 border-slate-200">
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                                         <div class="flex items-center gap-2">
-                                            No
-                                        </div>
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                                        <div class="flex items-center gap-2">
                                             Nama Satuan
                                         </div>
                                     </th>
@@ -97,16 +92,11 @@
                                         </div>
                                     </th>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                @foreach($satuans as $satuan)
-                                    <tr class="hover:bg-slate-50 transition-colors duration-150">
-                                        <td class="px-4 py-4">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-slate-600 font-semibold text-sm">
-                                                {{ $satuans->firstItem() + $loop->index }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4">
+                             </thead>
+                             <tbody class="divide-y divide-slate-100">
+                                 @foreach($satuans as $satuan)
+                                     <tr class="hover:bg-slate-50 transition-colors duration-150">
+                                         <td class="px-4 py-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-sm">
                                                     <span class="text-white font-bold text-sm">{{ strtoupper(substr($satuan->name, 0, 2)) }}</span>
