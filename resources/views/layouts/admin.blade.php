@@ -436,23 +436,10 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                 <div class="space-y-1">
                     <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">Master Data
                     </div>
-                    @if(Route::has('admin.kategori.index'))
-                        <a href="{{ route('admin.kategori.index') }}"
-                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
-                            <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-3 h-3 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                            </div>
-                            Kategori
-                        </a>
-                    @endif
-
                     @if(Route::has('admin.departement.index'))
                         <a href="{{ route('admin.departement.index') }}"
-                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
-                            <div class="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.departement.*') ? 'bg-red-50 text-red-700 font-semibold' : '' }}">
+                            <div class="w-6 h-6 {{ request()->routeIs('admin.departement.*') ? 'bg-amber-200' : 'bg-amber-100' }} rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
@@ -464,8 +451,8 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
 
                     @if(Route::has('admin.jabatan.index'))
                         <a href="{{ route('admin.jabatan.index') }}"
-                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
-                            <div class="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.jabatan.*') ? 'bg-red-50 text-red-700 font-semibold' : '' }}">
+                            <div class="w-6 h-6 {{ request()->routeIs('admin.jabatan.*') ? 'bg-orange-200' : 'bg-orange-100' }} rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 11V7a4 4 0 10-8 0v4M5 21h14a2 2 0 002-2V9H3v10a2 2 0 002 2z" />
@@ -475,10 +462,23 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
                         </a>
                     @endif
 
+                    @if(Route::has('admin.kategori.index'))
+                        <a href="{{ route('admin.kategori.index') }}"
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.kategori.*') ? 'bg-red-50 text-red-700 font-semibold' : '' }}">
+                            <div class="w-6 h-6 {{ request()->routeIs('admin.kategori.*') ? 'bg-violet-200' : 'bg-violet-100' }} rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-3 h-3 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </div>
+                            Kategori
+                        </a>
+                    @endif
+
                     @if(Route::has('admin.satuan.index'))
                         <a href="{{ route('admin.satuan.index') }}"
-                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
-                            <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.satuan.*') ? 'bg-red-50 text-red-700 font-semibold' : '' }}">
+                            <div class="w-6 h-6 {{ request()->routeIs('admin.satuan.*') ? 'bg-emerald-200' : 'bg-emerald-100' }} rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
@@ -490,8 +490,8 @@ data-flash-success="{{ session('success') }}" @endif @if(session('error')) data-
 
                     @if(Route::has('admin.checklist-quality.index'))
                         <a href="{{ route('admin.checklist-quality.index') }}"
-                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4">
-                            <div class="w-6 h-6 bg-sky-100 rounded-lg flex items-center justify-center mr-3">
+                            class="flex items-center px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 ml-4 {{ request()->routeIs('admin.checklist-quality.*') ? 'bg-red-50 text-red-700 font-semibold' : '' }}">
+                            <div class="w-6 h-6 {{ request()->routeIs('admin.checklist-quality.*') ? 'bg-sky-200' : 'bg-sky-100' }} rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12h6m-6 4h6m-7 4h8a2 2 0 002-2V6a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z" />
