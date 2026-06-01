@@ -83,7 +83,7 @@
                                 <tr class="border-b-2 border-slate-200">
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                                         <div class="flex items-center gap-2">
-                                            ID
+                                            No
                                         </div>
                                     </th>
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
@@ -102,8 +102,8 @@
                                 @foreach($kategoris as $kategori)
                                     <tr class="hover:bg-slate-50 transition-colors duration-150">
                                         <td class="px-4 py-4">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-100 text-red-700 font-semibold text-sm">
-                                                {{ $kategori->id }}
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-slate-600 font-semibold text-sm">
+                                                {{ $kategoris->firstItem() + $loop->index }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-4">
