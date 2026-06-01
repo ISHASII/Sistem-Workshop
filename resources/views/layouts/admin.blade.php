@@ -6,12 +6,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') - {{ config('app.name') }}</title>
-    @if (app()->environment('local'))
-        {{-- Use Vite dev server in local environment --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $prodManifestPath = '../public_html/build/manifest.json';
+        $useProd = file_exists($prodManifestPath);
+    @endphp
+     
+    @if ($useProd)
+        @php
+            $manifest = json_decode(file_get_contents($prodManifestPath), true);
+        @endphp
+        <link rel="stylesheet" href="{{ asset('build/' . $manifest['resources/css/app.css']['file']) }}">
+        <script type="module" src="{{ asset('build/' . $manifest['resources/js/app.js']['file']) }}"></script>
     @else
-        {{-- Use built assets in production/other envs --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @viteReactRefresh
+        @vite(['resources/js/app.js', 'resources/css/app.css'])
     @endif
 </head>
 

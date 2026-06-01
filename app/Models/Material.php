@@ -27,6 +27,22 @@ class Material extends Model
     ];
 
     /**
+     * Boot method for Material model to keep stok_current perfectly synced
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($material) {
+            $material->stok_current = $material->jumlah;
+        });
+
+        static::updating(function ($material) {
+            $material->stok_current = $material->calculateDynamicStok();
+        });
+    }
+
+    /**
      * Relationship dengan Satuan
      */
     public function satuan()
@@ -51,11 +67,17 @@ class Material extends Model
     }
 
     /**
-     * Get current stock including movements (checks stok_current cache first)
+     * Get current stock including movements (checks stok_current cache first with self-healing fallback)
      */
     public function getCurrentStok()
     {
         if (isset($this->stok_current)) {
+            // Self-heal: If stok_current is 0 but base jumlah > 0 and no movements exist, it is out of sync
+            if ((float)$this->stok_current === 0.0 && $this->jumlah > 0 && !$this->movements()->exists()) {
+                $calculated = (float) $this->calculateDynamicStok();
+                $this->updateStokCurrent();
+                return $calculated;
+            }
             return (float) $this->stok_current;
         }
 
@@ -63,27 +85,17 @@ class Material extends Model
     }
 
     /**
-     * Dynamically calculate stock from movements history
+     * Dynamically calculate stock from movements history directly from DB
      */
     public function calculateDynamicStok()
     {
-        if ($this->relationLoaded('movements')) {
-            $stokMasuk = $this->movements
-                ->where('type', 'in')
-                ->sum('jumlah');
+        $stokMasuk = $this->movements()
+            ->where('type', 'in')
+            ->sum('jumlah');
 
-            $stokKeluar = $this->movements
-                ->where('type', 'out')
-                ->sum('jumlah');
-        } else {
-            $stokMasuk = $this->movements()
-                ->where('type', 'in')
-                ->sum('jumlah');
-
-            $stokKeluar = $this->movements()
-                ->where('type', 'out')
-                ->sum('jumlah');
-        }
+        $stokKeluar = $this->movements()
+            ->where('type', 'out')
+            ->sum('jumlah');
 
         return $this->jumlah + $stokMasuk - $stokKeluar;
     }
