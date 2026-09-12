@@ -113,9 +113,9 @@
                     <label for="safety_stock" class="block text-sm font-medium text-slate-700 mb-1">
                         Safety Stock <span class="text-red-500">*</span>
                     </label>
-              <input type="number" step="1" min="0" id="safety_stock" name="safety_stock"
-                  value="{{ old('safety_stock', number_format($material->safety_stock, 0)) }}" readonly
-                  class="w-full px-3 py-2 border border-slate-300 bg-slate-100 text-slate-500 rounded-md cursor-not-allowed">
+                    <input type="number" step="1" min="0" id="safety_stock" name="safety_stock"
+                           value="{{ old('safety_stock', (int)$material->safety_stock) }}" required
+                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 @error('safety_stock') border-red-500 @enderror">
                     @error('safety_stock')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
